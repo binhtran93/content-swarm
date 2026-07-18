@@ -1,6 +1,6 @@
 # Projects — Overall Plan
 
-Status: Not started
+Status: In progress
 
 ## Goal
 

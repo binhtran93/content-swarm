@@ -16,6 +16,9 @@ export function AdminSidebar({
   projectId?: string;
 }) {
   const pathname = usePathname();
+  const routeProjectId = pathname.match(/^\/admin\/projects\/([^/]+)/)?.[1];
+  const activeProjectId =
+    projectId ?? (routeProjectId === "new" ? undefined : routeProjectId);
   const closeButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export function AdminSidebar({
             Workspace
           </p>
           <ul className="menu w-full gap-1 p-0">
-            {getAdminNavigation(projectId).map((item) => {
+            {getAdminNavigation(activeProjectId).map((item) => {
               const active =
                 pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (

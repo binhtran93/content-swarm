@@ -1,6 +1,6 @@
 # 01.01 — Project Management
 
-Status: Not started
+Status: In progress
 
 ## Outcome
 
@@ -109,6 +109,7 @@ creation must not call AI.
 - [Archive Project](../../src/features/projects/service/archive-project.server.ts)
 - [List Projects](../../src/features/projects/service/list-active-projects.server.ts)
 - [Get Project](../../src/features/projects/service/get-project.server.ts)
+- [Get active Project context](../../src/features/projects/service/get-project-context.server.ts)
 - [Projects page](../../src/app/admin/projects/page.tsx)
 - [Project tests](../../src/features/projects/service/project-commands.test.ts)
 
