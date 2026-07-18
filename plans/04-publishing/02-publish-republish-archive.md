@@ -96,7 +96,7 @@ None. AI cannot decide or trigger publication.
 - [Republish command](../../src/features/publishing/service/republish-article.server.ts)
 - [Archive command](../../src/features/publishing/service/archive-article.server.ts)
 - [Public read service](../../src/features/publishing/service/public-article-reader.server.ts)
-- [Publish controls](../../src/features/publishing/components/publish-controls.tsx)
+- [Publish controls](../../src/backoffice/features/publishing/publish-controls.tsx)
 - [Transaction tests](../../src/features/publishing/service/publish-article.test.ts)
 
 ## Implementation order
@@ -134,11 +134,13 @@ editorial Article documents.
 - Archive removes slug resolution and active public queries.
 - Failed commands keep previous public version complete.
 - Public read credential/service cannot read editorial collections.
+- Cross-project Article IDs, slugs, related IDs, and locale selections are
+  rejected; the same locale slug may publish independently in two Projects.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
 - Real public data exists without fake fixtures.
+- At least two configured Projects are covered by publication isolation tests.
 - Snapshot isolation is proven in an integration test and manual demonstration.
 - Public Experience can begin entirely from the public read contract.
-

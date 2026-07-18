@@ -35,6 +35,10 @@ Publishing reads Article Authoring only through a publication-candidate
 contract. Public Experience reads Publishing through a read-only public content
 service.
 
+Every publication document, slug, candidate, transaction, and invalidation key
+is scoped to one explicit `projectId`. A slug or Article ID from one Project can
+never resolve or overwrite data in another Project.
+
 ## Data flow
 
 Inputs:
@@ -76,3 +80,6 @@ public documents directly through the read service. Edit/save the working Review
 and prove public content remains unchanged. Republish and observe the update.
 Archive and prove the public slug no longer resolves.
 
+Repeat a minimal source publication for a second configured Project before
+declaring multi-project Publishing complete, proving identical slugs can exist
+independently across Projects.

@@ -131,7 +131,7 @@ None in this file. Grouping assistance is implemented by
 - [Target catalogue](../../src/features/keywords/config/search-market-catalog.ts)
 - [Keyword service](../../src/features/keywords/service/keyword-service.server.ts)
 - [Topic query](../../src/features/keywords/service/list-available-article-topics.server.ts)
-- [Backlog UI](../../src/features/keywords/components/keyword-backlog.tsx)
+- [Backlog UI](../../src/backoffice/features/keywords/keyword-backlog.tsx)
 - [Service tests](../../src/features/keywords/service/keyword-service.test.ts)
 
 ## Implementation order
@@ -174,4 +174,3 @@ available-topic result such as:
 - At least one real group is visible and expandable.
 - Available topic query returns correct individual/grouped topics.
 - No DataForSEO or AI call is required for completion.
-

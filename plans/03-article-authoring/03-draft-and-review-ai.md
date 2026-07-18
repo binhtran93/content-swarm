@@ -131,7 +131,7 @@ not read Draft or Review.
 - [Draft prompt](../../src/features/articles/prompts/article-draft-prompt.ts)
 - [Review prompt](../../src/features/articles/prompts/article-review-prompt.ts)
 - [MDX generation](../../src/features/articles/service/generate-article-mdx.server.ts)
-- [MDX workspace](../../src/features/articles/components/mdx-workspace.tsx)
+- [MDX workspace](../../src/backoffice/features/articles/mdx-workspace.tsx)
 - [Validator fixtures](../../src/features/articles/service/validate-article-mdx.test.ts)
 
 ## Implementation order
@@ -166,4 +166,3 @@ policy intended for the public renderer.
 - A real Article has valid saved Review MDX.
 - Public renderer compatibility fixtures pass.
 - The owner can complete the entire writing path without AI.
-

@@ -119,7 +119,7 @@ it into a locale public document.
 - [Translation prompt](../../src/features/articles/prompts/article-translation-prompt.ts)
 - [Translation service](../../src/features/articles/service/translation-service.server.ts)
 - [Approval command](../../src/features/articles/service/approve-translation.server.ts)
-- [Translation workspace](../../src/features/articles/components/article-translation-workspace.tsx)
+- [Translation workspace](../../src/backoffice/features/articles/article-translation-workspace.tsx)
 - [Translation tests](../../src/features/articles/service/article-translation.test.ts)
 
 ## Implementation order
@@ -154,4 +154,3 @@ the current source Review hash. No public locale document exists yet.
 - Source Article remains Ready.
 - At least one approved translation is available to the publication candidate.
 - Publishing can select source-only or source-plus-approved-locales explicitly.
-

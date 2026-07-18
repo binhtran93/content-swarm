@@ -98,6 +98,10 @@ description, provider payload, workflow state, or private translation data.
 
 Candidate output is serializable and safe to show in admin preview.
 
+Canonical URL, CTA, locale set, and topic mapping come from the candidate
+Project’s own registry entry. Candidate construction must not import SubIQ
+configuration directly.
+
 ## Backoffice behavior
 
 Publish Preview displays:
@@ -126,7 +130,7 @@ content silently.
 - [Public slug schema](../../src/features/publishing/model/public-slug-document.ts)
 - [Candidate builder](../../src/features/publishing/service/build-publication-candidate.server.ts)
 - [Candidate result](../../src/features/publishing/model/publication-candidate.ts)
-- [Publish preview](../../src/features/publishing/components/publish-preview.tsx)
+- [Publish preview](../../src/backoffice/features/publishing/publish-preview.tsx)
 - [Candidate tests](../../src/features/publishing/service/build-publication-candidate.test.ts)
 
 ## Implementation order
@@ -151,6 +155,8 @@ selected translation, matching the exact documents Publishing will write.
 - Draft/Stale translation cannot enter candidate.
 - Invalid current MDX/slug/image/canonical blocks candidate.
 - Same inputs produce the same content fields/hashes.
+- Two Projects using the same slug build independent URLs/documents.
+- Candidate config/branding belongs to its requested Project only.
 - Candidate preview performs no public Firestore write.
 - Formatting, lint, type checking, tests, and build pass.
 
@@ -159,4 +165,3 @@ selected translation, matching the exact documents Publishing will write.
 - The owner can preview the exact real candidate.
 - Candidate passes strict public schema validation.
 - The next command can persist it without rebuilding data in the browser.
-

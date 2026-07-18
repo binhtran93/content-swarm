@@ -96,7 +96,7 @@ None.
 - [Output schema](../../src/features/keywords/model/keyword-grouping-proposal.ts)
 - [AI command](../../src/features/keywords/service/propose-keyword-groups.server.ts)
 - [Apply command](../../src/features/keywords/service/apply-keyword-group-proposal.server.ts)
-- [Proposal UI](../../src/features/keywords/components/keyword-grouping-proposal.tsx)
+- [Proposal UI](../../src/backoffice/features/keywords/keyword-grouping-proposal.tsx)
 - [Prompt tests](../../src/features/keywords/prompts/keyword-grouping-prompt.test.ts)
 
 ## Implementation order
@@ -127,4 +127,3 @@ the proposal itself remaining non-authoritative and unsaved.
 - AI grouping can be demonstrated on real SubIQ Backlog data.
 - Manual grouping remains fully usable with AI disabled.
 - Only confirmed groups persist.
-

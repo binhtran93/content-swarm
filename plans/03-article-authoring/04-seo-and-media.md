@@ -99,7 +99,7 @@ Source is Ready only when:
 - [Derived metadata](../../src/features/articles/service/derive-article-metadata.ts)
 - [Readiness](../../src/features/articles/service/evaluate-article-readiness.ts)
 - [Metadata service](../../src/features/articles/service/save-article-metadata.server.ts)
-- [SEO editor](../../src/features/articles/components/article-seo-editor.tsx)
+- [SEO editor](../../src/backoffice/features/articles/article-seo-editor.tsx)
 - [Readiness tests](../../src/features/articles/service/evaluate-article-readiness.test.ts)
 
 ## Implementation order
@@ -133,4 +133,3 @@ A real source Article with `editorialStatus: "ready"` and a complete
 - One real SubIQ source Article is Ready.
 - Readiness report has no blocker.
 - Publishing can build a source candidate without querying UI state.
-

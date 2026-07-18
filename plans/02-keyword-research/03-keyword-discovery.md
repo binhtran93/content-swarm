@@ -119,7 +119,7 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 - [Fingerprint](../../src/features/discoveries/service/discovery-fingerprint.ts)
 - [DataForSEO client](../../src/features/discoveries/provider/data-for-seo-client.server.ts)
 - [Discovery service](../../src/features/discoveries/service/discovery-service.server.ts)
-- [Discover UI](../../src/features/discoveries/components/keyword-discover.tsx)
+- [Discover UI](../../src/backoffice/features/discoveries/keyword-discover.tsx)
 - [Provider fixtures](../../src/features/discoveries/provider/data-for-seo-fixtures.test.ts)
 
 ## Implementation order
@@ -156,4 +156,3 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 - Saved discovery can be reopened after refresh.
 - Candidate acceptance produces real Backlog records.
 - Backlog now contains enough real topic data to begin Article Authoring.
-

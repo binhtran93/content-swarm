@@ -4,9 +4,9 @@ Status: Not started
 
 ## Goal
 
-Adapt the best public presentation from `tdbinh` to read only real sanitized
-published data, preserve product URLs/SEO, and cut over without exposing the
-backoffice.
+Adapt the best public presentation from `tdbinh` into one multi-project public
+platform that reads only real sanitized published data, preserves each
+product’s URLs/SEO, and cuts over without exposing the backoffice.
 
 ## Reader journey
 
@@ -27,6 +27,8 @@ Public Experience owns:
 - Read-only query adapters for `publicArticles` and `publicSlugs`.
 - Blog archive, search, locale fallback, SEO, sitemap, and robots behavior.
 - Landing/support/legal page adaptation and production routing.
+- Generic project route wrappers and per-project landing modules/configuration
+  for SubIQ, Jewelry Identifier, SkyLens, Urge Zero, and future products.
 
 It owns no editorial Firestore document and performs no product-data write.
 
@@ -59,10 +61,14 @@ Outputs:
   clear noindex fallback.
 - Public configuration owns canonical domain and route prefix.
 - Existing canonical URLs are preserved or explicitly redirected.
+- Project ID is always explicit; missing/unknown configuration never falls back
+  to SubIQ.
+- Shared Blog components receive project config/dictionary contracts and must
+  not use SubIQ-specific types.
 
 ## Final demonstration
 
-Open the new SubIQ staging domain, browse and search the real article published
-in the previous plan, read source and translation routes, verify metadata and
-sitemap, then run the cutover checklist against existing production URLs.
-
+Open the new SubIQ staging domain and at least one additional configured product
+domain. Confirm each has independent presentation/data, browse the real
+published articles, verify metadata/sitemaps, and run the cutover checklist
+against every existing production route.

@@ -10,6 +10,7 @@ feature receives a valid active `projectId` and public-site context.
 ## Depends on
 
 - [Platform Foundation](../00-platform-foundation.md)
+- [Public Site Registry](./00-public-site-registry.md)
 - [Projects Overall Plan](./PLAN.md)
 
 ## Firestore ownership
@@ -76,6 +77,9 @@ Routes:
 - Archive requires confirmation and explains that future commands stop.
 - Loading, empty, invalid, unavailable, save failure, and success states are
   explicit.
+- Build cards, forms, confirmation modal, buttons, alerts, and loading states
+  with the owned Nexus-derived DaisyUI patterns under `src/backoffice`; do not
+  copy an ecommerce demo page wholesale.
 
 ## Public behavior
 
@@ -98,18 +102,18 @@ creation must not call AI.
 
 ## Implementation order
 
-1. Implement typed public-site registry with SubIQ configuration adapted from
-   `tdbinh`.
+1. Consume the completed Public Site Registry contract.
 2. Implement document/input schemas and Firestore reader.
 3. Implement queries and commands with actor/project validation.
 4. Implement admin project shell and Projects list.
-5. Implement Create and Settings.
+5. Implement Create and Settings with only unassociated site configurations.
 6. Implement archive protection used by later feature services.
-7. Add service, component, authorization, and isolation tests.
+7. Add service, component, authorization, and cross-project isolation tests.
 
 ## Tangible output
 
-A real Firestore Project created through the admin UI and visible after refresh:
+Real Firestore Projects created through the admin UI and visible after refresh,
+for example:
 
 ```text
 projects/{realProjectId}
@@ -118,7 +122,10 @@ projects/{realProjectId}
   status: active
 ```
 
-Keyword Research can now scope all work to this project.
+Keyword Research can now scope all work independently to each Project.
+
+Create separate Project documents for each product workspace. Do not store all
+brands as one Project or share keyword/article subcollections across products.
 
 ## Verification
 
@@ -131,8 +138,8 @@ Keyword Research can now scope all work to this project.
 
 ## Done when
 
-- The SubIQ project exists as real data.
-- Its admin screens work on desktop and mobile.
-- Its source configuration is resolvable.
+- The SubIQ Project and at least one additional product Project exist as real
+  isolated data.
+- Their admin screens work on desktop and mobile.
+- Each source configuration resolves to its own brand/domain/capabilities.
 - Archive prevents a representative downstream command in an integration test.
-

@@ -4,8 +4,8 @@ Status: Not started
 
 ## Goal
 
-Create the smallest useful administrative foundation: the owner can create a
-real editorial Project and associate it with one version-controlled public-site
+Create the smallest useful multi-product foundation: the owner can create real
+editorial Projects and associate each with one version-controlled public-site
 configuration.
 
 ## User journey
@@ -15,7 +15,7 @@ Open admin
 → View Projects
 → Create Project
 → Enter name and reusable AI description
-→ Associate configured public site
+→ Associate SubIQ, Jewelry Identifier, SkyLens, Urge Zero, or another configured site
 → Open project workspace
 ```
 
@@ -31,6 +31,9 @@ Projects owns:
 Projects does not own public brand/theme configuration. R1 keeps that typed and
 version-controlled under `src/public-site/config/`.
 
+Project screens use the owned Nexus-derived backoffice shell and DaisyUI
+patterns. They must not import components directly from `/nexus`.
+
 ## Data flow
 
 Inputs:
@@ -43,10 +46,13 @@ Output:
 - An active Project that downstream Keyword and Article features can use.
 - Read-only public context: canonical origin, supported locales, default locale,
   topics, MDX contract ID, and install CTA.
+- A registry of independently configured public products that shared Public
+  Experience services can resolve by `projectId`.
 
 ## Implementation files
 
-1. [Project management](./01-project-management.md)
+1. [Public Site Registry](./00-public-site-registry.md)
+2. [Project Management](./01-project-management.md)
 
 ## Shared rules
 
@@ -56,10 +62,14 @@ Output:
   commands.
 - Unknown public-site configuration blocks article publication later.
 - Public-site code never reads private project descriptions.
+- One `publicSiteId` can associate with at most one active editorial Project in
+  R1 unless multi-workspace ownership is deliberately introduced later.
+- All source-controlled site configs implement the same contract, but each can
+  enable landing, blog, localization, and legal surfaces independently while
+  incomplete legacy products are being upgraded.
 
 ## Final demonstration
 
-Create a real SubIQ project from the admin UI, associate `publicSiteId: "subiq"`,
-refresh the page, reopen it, edit its description, and see its read-only domain
-and locale configuration.
-
+Resolve all four initial public-site configurations. Create real Projects for at
+least SubIQ and one additional product from the admin UI, refresh, reopen them,
+and prove each displays its own domain, locales, brand, and capabilities.

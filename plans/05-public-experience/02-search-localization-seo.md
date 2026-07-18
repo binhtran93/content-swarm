@@ -17,6 +17,10 @@ robots, and structured data.
 
 Exact-locale archive/search reads `publicArticles` only.
 
+All queries begin from the requested Project’s `publicArticles` subcollection;
+global collection-group search is not used unless it still enforces an exact
+validated `projectId` boundary.
+
 Localized archive merges two ordered streams:
 
 1. `contentLocale == requestedLocale` exact published documents.
@@ -74,6 +78,8 @@ SEO output:
 - Project sitemap containing only indexable same-site public URLs.
 - Noindex and cross-domain canonical URLs excluded from sitemap.
 - Project robots output.
+- Independent canonical origin, topic routes, locale alternatives, sitemap, and
+  robots output for every enabled Project.
 
 ## Backoffice behavior
 
@@ -122,11 +128,13 @@ None. Search, fallback, and SEO are deterministic public behavior.
 - Visible translation must itself match localized search.
 - Sitemap contains no archived/noindex/external-canonical/fallback URL.
 - Structured data agrees with visible content and public dates.
+- Sitemap/robots/canonical generation for one Project contains no URL from
+  another Project.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
 - Source and at least one real locale journey pass end to end.
+- SEO isolation tests cover at least two Project configurations.
 - Search and SEO use only public documents/configuration.
 - Required Firestore indexes are versioned and deployed in staging.
-

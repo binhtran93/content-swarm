@@ -26,7 +26,7 @@ For each implementation file:
 | Order | Plan | Tangible final output |
 | --- | --- | --- |
 | 00 | [Platform foundation](./00-platform-foundation.md) | Buildable app, test harness, Firebase boundary, and emulator/staging connection |
-| 01 | [Projects](./01-projects/PLAN.md) | A real active project associated with one public-site configuration |
+| 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces associated with independent public-site configurations |
 | 02 | [Keyword research](./02-keyword-research/PLAN.md) | Real accepted individual/grouped Backlog topics with reusable discoveries |
 | 03 | [Article authoring](./03-article-authoring/PLAN.md) | A valid Ready working article and optional approved translations |
 | 04 | [Publishing](./04-publishing/PLAN.md) | Sanitized public Firestore documents created by explicit publication |
@@ -66,6 +66,70 @@ its Firestore documents directly.
 - Paid provider calls occur only after an explicit owner command.
 - A feature is incomplete until its output is visible, persisted, and usable by
   the next feature.
+- Every public query, slug, route, cache key, sitemap, and publication command is
+  scoped by `projectId`; content from one Project must never appear on another
+  Project’s domain.
+
+## Multi-project public sites
+
+The platform supports multiple public products from one codebase. Initial
+configured project IDs are:
+
+```text
+subiq
+jewelry-identifier
+skylens
+urge-zero
+```
+
+SubIQ is the first complete reference implementation, not a hard-coded product
+inside shared services or components. Each Project has its own source-controlled
+site configuration, Firestore data subtree, brand, canonical domain, locales,
+assets, topics, landing module, and independently enabled public capabilities.
+
+See [Public Site Registry](./01-projects/00-public-site-registry.md).
+
+## Backoffice UI source: Nexus
+
+The private backoffice uses the locally purchased Nexus template at
+`/Users/binhtran/projects/AnmiSoft/nexus` as its UI foundation.
+
+Adoption rules:
+
+- Nexus is a licensed local source/reference directory and remains excluded from
+  the production repository by `/nexus` in `.gitignore`.
+- Copy and adapt only the components/styles needed by the product into owned
+  code under `src/backoffice/`.
+- Never import production code directly from `../nexus`, use symlinks, or make
+  the build depend on the local template directory.
+- The copied code becomes maintained product code and must follow the target
+  Next.js, React, TypeScript, accessibility, testing, and formatting rules.
+- Use Nexus/DaisyUI for the backoffice presentation. Do not carry Ant Design UI
+  from `seo-pipe-lite` into the new backoffice.
+- Reuse `seo-pipe-lite` business behavior and server contracts selectively, not
+  its visual component implementation.
+- Public product/blog UI remains based on the best `tdbinh` public components
+  and does not depend on the Nexus admin shell.
+- Do not copy Nexus demo dashboards, ecommerce/chat/file-manager apps, charts,
+  fake data, placeholder account actions, or unused dependencies.
+- Preserve a short provenance/license notice for adapted Nexus files. Confirm
+  that the purchased Solo/Team/Enterprise package covers this one end product
+  and everyone who receives source access.
+
+The detailed adoption boundary is in
+[Platform Foundation](./00-platform-foundation.md#nexus-backoffice-adoption).
+
+Presentation code is surface-owned:
+
+```text
+src/features/                 Shared domain, models, and server application logic
+src/backoffice/features/      Nexus/DaisyUI admin screens and feature components
+src/public-site/              Public branded components, routes, and read services
+```
+
+`src/features` must not contain reusable-looking UI that actually assumes one
+surface. Backoffice and public components may share headless logic or schemas,
+but they should not share cards, forms, tables, shells, or styling by default.
 
 ## Prompt ownership
 
