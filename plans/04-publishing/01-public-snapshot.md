@@ -4,8 +4,9 @@ Status: Not started
 
 ## Outcome
 
-Publishing can build and preview deterministic sanitized public documents from
-one exact Ready Article revision. No Firestore public write occurs yet.
+Publishing can validate the current Article and selected approved Translations,
+then build exact sanitized public documents for preview. No public write occurs
+in this increment.
 
 ## Depends on
 
@@ -14,15 +15,14 @@ one exact Ready Article revision. No Firestore public write occurs yet.
 
 ## Firestore ownership
 
-This file defines the public document contract that the next file persists.
+This file defines the public contract that the next increment persists.
 
-Path pattern:
+Path:
 `projects/{projectId}/publicArticles/{articleId}--{normalizedLocale}`
 
 ```ts
 type PublicArticleDocument = {
   schemaVersion: 1
-  projectId: string
   articleId: string
   sourceLocale: string
   contentLocale: string
@@ -31,38 +31,25 @@ type PublicArticleDocument = {
   title: string
   excerpt: string
   topic: string
-  bodyMdx: string
-  featuredImage: {
-    url: string
-    alt: string
-    width: number
-    height: number
-  } | null
-  seo: {
-    title: string
-    description: string
-    canonicalUrlOverride: string | null
-    robotsOverride: "index" | "noindex" | null
-    schemaType: "Article" | "BlogPosting"
-  }
-  keywordTerms: string[]
+  content: string
+  seoTitle: string
+  seoDescription: string
   searchTokens: string[]
-  relatedArticleIds: string[]
-  localeSlugs: Record<string, string>
-  publication: {
-    state: "published" | "archived"
-    publishedAt: Timestamp
-    contentUpdatedAt: Timestamp
-    publicRevision: number
-    sourceRevision: number
-    contentHash: string
-  }
+  status: "published" | "archived"
+  publishedAt: Timestamp
+  updatedAt: Timestamp
 }
 ```
 
-There is one public document per published locale. This keeps archive/search
-queries simple and avoids putting every translated MDX body into one Firestore
-document.
+There is one public document per published locale. `searchTokens` are generated
+during Publishing from final title, excerpt, and Content for the simple
+Firestore-backed public search. They are not stored in the working Article or
+Translation.
+
+Canonical URL, robots behavior, and `BlogPosting` structured data are derived
+by public SEO code. The public document has no featured image, Brief, Outline,
+prompt data, keyword provider data, revision, hash, configurable schema type,
+canonical override, robots override, related IDs, reading time, or word count.
 
 ### Public slug
 
@@ -71,36 +58,28 @@ Path: `projects/{projectId}/publicSlugs/{localeKey--slug}`
 ```ts
 type PublicSlugDocument = {
   schemaVersion: 1
-  projectId: string
-  articleId: string
   publicArticleId: string
-  locale: string
-  slug: string
   updatedAt: Timestamp
 }
 ```
 
-The public document contains no Brief, Outline, Draft, prompt versions, owner
-description, provider payload, workflow state, or private translation data.
+The document ID already contains locale and slug. `publicArticleId` points to
+the exact public source/translation snapshot.
 
 ## Candidate builder
 
-`buildPublicationCandidate(projectId, articleId, expectedRevision, locales)`:
+`buildPublicationCandidate(projectId, articleId, locales)`:
 
-1. Loads the active Project and requires its `canonicalBaseUrl`.
-2. Loads Article and requested Translation documents through Article contracts.
-3. Confirms expected revision and current readiness.
-4. Revalidates Review/translation MDX and metadata.
-5. Confirms source/translation working slug reservations.
-6. Includes only approved translations tied to the current source hash.
-7. Derives public dates/revision inputs without writing them.
-8. Produces source/locale `PublicArticleDocument` candidates and exact URLs.
+1. Loads the active Project and requires `canonicalBaseUrl`.
+2. Loads the Article and validates its current required fields and MDX.
+3. Resolves the assigned Keyword/Group for validation only.
+4. Loads only explicitly selected approved Translation documents.
+5. Confirms source and translated slug reservations.
+6. Generates public search tokens.
+7. Produces exact public documents, slug documents, and URLs without writing.
 
-Candidate output is serializable and safe to show in admin preview.
-
-The canonical URL comes from the Project document. Article and translation data
-provide locale and topic information. Candidate construction must not import
-SubIQ presentation code directly.
+Preview and Confirm both rebuild from current Firestore data. There is no
+expected revision or content hash in R1.
 
 ## Backoffice behavior
 
@@ -108,60 +87,56 @@ Publish Preview displays:
 
 - First Publish or Republish.
 - Exact source and selected locale URLs.
-- Source revision and content hashes.
-- Title, excerpt, topic, image, metadata, canonical/robots, related IDs.
-- Blocking readiness errors and non-blocking warnings.
-- Difference summary against existing public documents when republishing.
+- Title, excerpt, topic, SEO title, and SEO description.
+- Derived canonical URL, robots behavior, and structured-data type.
+- Blocking validation errors.
 
-No Confirm button is enabled with blockers or stale expected revision.
+Preview performs no public Firestore write.
 
 ## Public behavior
 
-None. This increment proves the data contract but writes no public documents.
+None yet. This increment only proves the public data contract.
 
 ## AI behavior and prompt
 
-None. Publishing is deterministic and must never ask AI to repair candidate
-content silently.
+None. Publishing is deterministic.
 
 ## Planned implementation links
 
-- [Public article schema](../../src/features/articles/publishing/model/public-article-document.ts)
-- [Public slug schema](../../src/features/articles/publishing/model/public-slug-document.ts)
-- [Candidate builder](../../src/features/articles/publishing/service/build-publication-candidate.server.ts)
-- [Candidate result](../../src/features/articles/publishing/model/publication-candidate.ts)
+- [Public Article document](../../src/features/articles/publishing/model/public-article-document.ts)
+- [Public Slug document](../../src/features/articles/publishing/model/public-slug-document.ts)
+- [Publication candidate](../../src/features/articles/publishing/model/publication-candidate.ts)
+- [Build candidate](../../src/features/articles/publishing/service/build-publication-candidate.server.ts)
 - [Publish preview](../../src/features/articles/backoffice/publishing/publish-preview.tsx)
 - [Candidate tests](../../src/features/articles/publishing/service/build-publication-candidate.test.ts)
 
+Each model or service file has one public export.
+
 ## Implementation order
 
-1. Implement strict public schemas and serialization.
-2. Implement Article publication-candidate read contract.
-3. Implement deterministic locale public-document projection.
-4. Implement blockers/warnings and exact URL construction.
-5. Implement republish comparison summary.
-6. Implement Publish Preview UI.
-7. Add public-data leakage and hostile-MDX candidate tests.
+1. Implement Public Article and Slug schemas.
+2. Implement deterministic search-token generation.
+3. Implement Article and Translation validation for Publishing.
+4. Implement candidate construction and exact URL derivation.
+5. Implement Publish Preview.
+6. Test source-only, selected approved locales, invalid MDX, and duplicate slugs.
 
 ## Tangible output
 
-A previewable in-memory/serialized candidate for the real Ready Article and its
-selected translation, matching the exact documents Publishing will write.
+A previewable candidate for one real Article and its selected approved
+Translations, with no public Firestore write.
 
 ## Verification
 
-- Candidate contains no editorial-only fields.
-- Stale Article revision/hash is rejected.
-- Draft/Stale translation cannot enter candidate.
-- Invalid current MDX/slug/image/canonical blocks candidate.
-- Same inputs produce the same content fields/hashes.
-- Two Projects using the same slug build independent URLs/documents.
-- Candidate config/branding belongs to its requested Project only.
-- Candidate preview performs no public Firestore write.
+- Incomplete working data is rejected with clear blockers.
+- Unapproved Translations are rejected.
+- The same current Firestore data produces the same content fields.
+- Search tokens are deterministic.
+- Preview writes nothing publicly.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
-- The owner can preview the exact real candidate.
-- Candidate passes strict public schema validation.
-- The next command can persist it without rebuilding data in the browser.
+- The owner can preview the exact source public document.
+- At least one approved Translation can be included optionally.
+- No private authoring fields appear in the candidate.

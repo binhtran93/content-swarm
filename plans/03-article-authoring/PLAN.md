@@ -12,18 +12,18 @@ tool.
 
 ```text
 Choose Backlog topic
-→ Create Article with keyword snapshot
+→ Create Article with one primary keyword ID
 → Save Brief
 → Save Outline and title
-→ Save Draft MDX
-→ Save reviewed MDX
-→ Complete SEO/media
+→ Save Content MDX
+→ Complete SEO
 → Optionally prepare and approve translations
-→ Article becomes Ready
+→ Readiness validation allows Publish
 ```
 
-The workspace is revisitable, not an irreversible wizard. Saved prerequisites
-control progression; a query parameter never becomes workflow truth.
+The workspace is revisitable, not an irreversible wizard. The URL identifies
+the open section and saved fields determine progress; navigation state is never
+stored in Firestore.
 
 ## Ownership
 
@@ -32,52 +32,53 @@ Article Authoring owns:
 - `articles/{articleId}`.
 - `articles/{articleId}/translations/{locale}`.
 - `articleSlugs/{locale--slug}` working slug reservations.
-- Immutable keyword snapshots.
-- Brief, Outline, Draft, Review, SEO, computed data, and readiness.
+- One primary Keyword reference; Keyword Group remains the source of truth for
+  supporting members.
+- Brief, Outline, Content, and simple SEO fields.
 - Writing and translation prompts.
 
-It does not own public article documents. Publishing receives a ready working
-article through a read-only candidate contract.
+It does not own public article documents. Publishing validates the working
+Article and builds a separate public snapshot.
 
 ## Data flow
 
 Inputs:
 
-- Active Project and public-site context.
+- Active Project.
 - One available individual/grouped Backlog topic.
 - Owner content/metadata.
 - Optional AI proposals.
 
 Outputs:
 
-- `getPublicationCandidate(projectId, articleId, revision)` returning a complete
-  validated source revision and selected approved translations.
-- An Article with editorial status `ready` but no public effect.
+- A validated source Article and optional approved Translation documents that
+  Publishing can read.
 
 ## Implementation sequence
 
 1. [Article Creation](./01-article-creation.md)
 2. [Brief and Outline AI](./02-brief-and-outline-ai.md)
-3. [Draft and Review AI](./03-draft-and-review-ai.md)
-4. [SEO and Media](./04-seo-and-media.md)
+3. [Content and AI Assistance](./03-content-ai.md)
+4. [SEO](./04-seo.md)
 5. [Translations AI](./05-translations-ai.md)
 
 ## Shared rules
 
 - Article is created only after one eligible topic is saved.
-- Keyword inputs are snapshots, not live references used during generation.
+- Article stores one `keywordId`; services resolve its immutable assigned Group
+  when writing or generating.
 - Generate changes only the active unsaved editor.
 - Save never invokes AI.
 - Title and metadata remain outside MDX.
-- Reviewed MDX is body-only and begins at H2.
+- Content MDX is body-only and begins at H2.
 - The same MDX safety contract is used by editor validation and public renderer.
-- Editorial Ready does not mean Published.
+- Readiness is derived from saved fields and is not another stored status.
 - Saving an already-published Article changes only working data.
-- Translation approval is tied to a source revision/hash.
+- Translations are optional per-locale subcollection documents.
 
 ## Final demonstration
 
-Using real SubIQ Backlog data, create one article and complete it manually to
-Ready. Then demonstrate one AI proposal without auto-saving. Optionally create
-and approve a Vietnamese translation. Confirm that no public document exists
-until Publishing runs.
+Using real SubIQ Backlog data, create one Article and complete it until derived
+readiness passes. Demonstrate one AI proposal without auto-saving. Optionally
+create and approve a Vietnamese Translation. Confirm that no public document
+exists until Publishing runs.

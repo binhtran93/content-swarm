@@ -1,73 +1,71 @@
-# 03.05 — Translations AI
+# 03.05 — Translations and AI Assistance
 
 Status: Not started
 
 ## Outcome
 
-The owner can manually or assistively create, validate, save, and approve an
-exact-locale translation tied to a specific source revision and hash.
+The owner can manually write or generate, review, save, and approve an optional
+translation. Source Article publication never requires a translation.
 
 ## Depends on
 
-- [SEO and Media](./04-seo-and-media.md)
-
-Translations are optional for first source publication unless product policy
-explicitly requires one.
+- [SEO](./04-seo.md)
 
 ## Firestore ownership
 
 Path: `projects/{projectId}/articles/{articleId}/translations/{locale}`
 
+Examples:
+
+```text
+projects/subiq/articles/article-123/translations/vi-VN
+projects/subiq/articles/article-123/translations/de-DE
+```
+
 ```ts
-type ArticleTranslationDocument = {
+type TranslationDocument = {
   schemaVersion: 1
-  locale: string
-  sourceRevision: number
-  sourceReviewHash: string
-  revision: number
-  status: "draft" | "approved" | "stale"
   title: string
   slug: string
   excerpt: string
-  bodyMdx: string
-  bodyHash: string
-  featuredImageAlt: string | null
-  seo: { title: string; description: string }
-  computed: { searchTokens: string[] }
-  approvedBy: string | null
-  approvedAt: Timestamp | null
+  content: string
+  seoTitle: string
+  seoDescription: string
+  status: "draft" | "approved"
   createdAt: Timestamp
   updatedAt: Timestamp
 }
 ```
 
-Locale slug uses `articleSlugs/{localeKey--slug}` and is reserved in the same
-transaction as translation save.
+The locale is the document ID and is not duplicated as a field. Translation
+content is not embedded in the Article, and the Article does not store a list
+of translation locales.
 
-When source Review changes materially, approved translations become `stale`.
-Preserve their content. They require explicit review/save/approve again.
+There is no translation revision, hash, source hash, stale status, featured
+image alt, computed search token, or publication state in this working
+document. Publishing creates independent public locale snapshots.
 
-## Commands
+## Commands and queries
 
-- `listSupportedTranslationLocales(projectId, articleId)`.
+- `listTranslations(projectId, articleId)`.
+- `getTranslation(projectId, articleId, locale)`.
+- `saveTranslation(projectId, articleId, locale, input)`.
 - `generateTranslation(projectId, articleId, locale)`.
-- `saveTranslation(..., expectedArticleRevision, expectedTranslationRevision)`.
-- `approveTranslation(projectId, articleId, locale, expectedRevision)`.
+- `approveTranslation(projectId, articleId, locale)`.
 
-Approval revalidates MDX, required metadata, URL preservation, source
-revision/hash, and slug ownership.
+Save writes only the selected Translation. Generate returns an unsaved proposal.
+Approve revalidates required fields, MDX, locale, and Project-scoped slug.
 
 ## Backoffice behavior
 
-- Locale selector contains only supported non-source locales.
-- Translation workspace edits title, slug, excerpt, body MDX, image alt, and
-  SEO fields.
-- Safe preview uses the same public component contract.
-- Draft/Approved/Stale states are unmistakable.
-- Approve is separate from Save and from Publish.
-- Show source revision/hash relationship and source-change warning.
+- Translations is an optional Article route/section and is never an automatic
+  required step.
+- List existing locale documents from the Translation subcollection.
+- Add locale, edit fields and MDX, preview safely, Save, Generate, and Approve.
+- Generated output remains unsaved until owner confirmation.
+- Source Article may proceed directly to Publish with zero translations.
 
-## AI behavior
+## AI behavior and prompt
 
 Version: `article-translation-v1`
 
@@ -76,81 +74,81 @@ Canonical source:
 
 Server inputs:
 
-- Source locale and exact target locale.
-- Saved source title, excerpt, Review MDX, featured image alt, and SEO metadata.
-- Protected URLs extracted from source.
-- MDX component contract and translation rules.
+- Source title, excerpt, Content, SEO title, and SEO description.
+- Source and target locales.
+- Project name and product context.
+- Approved MDX component descriptions.
 
-Structured output:
+Required system prompt:
+
+```text
+Translate and localize the supplied article for the target locale. Preserve
+meaning, factual claims, MDX structure, links, and approved component names.
+Return a translated title, slug suggestion, excerpt, complete MDX content, SEO
+title, and SEO description. Do not add facts, omit sections, or translate code,
+URLs, or component names. Return only the requested structured object.
+```
+
+Output schema:
 
 ```ts
 {
   title: string
-  slugSuggestion: string
+  slug: string
   excerpt: string
-  bodyMdx: string
-  featuredImageAlt: string | null
+  content: string
   seoTitle: string
   seoDescription: string
 }
 ```
 
-Required system prompt:
-
-```text
-Translate the complete approved source article into the exact requested locale.
-Preserve meaning, factual uncertainty, MDX structure, component names, code,
-and every protected link destination. Translate reader-facing text naturally
-for the locale rather than word-for-word. Do not add, remove, verify, or invent
-claims. Do not add imports, frontmatter, H1, raw HTML, scripts, expressions, or
-new URLs. Return only the requested structured object.
-```
-
-Generated output is validated before editor prefill and remains unsaved.
-
 ## Public behavior
 
-None. Approved translation is still private until Publishing explicitly copies
-it into a locale public document.
+None until Publish. Approved working Translations are private.
+
+When published, each locale receives its own snapshot:
+
+```text
+projects/{projectId}/publicArticles/{articleId}--{normalizedLocale}
+```
 
 ## Planned implementation links
 
-- [Translation document](../../src/features/articles/model/article-translation-document.ts)
+- [Translation document](../../src/features/articles/model/translation-document.ts)
+- [List Translations](../../src/features/articles/service/list-translations.server.ts)
+- [Get Translation](../../src/features/articles/service/get-translation.server.ts)
+- [Save Translation](../../src/features/articles/service/save-translation.server.ts)
+- [Generate Translation](../../src/features/articles/service/generate-translation.server.ts)
+- [Approve Translation](../../src/features/articles/service/approve-translation.server.ts)
 - [Translation prompt](../../src/features/articles/prompts/article-translation-prompt.ts)
-- [Translation service](../../src/features/articles/service/translation-service.server.ts)
-- [Approval command](../../src/features/articles/service/approve-translation.server.ts)
 - [Translation workspace](../../src/features/articles/backoffice/article-translation-workspace.tsx)
-- [Translation tests](../../src/features/articles/service/article-translation.test.ts)
+
+Each model, prompt, or service file has one public export.
 
 ## Implementation order
 
-1. Implement supported locale and translation schemas.
-2. Implement manual translation save with slug transaction and MDX validation.
-3. Implement translation prompt and generated-output validation.
-4. Implement workspace and preview.
-5. Implement explicit approval with actor/hash capture.
-6. Implement source-change staleness.
-7. Test protected URLs, exact locales, stale approval, concurrency, and AI
-   provider-disabled path.
+1. Implement Translation schema and per-locale reads.
+2. Implement manual save and safe preview.
+3. Implement the translation prompt and generation command.
+4. Implement Project-scoped translated slug reservation.
+5. Implement explicit approval validation.
+6. Test manual-only, disabled AI, invalid MDX, duplicate slugs, and isolation.
 
 ## Tangible output
 
-At least one real approved translation document, for example `vi-VN`, tied to
-the current source Review hash. No public locale document exists yet.
+At least one real locale document saved under an Article and explicitly
+approved, while the source Article remains independently publishable.
 
 ## Verification
 
-- Manual translation works with AI disabled.
-- Generated proposal never saves/approves.
-- Unsupported/source locale is rejected.
-- Translation slug is unique within Project/locale.
-- Links/components/code remain protected.
-- Source Review change marks approval Stale without deleting content.
-- Approved translation remains private.
+- Source Article publishes with no Translation documents.
+- Generate never saves automatically.
+- Unapproved Translation cannot be selected for Publish.
+- Invalid MDX or duplicate locale slug cannot be approved.
+- Translation content is never embedded in the source Article document.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
-- Source Article remains Ready.
-- At least one approved translation is available to the publication candidate.
-- Publishing can select source-only or source-plus-approved-locales explicitly.
+- A real approved Translation can be reopened after refresh.
+- Publish Preview can select it without reading any fake data.

@@ -24,7 +24,6 @@ type ProjectDocument = {
   topics: string[]
   canonicalBaseUrl: string | null
   status: "active" | "archived"
-  createdBy: string
   createdAt: Timestamp
   updatedAt: Timestamp
   archivedAt: Timestamp | null
@@ -53,8 +52,8 @@ project count justifies a query. Do not add speculative indexes.
 - `updateProject(projectId, input)`
 - `archiveProject(projectId)`
 
-Every command validates the authenticated actor and appends an audit event for
-create/archive. Editing description need not create a verbose audit event in R1.
+Every command validates the authenticated owner. Normal application/cloud logs
+handle technical failures; R1 has no separate Firestore audit collection.
 
 ## Queries
 
@@ -99,9 +98,13 @@ creation must not call AI.
 
 - [Project schema](../../src/features/projects/model/project-document.ts)
 - [Project input](../../src/features/projects/model/project-input.ts)
-- [Project service](../../src/features/projects/service/project-service.server.ts)
+- [Create Project](../../src/features/projects/service/create-project.server.ts)
+- [Update Project](../../src/features/projects/service/update-project.server.ts)
+- [Archive Project](../../src/features/projects/service/archive-project.server.ts)
+- [List Projects](../../src/features/projects/service/list-active-projects.server.ts)
+- [Get Project](../../src/features/projects/service/get-project.server.ts)
 - [Projects page](../../src/app/admin/projects/page.tsx)
-- [Project tests](../../src/features/projects/service/project-service.test.ts)
+- [Project tests](../../src/features/projects/service/project-commands.test.ts)
 
 ## Implementation order
 

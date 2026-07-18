@@ -66,7 +66,6 @@ src/
       urge-zero/
     services/
   platform/
-    audit/
     auth/
     env/
     firebase/
@@ -173,42 +172,17 @@ This increment owns no product collection. It provides:
 - A test helper that uses isolated project/document prefixes or emulator reset.
 - Firestore converters/readers that reject malformed product documents.
 - Shared transaction and timestamp conventions.
-- Shared append-only audit-event contract.
-
-### Audit event document
-
-Path: `projects/{projectId}/auditEvents/{eventId}`
-
-```ts
-type AuditEventDocument = {
-  schemaVersion: 1
-  projectId: string
-  actorId: string
-  action: string
-  entityType: string
-  entityId: string
-  outcome: "succeeded" | "failed"
-  correlationId: string
-  details: Record<string, string | number | boolean | null>
-  createdAt: Timestamp
-}
-```
-
-Never store credentials, complete prompts, full provider payloads, or article
-content in audit details.
 
 ## AI behavior
 
-None. Do not add an AI abstraction until the first real AI feature in Keyword
-Grouping. Foundation may provide only typed environment access.
+None. Do not add an AI abstraction until the first real Article AI feature.
+Foundation may provide only typed environment access.
 
 ## Planned implementation links
 
 - [Environment schema](../src/platform/env/server-env.ts)
 - [Firebase Admin app](../src/platform/firebase/admin-app.server.ts)
 - [Firestore accessor](../src/platform/firebase/firestore.server.ts)
-- [Audit event contract](../src/platform/audit/audit-event.ts)
-- [Audit writer](../src/platform/audit/write-audit-event.server.ts)
 - [Test setup](../src/test/setup.ts)
 - [Admin shell](../src/backoffice/components/layout/admin-shell.tsx)
 - [Admin navigation](../src/backoffice/config/navigation.ts)
@@ -232,17 +206,15 @@ These targets may not exist yet. Create them only when implementing this plan.
 7. Implement typed server environment parsing.
 8. Implement Firebase Admin and Firestore access.
 9. Configure emulator or isolated development access.
-10. Add the audit event schema/writer.
-11. Create a minimal public placeholder and protected Nexus-based admin shell.
-12. Add CI or one local `check` command that runs all required verification.
+10. Create a minimal public placeholder and protected Nexus-based admin shell.
+11. Add CI or one local `check` command that runs all required verification.
 
 ## Tangible output
 
 - The application opens a public placeholder.
 - An authenticated or temporary development-only admin gate opens the adapted
   Nexus-based ANMISOFT shell without demo screens or exposing credentials.
-- An integration test writes and reads one audit event using the test Firestore
-  environment.
+- An integration test proves isolated emulator/development Firestore access.
 
 Do not create fake Project, Keyword, or Article product data in this increment.
 
@@ -254,7 +226,6 @@ Do not create fake Project, Keyword, or Article product data in this increment.
 - No unused Nexus demo dependency remains in `package.json`.
 - Sidebar works with keyboard and responsive mobile behavior.
 - Nexus branding, fake account data, and demo menu items are absent.
-- Audit schema rejects sensitive/non-supported detail values.
 - Test Firestore does not touch production.
 - Formatting, lint, type checking, tests, and build pass from a clean checkout.
 

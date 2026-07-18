@@ -21,6 +21,16 @@ For each implementation file:
 8. Update the implementation links if paths changed.
 9. Mark the file complete only when every Done condition passes.
 
+## File responsibility rule
+
+- A domain entity/model file has one public export.
+- A command, query, provider operation, AI operation, or other service file has
+  one public export and one responsibility.
+- A prompt file has one public prompt export.
+- Supporting helpers stay private unless they deserve their own single-export
+  file.
+- Do not create large service objects or barrel files that re-export a feature.
+
 ## Execution order
 
 | Order | Plan | Tangible final output |
@@ -28,7 +38,7 @@ For each implementation file:
 | 00 | [Platform foundation](./00-platform-foundation.md) | Buildable app, test harness, Firebase boundary, and emulator/staging connection |
 | 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces with minimal publication URL settings |
 | 02 | [Keyword research](./02-keyword-research/PLAN.md) | Real accepted individual/grouped Backlog topics with reusable discoveries |
-| 03 | [Article authoring](./03-article-authoring/PLAN.md) | A valid Ready working article and optional approved translations |
+| 03 | [Article authoring](./03-article-authoring/PLAN.md) | A working Article that passes derived readiness, plus optional approved Translations |
 | 04 | [Publishing](./04-publishing/PLAN.md) | Sanitized public Firestore documents created by explicit publication |
 | 05 | [Public experience](./05-public-experience/PLAN.md) | Public sites/blogs rendering real published data, followed by production cutover |
 
@@ -45,7 +55,6 @@ its Firestore documents directly.
 | Keyword Research / Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` with a bounded ordered result array |
 | Articles / Authoring | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
 | Articles / Publishing | `projects/{projectId}/publicArticles/{articleId--locale}` and `publicSlugs/{locale--slug}` |
-| Platform audit | `projects/{projectId}/auditEvents/{eventId}`; features append through the shared audit contract |
 | Public Experience | Read-only access to `publicArticles` and `publicSlugs`; owns no editorial data |
 
 ## Cross-feature rules
@@ -57,8 +66,8 @@ its Firestore documents directly.
 - Server services translate timestamps into serializable application models.
 - Public code never reads `articles`, translations, prompts, discoveries, or
   other editorial documents.
-- Article creation snapshots keywords so later Backlog changes do not rewrite
-  historical writing inputs.
+- Article Creation stores one primary `keywordId`. An assigned Keyword Group is
+  immutable, and Article services resolve its current Keyword documents.
 - Working articles and public articles are different documents.
 - Saving working content never updates a public document.
 - AI generates an unsaved proposal. It never saves, approves, advances, or

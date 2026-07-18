@@ -15,7 +15,7 @@ Open product domain
 → Understand product or browse Blog
 → Filter/search real published articles
 → Open source or exact translated article
-→ Read safe MDX and related content
+→ Read safe MDX content
 → Follow install/support action
 ```
 
@@ -56,7 +56,7 @@ Outputs:
 - No fake fixture is used when real published test/staging data exists.
 - Public code never imports Article Authoring or admin modules.
 - Public article queries are read-only and limited to public collections.
-- Only `publication.state == published` documents are visible.
+- Only `status == published` public documents are visible.
 - The page owns H1; MDX owns body only.
 - Exact approved locale wins; otherwise show only the declared source with a
   clear noindex fallback.

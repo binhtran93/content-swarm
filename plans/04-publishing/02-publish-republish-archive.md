@@ -18,9 +18,7 @@ Writes:
 
 - `publicArticles/{articleId--locale}`.
 - `publicSlugs/{locale--slug}`.
-- Article `publication` summary fields through the Article-owned publication
-  update contract.
-- One append-only audit event.
+- Article `status`.
 
 The application-level publication transaction orchestrates these feature-owned
 updates. No UI route writes Firestore directly.
@@ -30,20 +28,17 @@ not guessed here.
 
 ## Commands
 
-- `publishArticle(projectId, articleId, expectedRevision, locales)`.
+- `publishArticle(projectId, articleId, locales)`.
 - `republishArticle(...)` using the same authoritative candidate builder.
 - `publishAdditionalLocales(...)` for an already-public source.
-- `archiveArticle(projectId, articleId, expectedPublicRevision)`.
+- `archiveArticle(projectId, articleId)`.
 
 ### First publish transaction
 
 - Re-read and rebuild candidate.
-- Verify no stale revision.
 - Verify/claim public slug documents.
 - Write selected locale public documents.
-- Set Article `publication.state = published`, original `publishedAt`, current
-  published revision, and content update time.
-- Write success audit event.
+- Set Article `status = published`.
 
 ### Republish transaction
 
@@ -51,14 +46,14 @@ not guessed here.
 - Replace selected/current locale public documents.
 - Archive/remove public locale documents no longer selected only after explicit
   owner understanding.
-- Increment public revision and update `contentUpdatedAt`.
+- Update public `updatedAt`.
 
 ### Archive transaction
 
-- Set public documents `publication.state = archived`.
+- Set public documents `status = archived`.
 - Remove active public slug mappings.
-- Set Article publication summary Archived.
-- Retain sanitized documents and audit history for recovery/inspection.
+- Set Article `status = archived`.
+- Retain sanitized documents for recovery/inspection.
 
 If Firestore operation limits make one transaction impossible, redesign the
 bounded aggregate or use a safe staged/idempotent protocol before implementation.
@@ -68,17 +63,17 @@ Do not accept partial public locale state casually.
 
 - Publish/Republish confirmation names affected URLs/locales.
 - Disable duplicate submission and show progress.
-- Success shows public links and public revision.
-- Stale preview redirects back to refreshed preview.
+- Success shows public links.
 - Failure preserves previous public version and working data.
 - Archive requires confirmation and explains loss of public access.
-- Article list shows Published, Published with unpublished changes, and Archived.
+- Article list shows Draft, Published, and Archived. R1 does not add a separate
+  unpublished-changes indicator.
 
 ## Public behavior
 
 Only the read service is added here for verification:
 
-- `getPublicArticleById(projectId, publicArticleId)`.
+- `getPublicArticle(projectId, publicArticleId)`.
 - `resolvePublicSlug(projectId, locale, slug)`.
 
 Full routes/UI come next.
@@ -92,20 +87,21 @@ None. AI cannot decide or trigger publication.
 - [Publish command](../../src/features/articles/publishing/service/publish-article.server.ts)
 - [Republish command](../../src/features/articles/publishing/service/republish-article.server.ts)
 - [Archive command](../../src/features/articles/publishing/service/archive-article.server.ts)
-- [Public read service](../../src/features/articles/publishing/service/public-article-reader.server.ts)
+- [Get Public Article](../../src/features/articles/publishing/service/get-public-article.server.ts)
+- [Resolve Public Slug](../../src/features/articles/publishing/service/resolve-public-slug.server.ts)
 - [Publish controls](../../src/features/articles/backoffice/publishing/publish-controls.tsx)
 - [Transaction tests](../../src/features/articles/publishing/service/publish-article.test.ts)
 
 ## Implementation order
 
-1. Implement read-only public article/slug service.
-2. Implement first-publish transaction with optimistic revision.
+1. Implement the two single-export public read services.
+2. Implement first-publish transaction.
 3. Implement the Article publication update contract.
 4. Implement Republish and locale-add behavior.
 5. Implement Archive.
 6. Implement admin confirmations/results and list labels.
-7. Add atomicity, conflict, retry, stale, concurrency, and rollback tests.
-8. Publish the real Ready SubIQ Article in development/staging.
+7. Add atomicity, conflict, retry, concurrency, and rollback tests.
+8. Publish the real validated SubIQ Article in development/staging.
 
 ## Tangible output
 
@@ -124,20 +120,20 @@ editorial Article documents.
 ## Verification
 
 - First publish creates all expected source/locale public documents atomically.
-- Working Review edit after publish leaves public body/hash unchanged.
-- Stale confirmation writes nothing.
-- Republish updates body/hash/update time but preserves original publish time.
+- Working Content edit after publish leaves public Content unchanged.
+- Republish updates Content and `updatedAt` but preserves original
+  `publishedAt`.
 - Publishing does not modify Keyword documents.
 - Archive removes slug resolution and active public queries.
 - Failed commands keep previous public version complete.
 - Public read credential/service cannot read editorial collections.
-- Cross-project Article IDs, slugs, related IDs, and locale selections are
+- Cross-project Article IDs, slugs, and locale selections are
   rejected; the same locale slug may publish independently in two Projects.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
 - Real public data exists without fake fixtures.
-- At least two configured Projects are covered by publication isolation tests.
+- At least two Projects are covered by publication isolation tests.
 - Snapshot isolation is proven in an integration test and manual demonstration.
 - Public Experience can begin entirely from the public read contract.

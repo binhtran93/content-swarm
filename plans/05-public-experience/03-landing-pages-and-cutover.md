@@ -24,10 +24,10 @@ Legacy mapping:
 | --- | --- |
 | Project | Project document including optional `canonicalBaseUrl` |
 | Keywords/groups | Keyword-owned documents |
-| Discoveries | Discovery metadata/candidates |
+| Discoveries | Discovery request and ordered results |
 | Working/unpublished Article | Article working document only |
 | Published valid Article | Working Article plus matching public source/locale documents |
-| Draft translation | Private translation Draft |
+| Draft translation | Private Translation with `status: draft` |
 | Approved eligible translation | Approved private translation and public document only if confirmed live |
 | Invalid published record | Quarantine report; never create invalid public data |
 
@@ -142,7 +142,7 @@ command.
 4. Implement read-only legacy migration scanner/classification report.
 5. Resolve slug, locale, invalid content, and publication ambiguities.
 6. Implement idempotent migration by calling owning feature contracts.
-7. Rehearse against isolated/staging data and reconcile counts/hashes/URLs.
+7. Rehearse against isolated/staging data and reconcile counts and URLs.
 8. Compare representative old/new screenshots, HTML semantics, metadata,
    sitemap, robots, search, and status codes for every Project.
 9. Deploy/verify production indexes, least-privilege credentials, monitoring,
@@ -164,7 +164,7 @@ command.
 - All four initial Project IDs resolve their truthful enabled surfaces; missing
   landing/blog inputs remain explicit readiness gaps rather than 404 surprises
   caused by hard-coded SubIQ architecture.
-- Dedicated-domain deployments resolve only their configured Project while the
+- Dedicated-domain deployments resolve only their selected Project while the
   multi-project deployment keeps `/{projectId}` isolation.
 - No legacy published article disappears without an explicit quarantine reason.
 - No invalid/unpublished Article becomes public during migration.

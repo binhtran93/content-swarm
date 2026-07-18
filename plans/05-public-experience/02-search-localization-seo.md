@@ -72,14 +72,14 @@ Default locale omits the locale segment.
 
 SEO output:
 
-- Title, description, canonical, robots, Open Graph/social image.
+- Title, description, canonical, robots, and basic Open Graph metadata.
 - Article/BlogPosting JSON-LD and breadcrumb JSON-LD.
 - Source and approved public locale hreflang alternatives.
 - Project sitemap containing only indexable same-site public URLs.
 - Noindex and cross-domain canonical URLs excluded from sitemap.
 - Project robots output.
 - Independent canonical base URL, topic routes, locale alternatives, sitemap, and
-  robots output for every enabled Project.
+  robots output for every Project site.
 
 ## Backoffice behavior
 
@@ -92,7 +92,8 @@ None. Search, fallback, and SEO are deterministic public behavior.
 
 ## Planned implementation links
 
-- [Localized queries](../../src/public-site/services/localized-public-blog-service.server.ts)
+- [List localized Articles](../../src/public-site/services/list-localized-public-articles.server.ts)
+- [Search public Articles](../../src/public-site/services/search-public-articles.server.ts)
 - [Search normalization](../../src/public-site/services/normalize-public-search.ts)
 - [Locale resolver](../../src/public-site/services/resolve-public-locale.ts)
 - [SEO helpers](../../src/public-site/seo/public-article-seo.ts)
@@ -135,6 +136,6 @@ None. Search, fallback, and SEO are deterministic public behavior.
 ## Done when
 
 - Source and at least one real locale journey pass end to end.
-- SEO isolation tests cover at least two Project configurations.
+- SEO isolation tests cover at least two Projects.
 - Search and SEO use only public documents/configuration.
 - Required Firestore indexes are versioned and deployed in staging.

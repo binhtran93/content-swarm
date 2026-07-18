@@ -23,9 +23,9 @@ Read-only paths:
 Initial source archive query:
 
 ```text
-publication.state == published
+status == published
 isSource == true
-order by publication.publishedAt desc
+order by publishedAt desc
 order by document ID desc
 limit pageSize + 1
 ```
@@ -35,19 +35,16 @@ Topic query adds `topic == selectedTopic`.
 Required indexes are added to the version-controlled Firestore index file only
 after implementing these exact queries.
 
-Use opaque cursor values containing publication time and document ID. Do not
+Use opaque cursor values containing `publishedAt` and document ID. Do not
 emulate pages with Firestore offsets.
 
 ## Public service contract
 
-```ts
-interface PublicBlogService {
-  listArticles(input: PublicArticleListInput): Promise<PublicArticlePage>
-  resolveArticle(input: PublicArticleResolveInput): Promise<PublicArticle | null>
-  getRelatedArticles(input: RelatedPublicArticlesInput): Promise<PublicArticleSummary[]>
-  listTopics(projectId: string): Promise<string[]>
-}
-```
+Single-responsibility read functions:
+
+- `listPublicArticles(input)`.
+- `resolvePublicArticle(input)`.
+- `listPublicTopics(projectId)`.
 
 Public models are derived from strict Publishing schemas. They do not reuse the
 editable Article model.
@@ -56,7 +53,7 @@ Every service call requires `projectId`; no service has a default Project.
 
 ## Public behavior
 
-Routes for a configured project:
+Routes for a Project:
 
 ```text
 /{projectId}/blog
@@ -67,20 +64,17 @@ Blog index:
 
 - Real published source articles only for the first pass.
 - Publication order, All/topic controls, opaque next/previous pagination.
-- Title, excerpt, topic, date, reading time, optional image.
+- Title, excerpt, topic, and publication date.
 - Loading, empty, error, and Not Found states.
 
 Article page:
 
 - Resolve locale/source slug through `publicSlugs`.
-- One H1 title, metadata, image, safe MDX, TOC, related reading, install CTA.
+- One H1 title, metadata, safe MDX, and optional TOC derived from headings.
 - Revalidate MDX defensively before compile; invalid public data is unavailable,
   not executed.
-- Related selection respects editorial order and skips archived/missing docs.
-- Site shell, topics, metadata, CTA, assets, and route prefix come from the
-  requested Project configuration.
-- A Project with Blog capability disabled returns unavailable/Not Found rather
-  than another Project’s Blog.
+- Site layout, header, footer, navigation, assets, and CTA come from that
+  Project's public-site code.
 
 ## Backoffice behavior
 
@@ -92,8 +86,9 @@ None. Public requests never invoke AI.
 
 ## Planned implementation links
 
-- [Public blog service](../../src/public-site/services/public-blog-service.server.ts)
-- [Firestore public blog adapter](../../src/public-site/services/firestore-public-blog-service.server.ts)
+- [List public Articles](../../src/public-site/services/list-public-articles.server.ts)
+- [Resolve public Article](../../src/public-site/services/resolve-public-article.server.ts)
+- [List public topics](../../src/public-site/services/list-public-topics.server.ts)
 - [Blog index](../../src/public-site/components/blog/blog-index.tsx)
 - [Article view](../../src/public-site/components/blog/blog-article.tsx)
 - [MDX renderer](../../src/public-site/components/blog/public-mdx.tsx)
@@ -102,11 +97,11 @@ None. Public requests never invoke AI.
 
 ## Implementation order
 
-1. Adapt public project config/site shell needed by Blog.
+1. Adapt each real Project site layout needed by Blog.
 2. Remove SubIQ-specific dictionary/component props from shared Blog UI and
    replace them with generic project Blog contracts.
 3. Implement strict public service models and source archive query.
-4. Implement slug resolution and related article reads.
+4. Implement slug resolution and topic reads.
 5. Adapt shared Blog index/article components without Firestore types in UI.
 6. Adapt safe MDX renderer using the shared MDX contract.
 7. Implement generic project source routes, loading/error/not-found, and
@@ -123,7 +118,7 @@ page until Republish.
 ## Verification
 
 - Public service cannot read `articles` or translations subcollection.
-- Requesting Project A never returns a document/topic/related item from Project
+- Requesting Project A never returns a document or topic from Project
   B, including when slugs and article IDs are similar.
 - Unpublished/archived document cannot list or resolve.
 - Cursor pages have no duplicates/skips under deterministic fixture data.
@@ -135,7 +130,7 @@ page until Republish.
 ## Done when
 
 - Source Blog works with real Firestore public data.
-- The same shared Blog routes/components work for a second configured Project
+- The same shared Blog routes/components work for a second Project
   without copying them into another project folder.
 - No production public route uses fake fixture data.
 - Snapshot isolation is visible end to end.

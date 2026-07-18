@@ -41,8 +41,8 @@ Keyword Research owns:
 - Keyword uniqueness, metrics, source discovery, grouping, and Article assignment.
 - DataForSEO operations and cost-control behavior.
 
-It does not own article keyword data. Article Creation copies an immutable
-keyword snapshot through a Keyword query contract.
+Article Creation stores one primary `keywordId` and resolves its optional Group
+through Keyword-owned queries. Assigned Group membership is immutable.
 
 ## Data flow
 

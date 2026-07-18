@@ -70,6 +70,8 @@ type KeywordGroupDocument = {
 ```
 
 Keep a group reasonably bounded. R1 can cap it at 25 members.
+Once any member has an `articleId`, grouping commands cannot change or dissolve
+that Group.
 
 ## Commands
 
@@ -114,10 +116,17 @@ None. Keyword grouping is a manual owner action.
 
 - [Keyword document](../../src/features/keywords/model/keyword-document.ts)
 - [Keyword group](../../src/features/keywords/model/keyword-group-document.ts)
-- [Keyword service](../../src/features/keywords/service/keyword-service.server.ts)
+- [Add Keyword](../../src/features/keywords/service/add-keyword.server.ts)
+- [Add Keywords](../../src/features/keywords/service/add-keywords.server.ts)
+- [Update Keyword](../../src/features/keywords/service/update-keyword.server.ts)
+- [List Keywords](../../src/features/keywords/service/list-keywords.server.ts)
+- [Create Group](../../src/features/keywords/service/create-keyword-group.server.ts)
+- [Update Group](../../src/features/keywords/service/update-keyword-group.server.ts)
+- [Dissolve Group](../../src/features/keywords/service/dissolve-keyword-group.server.ts)
+- [Assign topic](../../src/features/keywords/service/assign-keyword-topic.server.ts)
 - [Topic query](../../src/features/keywords/service/list-available-article-topics.server.ts)
 - [Backlog UI](../../src/features/keywords/backoffice/keyword-backlog.tsx)
-- [Service tests](../../src/features/keywords/service/keyword-service.test.ts)
+- [Command tests](../../src/features/keywords/service/keyword-commands.test.ts)
 
 ## Implementation order
 
