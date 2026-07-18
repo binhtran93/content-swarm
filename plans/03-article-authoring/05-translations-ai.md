@@ -82,11 +82,42 @@ Server inputs:
 Required system prompt:
 
 ```text
-Translate and localize the supplied article for the target locale. Preserve
-meaning, factual claims, MDX structure, links, and approved component names.
-Return a translated title, slug suggestion, excerpt, complete MDX content, SEO
-title, and SEO description. Do not add facts, omit sections, or translate code,
-URLs, or component names. Return only the requested structured object.
+Translate and localize the supplied article for the exact target locale.
+
+The result must read as though it was originally written and edited by a fluent
+native professional, not translated word for word. Use natural, idiomatic
+phrasing that native readers would normally use. Rewrite idioms, sentence
+structure, transitions, and expressions when a literal translation would sound
+awkward, robotic, overly formal, or unnatural.
+
+Preserve the source meaning, factual claims, intent, tone, section hierarchy,
+lists, emphasis, links, and complete MDX structure. Do not add, remove, merge,
+or invent facts, examples, statistics, quotes, product behavior, or sections.
+
+Respect the reader's time. Keep the translation clear, concise, and useful.
+Avoid filler, generic introductions, empty conclusions, unnecessary summaries,
+repeated ideas, and repetitive keyword use. Every paragraph must retain a clear
+purpose and distinct value.
+
+Localize titles, headings, descriptions, calls to action, and visible prose so
+they feel appropriate for the target audience. Preserve product names,
+trademarks, technical identifiers, and terminology that should not be
+translated. Format dates, numbers, and punctuation naturally for the target
+locale without changing their underlying values.
+
+Preserve MDX component names, HTML/MDX tag names, prop names, code, commands,
+file paths, identifiers, and URLs exactly. Translate human-readable text inside
+components only when doing so does not change component syntax or behavior.
+
+Create a concise, URL-safe slug suggestion using natural target-language search
+phrasing. Write an idiomatic SEO title and SEO description for the target
+locale. Use relevant keywords naturally; never force, repeat, or mechanically
+translate a keyword when native readers would use a different expression.
+
+Return exactly one structured object containing `title`, `slug`, `excerpt`,
+`content`, `seoTitle`, and `seoDescription`. Return no commentary, explanation,
+translation notes, alternatives, or Markdown code fence outside the requested
+structured object.
 ```
 
 Output schema:
@@ -121,6 +152,7 @@ projects/{projectId}/publicArticles/{articleId}--{normalizedLocale}
 - [Generate Translation](../../src/features/articles/service/generate-translation.server.ts)
 - [Approve Translation](../../src/features/articles/service/approve-translation.server.ts)
 - [Translation prompt](../../src/features/articles/prompts/article-translation-prompt.ts)
+- [Prompt tests](../../src/features/articles/prompts/article-translation-prompt.test.ts)
 - [Translation workspace](../../src/features/articles/backoffice/article-translation-workspace.tsx)
 
 Each model, prompt, or service file has one public export.
@@ -143,6 +175,8 @@ approved, while the source Article remains independently publishable.
 
 - Source Article publishes with no Translation documents.
 - Generate never saves automatically.
+- Prompt contract requires native localization rather than literal translation,
+  preserves MDX syntax, and prohibits filler, repetition, and invented facts.
 - Unapproved Translation cannot be selected for Publish.
 - Invalid MDX or duplicate locale slug cannot be approved.
 - Translation content is never embedded in the source Article document.

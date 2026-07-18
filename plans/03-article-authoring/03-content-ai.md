@@ -64,10 +64,30 @@ Server inputs:
 Required system prompt:
 
 ```text
-Write one complete helpful article body as valid MDX from the supplied title,
-brief, and outline. Do not include an H1 because the page renders the title.
-Use keywords naturally, do not invent facts, and use only approved MDX
-components. Return only the article MDX.
+Write one complete, genuinely useful article body as valid MDX from the supplied
+title, brief, and outline.
+
+Write in natural, idiomatic language for the requested locale. The result must
+read as though it was written and edited by a fluent native professional. Avoid
+awkward, translated, overly formal, robotic, or unnatural phrasing that a
+native reader would not normally use.
+
+Respect the reader's time. Begin with useful substance rather than a generic
+introduction. Every section and paragraph must add distinct information,
+explanation, guidance, or a concrete example. Remove filler, obvious
+statements, empty transitions, unnecessary summaries, and repeated ideas. Do
+not restate the title, brief, outline, or the same advice in different words.
+
+Use keywords naturally only when they fit the meaning. Never repeat keywords
+for SEO purposes or distort a sentence to include one.
+
+Prefer clear, specific, actionable explanations over broad claims. Use examples
+when they materially improve understanding, but do not invent facts,
+statistics, quotes, product behavior, or unsupported details. If the supplied
+context is insufficient for a factual claim, omit the claim.
+
+Do not include an H1 because the page renders the title. Use only approved MDX
+components. Return only the complete article MDX with no commentary.
 ```
 
 ### Improve Content
@@ -82,10 +102,27 @@ Server inputs add the currently saved Content.
 Required system prompt:
 
 ```text
-Improve the supplied MDX article for clarity, usefulness, structure, and
-alignment with the saved brief and outline. Preserve valid facts and intent.
-Return the complete improved MDX, not a report, explanation, or patch. Do not
-add an H1 or unsupported MDX components.
+Rewrite the supplied MDX into a clearer, more useful, and more natural article
+while preserving its valid facts, meaning, links, and intended outcome.
+
+The result must read as though it was written and edited by a fluent native
+professional for the requested locale. Replace awkward, translated, robotic,
+overly formal, or unnatural phrasing with idiomatic language a native reader
+would actually use.
+
+Respect the reader's time. Remove filler, generic introductions, empty
+conclusions, unnecessary transitions, obvious statements, repeated ideas, and
+sections that provide no distinct value. Combine overlapping passages. Ensure
+every remaining paragraph contributes useful information, explanation,
+guidance, or a concrete supported example.
+
+Improve structure and flow while staying aligned with the saved brief and
+outline. Use keywords naturally and never repeat them merely for SEO. Do not add
+facts, statistics, quotes, product behavior, or other details unsupported by
+the saved context.
+
+Return the complete improved MDX, not a review report, explanation, summary, or
+patch. Do not add an H1 or unsupported MDX components.
 ```
 
 ## Public behavior
@@ -101,6 +138,7 @@ None. Public pages continue reading only published snapshots.
 - [Improve Content](../../src/features/articles/service/improve-article-content.server.ts)
 - [Save Content](../../src/features/articles/service/save-article-content.server.ts)
 - [Content editor](../../src/features/articles/backoffice/article-content-editor.tsx)
+- [Prompt tests](../../src/features/articles/prompts/article-content-prompts.test.ts)
 - [Validator tests](../../src/features/articles/service/validate-article-mdx.test.ts)
 
 Each model, prompt, or service file has one public export.
@@ -123,6 +161,8 @@ validation Publishing will use.
 
 - Manual writing and save work with AI disabled.
 - Generate and Improve do not write Firestore.
+- Prompt contracts require native, idiomatic, non-repetitive, useful writing
+  and prohibit unsupported factual additions.
 - Unsafe MDX neither previews executably nor saves.
 - Refresh before Save restores the last saved Content.
 - Normal tests make no real AI call.
