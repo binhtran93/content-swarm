@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
   discoveryOrderBy,
   discoveryRequestSchema,
+  keywordIdeaSeeds,
   type DiscoveryRequest,
 } from "@/features/keywords/model/discovery-input";
 import { normalizeKeyword } from "@/features/keywords/model/keyword-input";
@@ -12,13 +13,15 @@ export function normalizeDiscoveryRequest(input: DiscoveryRequest) {
   return {
     ...request,
     input:
-      request.method === "competitor_website"
-        ? request.input
-            .trim()
-            .toLocaleLowerCase("en-US")
-            .replace(/^https?:\/\//, "")
-            .replace(/\/$/, "")
-        : normalizeKeyword(request.input),
+      request.method === "keyword_ideas"
+        ? keywordIdeaSeeds(request.input).join("\n")
+        : request.method === "competitor_website"
+          ? request.input
+              .trim()
+              .toLocaleLowerCase("en-US")
+              .replace(/^https?:\/\//, "")
+              .replace(/\/$/, "")
+          : normalizeKeyword(request.input),
     orderBy: [...discoveryOrderBy[request.method]],
   };
 }

@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { parseDiscoveryPayload } from "@/features/keywords/provider/fetch-keyword-discovery.server";
+import {
+  parseDiscoveryPayload,
+  parseLocationCatalogue,
+} from "@/features/keywords/provider/fetch-keyword-discovery.server";
 
 function response(items: unknown[]) {
   return {
@@ -10,6 +13,39 @@ function response(items: unknown[]) {
 }
 
 describe("DataForSEO projected response contracts", () => {
+  it("projects Google-supported country and language catalogue entries", () => {
+    expect(
+      parseLocationCatalogue(
+        response([
+          {
+            location_code: 2840,
+            location_name: "United States",
+            country_iso_code: "US",
+            available_languages: [
+              {
+                available_sources: ["google", "bing"],
+                language_name: "English",
+                language_code: "en",
+              },
+              {
+                available_sources: ["bing"],
+                language_name: "Unsupported",
+                language_code: "xx",
+              },
+            ],
+          },
+        ]),
+      ),
+    ).toEqual([
+      {
+        locationCode: 2840,
+        locationName: "United States",
+        countryCode: "US",
+        languages: [{ languageCode: "en", languageName: "English" }],
+      },
+    ]);
+  });
+
   it("projects keyword ideas without retaining raw provider fields", () => {
     expect(
       parseDiscoveryPayload(

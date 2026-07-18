@@ -15,19 +15,43 @@ export const discoveryOrderBy = {
   ],
 } as const;
 
-export const discoveryRequestSchema = z.object({
-  method: discoveryMethodSchema,
-  input: z.string().trim().min(1, "Enter a keyword or website.").max(500),
-  countryCode: countryCodeSchema,
-  languageCode: languageCodeSchema,
-  limit: z.union([
-    z.literal(50),
-    z.literal(100),
-    z.literal(250),
-    z.literal(500),
-  ]),
-  minimumVolume: z.number().int().nonnegative().nullable().default(null),
-  maximumDifficulty: z.number().min(0).max(100).nullable().default(null),
-});
+export const keywordIdeaSeeds = (input: string) => [
+  ...new Set(
+    input
+      .split(/\r?\n/)
+      .map((value) =>
+        value.trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US"),
+      )
+      .filter(Boolean),
+  ),
+];
+
+export const discoveryRequestSchema = z
+  .object({
+    method: discoveryMethodSchema,
+    input: z.string().trim().min(1, "Enter a keyword or website.").max(20_000),
+    countryCode: countryCodeSchema,
+    languageCode: languageCodeSchema,
+    limit: z.union([
+      z.literal(50),
+      z.literal(100),
+      z.literal(250),
+      z.literal(500),
+    ]),
+    minimumVolume: z.number().int().nonnegative().nullable().default(null),
+    maximumDifficulty: z.number().min(0).max(100).nullable().default(null),
+  })
+  .superRefine((request, context) => {
+    if (
+      request.method === "keyword_ideas" &&
+      keywordIdeaSeeds(request.input).length > 200
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["input"],
+        message: "Use no more than 200 seed keywords.",
+      });
+    }
+  });
 
 export type DiscoveryRequest = z.infer<typeof discoveryRequestSchema>;

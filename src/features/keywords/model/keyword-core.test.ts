@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { normalizeKeyword } from "@/features/keywords/model/keyword-input";
-import { discoveryRequestKey } from "@/features/keywords/service/discovery-request-key";
+import { keywordIdeaSeeds } from "@/features/keywords/model/discovery-input";
+import {
+  discoveryRequestKey,
+  normalizeDiscoveryRequest,
+} from "@/features/keywords/service/discovery-request-key";
 import {
   validateGroupInput,
   validateGroupKeywords,
@@ -37,6 +41,18 @@ describe("keyword identity and discovery normalization", () => {
     );
     expect(discoveryRequestKey(request)).not.toBe(
       discoveryRequestKey({ ...request, limit: 100 }),
+    );
+  });
+
+  it("normalizes and deduplicates multiline keyword idea seeds", () => {
+    const input =
+      "Subscription tracker\n cancel   subscriptions \nSUBSCRIPTION TRACKER";
+    expect(keywordIdeaSeeds(input)).toEqual([
+      "subscription tracker",
+      "cancel subscriptions",
+    ]);
+    expect(normalizeDiscoveryRequest({ ...request, input }).input).toBe(
+      "subscription tracker\ncancel subscriptions",
     );
   });
 });

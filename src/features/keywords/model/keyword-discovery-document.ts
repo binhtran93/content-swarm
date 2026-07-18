@@ -18,7 +18,7 @@ export const keywordDiscoveryDocumentSchema = z.object({
   schemaVersion: z.literal(1),
   requestKey: z.string().min(1),
   method: discoveryMethodSchema,
-  input: z.string().min(1).max(500),
+  input: z.string().min(1).max(20_000),
   countryCode: z.string().regex(/^[A-Z]{2}$/),
   languageCode: z.string().regex(/^[a-z]{2,3}$/),
   limit: z.union([
