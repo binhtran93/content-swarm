@@ -16,25 +16,20 @@ Both steps work manually; AI only proposes unsaved editor content.
 No new collection. This feature updates these Article fields:
 
 ```text
-brief.source
-brief.hash
-outline.source
-outline.hash
+brief
+outline
 title
-currentStep
-editorialStatus
-revision
 updatedAt
 ```
 
-Every changed save increments `revision`. Saving normalized identical source is
-idempotent. Normalize line endings and outer whitespace before hashing.
+Brief and Outline are plain Markdown strings. Save only the field being edited;
+do not replace the complete Article document.
 
 ## Commands
 
-- `saveBrief(projectId, articleId, source, expectedRevision)`.
+- `saveBrief(projectId, articleId, brief)`.
 - `generateBrief(projectId, articleId)`.
-- `saveOutline(projectId, articleId, source, title, expectedRevision)`.
+- `saveOutline(projectId, articleId, outline, title)`.
 - `generateOutline(projectId, articleId)`.
 
 Generation reads authoritative saved Article dependencies on the server.
@@ -48,7 +43,7 @@ Generation reads authoritative saved Article dependencies on the server.
 - Confirm before replacing owner-modified unsaved text.
 - Outline title is a separate required field or reliably parsed into one
   structured field; do not leave the only title inside Markdown.
-- Outline cannot save before Brief; Draft cannot open before Outline/title.
+- Outline cannot save before Brief; Content cannot open before Outline/title.
 
 ## AI behavior
 
@@ -62,7 +57,8 @@ Canonical source:
 Server inputs:
 
 - Project name and description.
-- Complete immutable keyword snapshot.
+- Current selected Keyword and optional Keyword Group resolved from
+  `Article.keywordId`.
 - Source locale.
 - Versioned general writing rules.
 
@@ -86,8 +82,8 @@ Canonical source:
 Server inputs:
 
 - Project context.
-- Keyword snapshot.
-- Saved Brief source/hash.
+- Current selected Keyword and optional Keyword Group.
+- Saved Brief.
 - Source locale.
 - Writing rules and approved MDX component descriptions.
 
@@ -116,14 +112,16 @@ None. Brief, Outline, and proposed Title remain editorial.
 - [Brief prompt](../../src/features/articles/prompts/article-brief-prompt.ts)
 - [Outline prompt](../../src/features/articles/prompts/article-outline-prompt.ts)
 - [Writing rules](../../src/features/articles/config/writing-rules.ts)
-- [Generation service](../../src/features/articles/service/generate-writing-step.server.ts)
-- [Save service](../../src/features/articles/service/save-writing-step.server.ts)
+- [Generate Brief](../../src/features/articles/service/generate-article-brief.server.ts)
+- [Save Brief](../../src/features/articles/service/save-article-brief.server.ts)
+- [Generate Outline](../../src/features/articles/service/generate-article-outline.server.ts)
+- [Save Outline](../../src/features/articles/service/save-article-outline.server.ts)
 - [Writing editor](../../src/features/articles/backoffice/writing-step-editor.tsx)
 - [Prompt tests](../../src/features/articles/prompts/article-writing-prompts.test.ts)
 
 ## Implementation order
 
-1. Implement normalized content hash/save commands with expected revision.
+1. Implement the single-field Brief and Outline save commands.
 2. Implement manual Brief editor/save and prerequisites.
 3. Add versioned Brief prompt and generation command.
 4. Implement Outline/title manual editor/save.
@@ -136,12 +134,12 @@ None. Brief, Outline, and proposed Title remain editorial.
 A real Article with persisted:
 
 ```text
-brief.source + hash
-outline.source + hash
+brief
+outline
 title
 ```
 
-Draft generation can now run entirely from saved data.
+Content generation can now run entirely from saved data.
 
 ## Verification
 
@@ -149,7 +147,6 @@ Draft generation can now run entirely from saved data.
 - Generate creates no Firestore write.
 - Refresh before Save restores previous saved value, not the proposal.
 - Outline generation cannot use unsaved browser Brief text.
-- Stale expected revision preserves owner input and asks for resolution.
 - Normal tests make no real AI call.
 - Formatting, lint, type checking, tests, and build pass.
 
@@ -157,4 +154,4 @@ Draft generation can now run entirely from saved data.
 
 - A real Article has a saved Brief, Outline, and title.
 - Manual and AI-assisted paths are demonstrated.
-- Draft is unlocked only by saved prerequisites.
+- Content is unlocked only by saved prerequisites.

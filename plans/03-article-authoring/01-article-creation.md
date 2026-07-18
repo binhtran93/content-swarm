@@ -4,8 +4,8 @@ Status: Not started
 
 ## Outcome
 
-The owner can list articles and create one real working Article from exactly one
-unassigned Backlog topic. The next step receives an immutable keyword snapshot.
+The owner can list Articles and create one real working Article from one
+available Keyword or Keyword Group.
 
 ## Depends on
 
@@ -19,98 +19,47 @@ Path: `projects/{projectId}/articles/{articleId}`
 ```ts
 type ArticleDocument = {
   schemaVersion: 1
-  projectId: string
-  sourceLocale: string
-  keywordSnapshot: {
-    topicRowId: string
-    capturedAt: Timestamp
-    primary: ArticleKeywordSnapshot
-    supporting: ArticleKeywordSnapshot[]
-  }
+  locale: string
+  keywordId: string
   title: string | null
   slug: string | null
   topic: string | null
   excerpt: string | null
-  brief: { source: string; hash: string } | null
-  outline: { source: string; hash: string } | null
-  draft: { mdx: string; hash: string } | null
-  review: { mdx: string; hash: string } | null
-  seo: {
-    title: string | null
-    description: string | null
-    canonicalUrlOverride: string | null
-    robotsOverride: "index" | "noindex" | null
-    schemaType: "Article" | "BlogPosting"
-  }
-  featuredImage: {
-    assetId: string | null
-    url: string
-    alt: string
-    width: number
-    height: number
-  } | null
-  relatedArticleIds: string[]
-  computed: {
-    searchTokens: string[]
-    readingMinutes: number | null
-    wordCount: number | null
-  }
-  editorialStatus: "writing" | "ready" | "needs_update"
-  currentStep:
-    | "topic"
-    | "brief"
-    | "outline"
-    | "draft"
-    | "review"
-    | "seo"
-    | "translations"
-    | "publish"
-  revision: number
-  publication: {
-    state: "unpublished" | "published" | "archived"
-    publishedRevision: number | null
-    publishedAt: Timestamp | null
-    contentUpdatedAt: Timestamp | null
-  }
-  createdBy: string
+  brief: string | null
+  outline: string | null
+  content: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  status: "draft" | "published" | "archived"
   createdAt: Timestamp
   updatedAt: Timestamp
 }
 ```
 
-### Keyword snapshot
+`keywordId` is the selected primary Keyword. If it has a `groupId`, the Keyword
+Group remains the source of truth for its supporting members. Do not copy
+keyword text, market data, group membership, or a synthetic topic-row ID into
+the Article.
 
-Snapshot every value needed for future prompts and audit:
+Once assigned to an Article, a Keyword Group cannot be changed, dissolved, or
+deleted. An assigned individual Keyword cannot be deleted. Article Creation
+sets `articleId` on the primary and every group member in the same transaction
+that creates the Article.
 
-```ts
-type ArticleKeywordSnapshot = {
-  keywordId: string
-  keyword: string
-  countryCode: string
-  languageCode: string
-  searchVolume: number | null
-  difficulty: number | null
-  sourceDiscoveryId: string | null
-}
-```
-
-Do not copy `groupId` as the only membership source. Store exact primary and
-supporting members in deterministic order.
-
-Indexes: article list by `updatedAt desc`; optional status filters should be
-added only with their real queries.
+There is no stored workflow step, revision, content hash, featured image,
+computed metadata, or separate writing/readiness status. The URL identifies the
+open editor section, and field validation determines whether the Article can be
+published.
 
 ## Commands and queries
 
-- `listArticles(projectId, filters)`.
+- `createArticle(projectId, keywordId, sourceLocale)`.
+- `listArticles(projectId)`.
 - `getArticle(projectId, articleId)`.
-- `createArticleFromTopic(projectId, topicRowId)`.
-- `visitArticleStep(projectId, articleId, step)` without changing completion.
 
-Creation transaction re-reads the Project and current available topic, creates
-the Article, and sets `articleId` on every selected keyword/group member. The
-whole operation succeeds or fails together, preventing two Articles from
-claiming the same topic.
+Creation re-reads the active Project, selected Keyword, and optional Keyword
+Group. It verifies that every member is unassigned, creates the Article, and
+assigns every member atomically.
 
 ## Backoffice behavior
 
@@ -119,60 +68,65 @@ Routes:
 ```text
 /admin/projects/{projectId}/articles
 /admin/projects/{projectId}/articles/new
-/admin/projects/{projectId}/articles/{articleId}
+/admin/projects/{projectId}/articles/{articleId}?step=brief
 ```
 
-- Article list: title/Untitled, topic, editorial state, publication state,
-  locales, updated time, Continue/Open.
-- New: searchable available topic rows, group expansion, exactly one selection.
-- Create only after `Save topic and continue` succeeds.
-- Empty state links to Keywords when no eligible topic exists.
-- Refreshing/leaving New before save creates nothing.
+- Article list shows title or Untitled, topic, status, locale, and updated time.
+- New shows available individual/grouped Keyword choices and exactly one
+  selection.
+- Create occurs only after the owner confirms the selected Keyword topic.
+- Empty state links to Keywords when no topic is available.
+- Leaving New before confirmation creates nothing.
+- Navigation uses URL state; opening an Article without `step` chooses the first
+  incomplete section. Navigation alone never writes Firestore.
 
 ## Public behavior
 
-None. Creating/editing an Article creates no `publicArticles` document.
+None. Creating or editing an Article does not create a public document.
 
 ## AI behavior and prompt
 
-None. Topic selection is an owner decision.
+None. Keyword selection is an owner decision.
 
 ## Planned implementation links
 
 - [Article document](../../src/features/articles/model/article-document.ts)
-- [Keyword snapshot](../../src/features/articles/model/article-keyword-snapshot.ts)
-- [Article service](../../src/features/articles/service/article-service.server.ts)
+- [Create Article](../../src/features/articles/service/create-article.server.ts)
+- [List Articles](../../src/features/articles/service/list-articles.server.ts)
+- [Get Article](../../src/features/articles/service/get-article.server.ts)
 - [Article list](../../src/features/articles/backoffice/article-list.tsx)
-- [Topic picker](../../src/features/articles/backoffice/article-topic-picker.tsx)
-- [Creation tests](../../src/features/articles/service/create-article-from-topic.test.ts)
+- [Keyword picker](../../src/features/articles/backoffice/article-keyword-picker.tsx)
+- [Creation tests](../../src/features/articles/service/create-article.test.ts)
+
+Each model or service file has one public export. Supporting helpers remain
+private or move to their own single-export file.
 
 ## Implementation order
 
-1. Implement Article/keyword snapshot schemas and Firestore reader.
-2. Implement article list/get queries.
-3. Implement available topic read contract from Keywords.
-4. Implement transactional creation.
-5. Implement Article list and New topic picker.
-6. Implement empty/error/responsive states and route protection.
-7. Test concurrency, assignment/group changes, cross-project IDs, and no-save exit.
+1. Implement the Article schema and Firestore reader.
+2. Implement list/get queries.
+3. Consume the available Keyword topic query.
+4. Implement transactional Article creation and Keyword assignment.
+5. Implement Article list and New Keyword picker.
+6. Implement URL-based section navigation and empty/error states.
+7. Test double submission, stale grouping, cross-project IDs, and no-save exit.
 
 ## Tangible output
 
-A real Article Firestore document whose `keywordSnapshot` matches the selected
-real Backlog topic and remains unchanged after editing the Backlog.
+A real draft Article containing one `keywordId`, with the selected Keyword or
+Group members pointing back to that Article.
 
 ## Verification
 
-- One click/double submission cannot create two Articles from one command.
-- Ineligible/stale topic fails without creating an Article.
-- Backlog edit after creation does not change the Article snapshot.
-- Every selected keyword points to the new Article; unrelated keywords remain
-  unassigned.
+- Double submission cannot create two Articles for one Keyword topic.
+- Stale or already-assigned Keyword selection creates nothing.
+- Group membership is not duplicated into the Article.
+- Assigned Keyword/Group changes are rejected.
 - No public document is created.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
 - The owner can create and reopen a real Untitled Article.
-- Its immutable keyword snapshot is visible in the workspace.
-- Brief can consume it without direct Keyword document reads.
+- Its Keyword topic resolves through `keywordId`.
+- Brief can consume that Keyword context.
