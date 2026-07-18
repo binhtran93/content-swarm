@@ -11,7 +11,6 @@ import type { DiscoveryResult } from "@/features/keywords/model/keyword-discover
 import type { DiscoveryLocation } from "@/features/keywords/model/discovery-location";
 import { normalizeDiscoveryRequest } from "@/features/keywords/service/discovery-request-key";
 import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
-import bundledLocationCatalogue from "@/platform/data-for-seo/locations_and_languages.json";
 
 const credentialsSchema = z.object({
   DATAFORSEO_LOGIN: z.string().trim().min(1),
@@ -146,15 +145,7 @@ const getCachedLocationCatalogue = unstable_cache(
 );
 
 export async function listDiscoveryLocations(): Promise<DiscoveryLocation[]> {
-  const fallback = parseLocationCatalogue(bundledLocationCatalogue);
-  if (!credentialsSchema.safeParse(process.env).success) return fallback;
-
-  try {
-    const current = await getCachedLocationCatalogue();
-    return current.length ? current : fallback;
-  } catch {
-    return fallback;
-  }
+  return getCachedLocationCatalogue();
 }
 
 async function resolveLocationCode(countryCode: string, languageCode: string) {
