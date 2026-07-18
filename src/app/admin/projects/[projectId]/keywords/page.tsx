@@ -52,13 +52,7 @@ export default async function KeywordsPage({
   const keywords = await listKeywords(projectId);
   const base = `/admin/projects/${projectId}/keywords`;
   return (
-    <div
-      className={`mx-auto max-w-7xl ${
-        view === "discover"
-          ? "space-y-6 lg:flex lg:h-[calc(100dvh-8rem)] lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden"
-          : "space-y-6"
-      }`}
-    >
+    <div className="mx-auto max-w-7xl space-y-6 lg:flex lg:h-[calc(100dvh-8rem)] lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden">
       <PageTitle
         action={
           <Link
@@ -113,14 +107,14 @@ export default async function KeywordsPage({
         </div>
       ) : null}
       {view === "backlog" ? (
-        <>
+        <div className="space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-6 lg:space-y-0">
           <AddKeywordForm projectId={projectId} />
           <KeywordBacklog
             groups={await listKeywordGroups(projectId)}
             keywords={keywords}
             projectId={projectId}
           />
-        </>
+        </div>
       ) : (
         await (async () => {
           const discoveries = await listDiscoveries(projectId);

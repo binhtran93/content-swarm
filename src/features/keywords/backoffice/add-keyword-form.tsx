@@ -7,7 +7,7 @@ import { addKeywordAction } from "@/features/keywords/backoffice/keyword-actions
 export function AddKeywordForm({ projectId }: { projectId: string }) {
   const [state, action, pending] = useActionState(addKeywordAction, null);
   return (
-    <form action={action}>
+    <form action={action} className="shrink-0">
       <details
         className="collapse-arrow bg-base-100 border-base-300 collapse border"
         open={state?.error ? true : undefined}

@@ -78,9 +78,9 @@ export function KeywordBacklog({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden">
       {groups.length ? (
-        <section className="space-y-3" aria-labelledby="groups-title">
+        <section className="shrink-0 space-y-3" aria-labelledby="groups-title">
           <h2 className="text-lg font-semibold" id="groups-title">
             Keyword groups
           </h2>
@@ -150,8 +150,11 @@ export function KeywordBacklog({
         </section>
       ) : null}
 
-      <form action={action} className="card card-border bg-base-100">
-        <div className="card-body p-0">
+      <form
+        action={action}
+        className="card card-border bg-base-100 flex min-h-0 flex-1 flex-col overflow-hidden"
+      >
+        <div className="card-body flex min-h-0 flex-1 flex-col p-0">
           <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-3">
             <div>
               <h2 className="card-title">Backlog</h2>
@@ -244,9 +247,9 @@ export function KeywordBacklog({
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="min-h-0 flex-1 overflow-auto">
               <table className="table">
-                <thead>
+                <thead className="bg-base-100 sticky top-0 z-1">
                   <tr>
                     <th className="w-10">
                       <span className="sr-only">Select</span>

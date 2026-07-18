@@ -204,6 +204,10 @@ export function KeywordDiscover({
   locations: DiscoveryLocation[];
 }) {
   const [state, action, pending] = useActionState(runDiscoveryAction, null);
+  const [addState, addAction, addPending] = useActionState(
+    addDiscoveryResultsAction,
+    null,
+  );
   const [resultSearch, setResultSearch] = useState("");
   const [minimumVolumeFilter, setMinimumVolumeFilter] = useState("");
   const [maximumDifficultyFilter, setMaximumDifficultyFilter] = useState("");
@@ -380,13 +384,25 @@ export function KeywordDiscover({
                 filteredResults.length > 0 ? (
                   <button
                     className="btn btn-primary btn-sm"
+                    disabled={addPending}
                     form={resultSelectionFormId}
                     type="submit"
                   >
-                    Add to backlog
+                    {addPending ? (
+                      <span className="loading loading-spinner loading-sm" />
+                    ) : null}
+                    {addPending ? "Adding…" : "Add to backlog"}
                   </button>
                 ) : null}
               </div>
+              {addState?.error ? (
+                <div
+                  className="alert alert-error mx-5 mb-3 w-auto"
+                  role="alert"
+                >
+                  {addState.error}
+                </div>
+              ) : null}
               {availableResults.length === 0 ? (
                 <div className="border-base-300 border-t px-5 py-12 text-center">
                   <p className="font-medium">
@@ -463,7 +479,7 @@ export function KeywordDiscover({
                     </div>
                   ) : (
                     <form
-                      action={addDiscoveryResultsAction}
+                      action={addAction}
                       className="flex min-h-0 flex-1 flex-col"
                       id={resultSelectionFormId}
                     >

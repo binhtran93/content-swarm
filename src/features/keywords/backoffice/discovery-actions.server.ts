@@ -9,6 +9,7 @@ import { getOrReuseDiscovery } from "@/features/keywords/service/get-or-reuse-di
 import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
 
 export type DiscoveryActionState = { error?: string } | null;
+export type AddDiscoveryResultsActionState = { error?: string } | null;
 
 function nullableNumber(value: FormDataEntryValue | null) {
   const text = String(value ?? "").trim();
@@ -53,15 +54,31 @@ export async function runDiscoveryAction(
   );
 }
 
-export async function addDiscoveryResultsAction(formData: FormData) {
+export async function addDiscoveryResultsAction(
+  _state: AddDiscoveryResultsActionState,
+  formData: FormData,
+): Promise<AddDiscoveryResultsActionState> {
   const projectId = String(formData.get("projectId") ?? "");
   const discoveryId = String(formData.get("discoveryId") ?? "");
-  const result = await addResultsToBacklog(
-    projectId,
-    discoveryId,
-    formData.getAll("keywords").map(String),
-  );
+  let created: number;
+  let skipped: number;
+  try {
+    const result = await addResultsToBacklog(
+      projectId,
+      discoveryId,
+      formData.getAll("keywords").map(String),
+    );
+    created = result.created.length;
+    skipped = result.skipped;
+  } catch (error) {
+    return {
+      error:
+        error instanceof KeywordServiceError
+          ? error.message
+          : "The selected keywords could not be added to the backlog.",
+    };
+  }
   redirect(
-    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&added=${result.created.length}&skipped=${result.skipped}`,
+    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&added=${created}&skipped=${skipped}`,
   );
 }
