@@ -1,0 +1,6 @@
+.next
+coverage
+nexus
+node_modules
+package-lock.json
+plans

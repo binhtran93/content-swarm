@@ -1,2 +1,9 @@
 /.idea
 /nexus
+/.next
+/node_modules
+/.env*
+!/.env.example
+/coverage
+*.tsbuildinfo
+*-debug.log

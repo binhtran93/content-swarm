@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
+@import "../backoffice/styles/backoffice.css";
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-base-200);
+  color: var(--color-base-content);
+}

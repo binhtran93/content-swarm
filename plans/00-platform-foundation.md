@@ -1,6 +1,6 @@
 # 00 — Platform Foundation
 
-Status: Not started
+Status: Complete
 
 ## Outcome
 

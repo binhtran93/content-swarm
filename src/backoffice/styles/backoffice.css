@@ -1,0 +1,40 @@
+.admin-sidebar {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 40;
+  display: flex;
+  width: 16rem;
+  transform: translateX(-100%);
+  flex-direction: column;
+  border-inline-end: 1px solid var(--color-base-300);
+  background: var(--color-base-100);
+  transition: transform 180ms ease;
+}
+
+.admin-sidebar-open {
+  transform: translateX(0);
+}
+
+.admin-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(15 23 42 / 45%);
+}
+
+@media (min-width: 64rem) {
+  .admin-sidebar {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-backdrop {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-sidebar {
+    transition: none;
+  }
+}
