@@ -71,8 +71,9 @@ Article page:
 
 - Resolve locale/source slug through `publicSlugs`.
 - One H1 title, metadata, safe MDX, and optional TOC derived from headings.
-- Revalidate MDX defensively before compile; invalid public data is unavailable,
-  not executed.
+- Revalidate MDX defensively before compile; render only the approved Nextra and
+  custom component map shared with the backoffice preview. Invalid public data
+  is unavailable, not executed.
 - Site layout, header, footer, navigation, assets, and CTA come from that
   Project's public-site code.
 
@@ -91,7 +92,8 @@ None. Public requests never invoke AI.
 - [List public topics](../../src/public-site/services/list-public-topics.server.ts)
 - [Blog index](../../src/public-site/components/blog/blog-index.tsx)
 - [Article view](../../src/public-site/components/blog/blog-article.tsx)
-- [MDX renderer](../../src/public-site/components/blog/public-mdx.tsx)
+- [MDX component map](../../src/public-site/components/mdx/article-mdx-components.tsx)
+- [MDX renderer](../../src/public-site/components/mdx/render-article-mdx.server.tsx)
 - [Blog routes](../../src/app/(public)/[projectId]/blog/page.tsx)
 - [Contract tests](../../src/public-site/services/public-blog-service.test.ts)
 

@@ -24,6 +24,43 @@ updatedAt
 There is no Draft/Review split, hash, revision, stored editor step, or automatic
 save of AI output.
 
+## MDX and Nextra contract
+
+Adapt the proven `tdbinh` rendering approach: compile stored MDX with
+`next-mdx-remote/rsc` and expose an explicit set of components from
+`nextra/components`.
+
+Initial approved Nextra components:
+
+```text
+Bleed
+Callout
+Cards
+Steps
+Table
+Tabs
+```
+
+Normal Markdown elements remain available. MDX cannot import modules, execute
+arbitrary JavaScript, or access components outside the approved map.
+
+The editor validator, safe preview, Content/Improve prompt input, Translation
+prompt input, Publishing validation, and public renderer use the same approved
+component names. AI prompts receive a short description of each available
+component so they use one only when it materially improves the article.
+
+Future custom content components are allowed, but they are added deliberately
+one at a time under `src/public-site/components/mdx/`. Each component file has
+one public export. Adding one component requires:
+
+1. Implement and test the component.
+2. Add it to the explicit MDX component map.
+3. Add its name and usage description to validation and AI prompt context.
+4. Verify both backoffice preview and public rendering.
+
+Do not build a plugin framework, dynamic component loader, or Firestore-driven
+component registry.
+
 ## Commands
 
 - `saveArticleContent(projectId, articleId, content)`.
@@ -132,6 +169,8 @@ None. Public pages continue reading only published snapshots.
 ## Planned implementation links
 
 - [MDX validator](../../src/features/articles/service/validate-article-mdx.ts)
+- [MDX component map](../../src/public-site/components/mdx/article-mdx-components.tsx)
+- [Public MDX renderer](../../src/public-site/components/mdx/render-article-mdx.server.tsx)
 - [Content prompt](../../src/features/articles/prompts/article-content-prompt.ts)
 - [Improve prompt](../../src/features/articles/prompts/article-content-improve-prompt.ts)
 - [Generate Content](../../src/features/articles/service/generate-article-content.server.ts)
@@ -145,8 +184,9 @@ Each model, prompt, or service file has one public export.
 
 ## Implementation order
 
-1. Implement the allowed MDX contract and validator.
-2. Implement manual Content save and safe preview.
+1. Adapt the explicit Nextra component map and allowed MDX contract from
+   `tdbinh`.
+2. Implement the validator, manual Content save, and safe preview.
 3. Implement the Content generation prompt and command.
 4. Implement the improvement prompt and command.
 5. Add proposal review/replacement behavior.
@@ -163,6 +203,8 @@ validation Publishing will use.
 - Generate and Improve do not write Firestore.
 - Prompt contracts require native, idiomatic, non-repetitive, useful writing
   and prohibit unsupported factual additions.
+- Approved Nextra components render consistently in backoffice preview and the
+  public renderer; an unknown component is rejected.
 - Unsafe MDX neither previews executably nor saves.
 - Refresh before Save restores the last saved Content.
 - Normal tests make no real AI call.
