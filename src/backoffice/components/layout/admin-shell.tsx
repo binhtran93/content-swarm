@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { AdminSidebar } from "@/backoffice/components/layout/admin-sidebar";
 import { AdminTopbar } from "@/backoffice/components/layout/admin-topbar";
@@ -16,6 +17,8 @@ export function AdminShell({
   projectId?: string;
 }) {
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const pathname = usePathname();
+  const routeProjectId = pathname.match(/^\/admin\/projects\/([^/]+)/)?.[1];
   const closeNavigation = useCallback(() => setNavigationOpen(false), []);
 
   return (
@@ -23,7 +26,7 @@ export function AdminShell({
       <AdminSidebar
         onClose={closeNavigation}
         open={navigationOpen}
-        projectId={projectId}
+        projectId={projectId ?? routeProjectId}
       />
       <div className="flex min-h-screen min-w-0 flex-col">
         <AdminTopbar

@@ -12,6 +12,30 @@
   transition: transform 180ms ease;
 }
 
+.btn {
+  font-weight: 500;
+}
+
+.card .card-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+}
+
+.card .card-body {
+  gap: 0;
+}
+
+.fieldset .fieldset-legend,
+.fieldset .fieldset-label {
+  color: color-mix(in oklab, var(--color-base-content) 80%, transparent);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+.table th {
+  font-weight: 500;
+}
+
 .admin-sidebar-open {
   transform: translateX(0);
 }

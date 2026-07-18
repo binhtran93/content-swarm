@@ -1,0 +1,85 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { ZodError } from "zod";
+
+import type { DiscoveryRequest } from "@/features/keywords/model/discovery-input";
+import { addResultsToBacklog } from "@/features/keywords/service/add-results-to-backlog.server";
+import { getOrReuseDiscovery } from "@/features/keywords/service/get-or-reuse-discovery.server";
+import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
+import { runDiscoveryAgain } from "@/features/keywords/service/run-discovery-again.server";
+
+export type DiscoveryActionState = { error?: string } | null;
+
+function nullableNumber(value: FormDataEntryValue | null) {
+  const text = String(value ?? "").trim();
+  return text ? Number(text) : null;
+}
+
+function requestFrom(formData: FormData): DiscoveryRequest {
+  return {
+    method: String(formData.get("method")) as DiscoveryRequest["method"],
+    input: String(formData.get("input") ?? ""),
+    countryCode: String(formData.get("countryCode") ?? ""),
+    languageCode: String(formData.get("languageCode") ?? ""),
+    limit: Number(formData.get("limit")) as DiscoveryRequest["limit"],
+    minimumVolume: nullableNumber(formData.get("minimumVolume")),
+    maximumDifficulty: nullableNumber(formData.get("maximumDifficulty")),
+  };
+}
+
+function message(error: unknown) {
+  if (error instanceof ZodError)
+    return error.issues[0]?.message ?? "Check the request.";
+  if (error instanceof KeywordServiceError) return error.message;
+  return "The discovery could not be completed. No paid retry was made.";
+}
+
+export async function runDiscoveryAction(
+  _state: DiscoveryActionState,
+  formData: FormData,
+): Promise<DiscoveryActionState> {
+  const projectId = String(formData.get("projectId") ?? "");
+  let discoveryId: string;
+  let reused: boolean;
+  try {
+    const result = await getOrReuseDiscovery(projectId, requestFrom(formData));
+    discoveryId = result.discovery.discoveryId;
+    reused = result.reused;
+  } catch (error) {
+    return { error: message(error) };
+  }
+  redirect(
+    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&reused=${reused ? "1" : "0"}`,
+  );
+}
+
+export async function rerunDiscoveryAction(
+  _state: DiscoveryActionState,
+  formData: FormData,
+): Promise<DiscoveryActionState> {
+  const projectId = String(formData.get("projectId") ?? "");
+  let discoveryId: string;
+  try {
+    const discovery = await runDiscoveryAgain(projectId, requestFrom(formData));
+    discoveryId = discovery.discoveryId;
+  } catch (error) {
+    return { error: message(error) };
+  }
+  redirect(
+    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&reused=0`,
+  );
+}
+
+export async function addDiscoveryResultsAction(formData: FormData) {
+  const projectId = String(formData.get("projectId") ?? "");
+  const discoveryId = String(formData.get("discoveryId") ?? "");
+  const result = await addResultsToBacklog(
+    projectId,
+    discoveryId,
+    formData.getAll("keywords").map(String),
+  );
+  redirect(
+    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&added=${result.created.length}&skipped=${result.skipped}`,
+  );
+}

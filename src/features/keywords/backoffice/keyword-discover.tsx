@@ -1,0 +1,340 @@
+"use client";
+
+import Link from "next/link";
+import { useActionState } from "react";
+
+import {
+  addDiscoveryResultsAction,
+  rerunDiscoveryAction,
+  runDiscoveryAction,
+} from "@/features/keywords/backoffice/discovery-actions.server";
+import type { KeywordDiscovery } from "@/features/keywords/model/keyword-discovery";
+
+function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
+  return (
+    <>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Method</legend>
+        <select
+          className="select w-full"
+          defaultValue={discovery?.method ?? "keyword_ideas"}
+          name="method"
+        >
+          <option value="keyword_ideas">Keyword ideas</option>
+          <option value="related_keywords">Related keywords</option>
+          <option value="competitor_website">Competitor website</option>
+        </select>
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Result limit</legend>
+        <select
+          className="select w-full"
+          defaultValue={discovery?.limit ?? 50}
+          name="limit"
+        >
+          {[50, 100, 250, 500].map((limit) => (
+            <option key={limit} value={limit}>
+              {limit}
+            </option>
+          ))}
+        </select>
+      </fieldset>
+      <fieldset className="fieldset sm:col-span-2">
+        <legend className="fieldset-legend">Keyword or website</legend>
+        <input
+          className="input w-full"
+          defaultValue={discovery?.input}
+          name="input"
+          placeholder="subscription tracker"
+          required
+        />
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Country</legend>
+        <input
+          className="input w-full uppercase"
+          defaultValue={discovery?.countryCode ?? "US"}
+          maxLength={2}
+          name="countryCode"
+          required
+        />
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Language</legend>
+        <input
+          className="input w-full lowercase"
+          defaultValue={discovery?.languageCode ?? "en"}
+          maxLength={3}
+          name="languageCode"
+          required
+        />
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Minimum volume</legend>
+        <input
+          className="input w-full"
+          defaultValue={discovery?.minimumVolume ?? ""}
+          min="0"
+          name="minimumVolume"
+          type="number"
+        />
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Maximum difficulty</legend>
+        <input
+          className="input w-full"
+          defaultValue={discovery?.maximumDifficulty ?? ""}
+          max="100"
+          min="0"
+          name="maximumDifficulty"
+          type="number"
+        />
+      </fieldset>
+    </>
+  );
+}
+
+export function KeywordDiscover({
+  projectId,
+  discoveries,
+  selected,
+  existingNormalizedKeywords,
+}: {
+  projectId: string;
+  discoveries: KeywordDiscovery[];
+  selected: KeywordDiscovery | null;
+  existingNormalizedKeywords: string[];
+}) {
+  const [state, action, pending] = useActionState(runDiscoveryAction, null);
+  const [rerunState, rerunAction, rerunPending] = useActionState(
+    rerunDiscoveryAction,
+    null,
+  );
+  const existing = new Set(existingNormalizedKeywords);
+  const availableResults =
+    selected?.results.filter(
+      (result) =>
+        !existing.has(
+          result.keyword.trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US"),
+        ),
+    ) ?? [];
+
+  return (
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
+      <div className="space-y-6">
+        <form action={action} className="card card-border bg-base-100">
+          <div className="card-body">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="card-title">Discover keywords</h2>
+                <p className="text-base-content/60 mt-1 text-sm">
+                  Configure a web keyword request. Matching saved results are
+                  reused.
+                </p>
+              </div>
+              <div className="badge badge-warning badge-soft badge-sm">
+                Provider call
+              </div>
+            </div>
+            {state?.error ? (
+              <div className="alert alert-error mt-4" role="alert">
+                {state.error}
+              </div>
+            ) : null}
+            <input name="projectId" type="hidden" value={projectId} />
+            <div className="mt-5 grid gap-x-4 gap-y-3 sm:grid-cols-2">
+              <RequestFields discovery={selected} />
+            </div>
+            <div className="border-base-300 mt-5 flex items-center justify-between gap-4 border-t pt-4">
+              <p className="text-base-content/55 text-xs">
+                Nothing runs until you submit this form.
+              </p>
+              <button
+                className="btn btn-primary btn-sm"
+                disabled={pending}
+                type="submit"
+              >
+                {pending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : null}
+                {pending ? "Getting keywords…" : "Get keywords"}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {selected ? (
+          <section className="card card-border bg-base-100">
+            <div className="card-body p-0">
+              <div className="flex flex-wrap items-start justify-between gap-3 p-5">
+                <div>
+                  <h2 className="card-title">Results for “{selected.input}”</h2>
+                  <p className="text-base-content/60 text-sm">
+                    {selected.results.length} saved · {availableResults.length}{" "}
+                    not yet in backlog
+                  </p>
+                </div>
+                <form action={rerunAction}>
+                  <input name="projectId" type="hidden" value={projectId} />
+                  <input name="method" type="hidden" value={selected.method} />
+                  <input name="input" type="hidden" value={selected.input} />
+                  <input
+                    name="countryCode"
+                    type="hidden"
+                    value={selected.countryCode}
+                  />
+                  <input
+                    name="languageCode"
+                    type="hidden"
+                    value={selected.languageCode}
+                  />
+                  <input name="limit" type="hidden" value={selected.limit} />
+                  <input
+                    name="minimumVolume"
+                    type="hidden"
+                    value={selected.minimumVolume ?? ""}
+                  />
+                  <input
+                    name="maximumDifficulty"
+                    type="hidden"
+                    value={selected.maximumDifficulty ?? ""}
+                  />
+                  <button
+                    className="btn btn-outline btn-sm"
+                    disabled={rerunPending}
+                    type="submit"
+                  >
+                    {rerunPending ? "Running paid call…" : "Run again (paid)"}
+                  </button>
+                </form>
+              </div>
+              {rerunState?.error ? (
+                <div className="alert alert-error mx-5 mb-3 w-auto">
+                  {rerunState.error}
+                </div>
+              ) : null}
+              {selected.results.length === 0 ? (
+                <div className="border-base-300 border-t px-5 py-12 text-center">
+                  <p className="font-medium">
+                    This successful discovery returned no results.
+                  </p>
+                  <p className="text-base-content/60 mt-1 text-sm">
+                    It remains saved and will be reused.
+                  </p>
+                </div>
+              ) : (
+                <form action={addDiscoveryResultsAction}>
+                  <input name="projectId" type="hidden" value={projectId} />
+                  <input
+                    name="discoveryId"
+                    type="hidden"
+                    value={selected.discoveryId}
+                  />
+                  <div className="overflow-x-auto">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>
+                            <span className="sr-only">Select</span>
+                          </th>
+                          <th>Keyword</th>
+                          <th>Volume</th>
+                          <th>Difficulty</th>
+                          <th>Rank</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selected.results.map((result, index) => {
+                          const normalized = result.keyword
+                            .trim()
+                            .replace(/\s+/g, " ")
+                            .toLocaleLowerCase("en-US");
+                          const alreadyAdded = existing.has(normalized);
+                          return (
+                            <tr
+                              className={alreadyAdded ? "opacity-50" : ""}
+                              key={`${result.keyword}:${index}`}
+                            >
+                              <td>
+                                <input
+                                  aria-label={`Select ${result.keyword}`}
+                                  className="checkbox checkbox-sm"
+                                  disabled={alreadyAdded}
+                                  name="keywords"
+                                  type="checkbox"
+                                  value={result.keyword}
+                                />
+                              </td>
+                              <td>
+                                {result.keyword}
+                                {alreadyAdded ? (
+                                  <span className="badge badge-ghost ml-2">
+                                    In backlog
+                                  </span>
+                                ) : null}
+                              </td>
+                              <td>
+                                {result.searchVolume?.toLocaleString() ?? "—"}
+                              </td>
+                              <td>{result.difficulty ?? "—"}</td>
+                              <td>{result.rank ?? "—"}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="border-base-300 flex justify-end border-t p-4">
+                    <button
+                      className="btn btn-primary"
+                      disabled={availableResults.length === 0}
+                      type="submit"
+                    >
+                      Add selected to backlog
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </section>
+        ) : null}
+      </div>
+
+      <aside className="card card-border bg-base-100 h-fit">
+        <div className="card-body">
+          <h2 className="card-title text-base">Saved discoveries</h2>
+          {discoveries.length === 0 ? (
+            <p className="text-base-content/60 text-sm">
+              No provider calls have been saved.
+            </p>
+          ) : (
+            <ul className="menu -mx-2">
+              {discoveries.map((discovery) => (
+                <li key={discovery.discoveryId}>
+                  <Link
+                    className={
+                      selected?.discoveryId === discovery.discoveryId
+                        ? "active"
+                        : ""
+                    }
+                    href={`/admin/projects/${projectId}/keywords?view=discover&discovery=${discovery.discoveryId}`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">
+                        {discovery.input}
+                      </span>
+                      <span className="text-xs opacity-60">
+                        {discovery.method.replaceAll("_", " ")} ·{" "}
+                        {discovery.results.length} results
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </aside>
+    </div>
+  );
+}
