@@ -21,5 +21,5 @@ export async function archiveProjectAction(
     return { error: "The project could not be archived. Please try again." };
   }
 
-  redirect("/admin/projects?archived=1");
+  redirect("/admin/projects");
 }

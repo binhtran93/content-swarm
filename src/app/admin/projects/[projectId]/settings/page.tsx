@@ -8,12 +8,10 @@ import { getProject } from "@/features/projects/service/get-project.server";
 
 export default async function ProjectSettingsPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ projectId: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [{ projectId }, query] = await Promise.all([params, searchParams]);
+  const { projectId } = await params;
   let project: Project | null = null;
   try {
     project = await getProject(projectId);
@@ -50,16 +48,6 @@ export default async function ProjectSettingsPage({
         title={project.name}
       />
 
-      {query.created === "1" ? (
-        <div className="alert alert-success" role="status">
-          <span>Project created. It is ready for editorial work.</span>
-        </div>
-      ) : null}
-      {query.saved === "1" ? (
-        <div className="alert alert-success" role="status">
-          <span>Project settings saved.</span>
-        </div>
-      ) : null}
       {archived ? (
         <div className="alert alert-warning" role="status">
           <span>

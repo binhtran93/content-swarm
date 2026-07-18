@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import { PageTitle } from "@/backoffice/components/ui/page-title";
 import type { Project } from "@/features/projects/model/project";
 import { listActiveProjects } from "@/features/projects/service/list-active-projects.server";
@@ -48,12 +49,7 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
-export default async function ProjectsPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const query = await searchParams;
+export default async function ProjectsPage() {
   let projects: Project[] | null = null;
   try {
     projects = await listActiveProjects();
@@ -75,19 +71,8 @@ export default async function ProjectsPage({
         title="Projects"
       />
 
-      {query.archived === "1" ? (
-        <div className="alert alert-success" role="status">
-          <span>Project archived. Existing public pages were not changed.</span>
-        </div>
-      ) : null}
-
       {projects === null ? (
-        <div className="alert alert-error" role="alert">
-          <span>Projects could not be loaded.</span>
-          <Link className="btn btn-sm" href="/admin/projects">
-            Try again
-          </Link>
-        </div>
+        <ErrorToast message="Projects could not be loaded." />
       ) : projects.length === 0 ? (
         <section className="card bg-base-100 border-base-300 border shadow-sm">
           <div className="card-body items-center py-14 text-center">

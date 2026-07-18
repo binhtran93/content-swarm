@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
   addDiscoveryResultsAction,
   runDiscoveryAction,
@@ -327,6 +328,7 @@ export function KeywordDiscover({
 
   return (
     <div className="grid min-h-0 flex-1 items-start gap-6 lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
+      <ErrorToast message={state?.error ?? addState?.error} />
       <div className="flex min-h-0 flex-col gap-6 lg:h-full">
         <form action={action}>
           <details
@@ -337,11 +339,6 @@ export function KeywordDiscover({
               <h2 className="font-medium">Discover keywords</h2>
             </summary>
             <div className="collapse-content border-base-300 border-t px-5 pb-5">
-              {state?.error ? (
-                <div className="alert alert-error mt-4" role="alert">
-                  {state.error}
-                </div>
-              ) : null}
               <input name="projectId" type="hidden" value={projectId} />
               {locations.length === 0 ? (
                 <div className="alert alert-warning mt-4" role="alert">
@@ -395,14 +392,6 @@ export function KeywordDiscover({
                   </button>
                 ) : null}
               </div>
-              {addState?.error ? (
-                <div
-                  className="alert alert-error mx-5 mb-3 w-auto"
-                  role="alert"
-                >
-                  {addState.error}
-                </div>
-              ) : null}
               {availableResults.length === 0 ? (
                 <div className="border-base-300 border-t px-5 py-12 text-center">
                   <p className="font-medium">

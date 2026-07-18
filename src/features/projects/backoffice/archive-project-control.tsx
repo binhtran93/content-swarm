@@ -2,6 +2,7 @@
 
 import { useActionState, useRef } from "react";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import { archiveProjectAction } from "@/features/projects/backoffice/archive-project-action.server";
 
 export function ArchiveProjectControl({
@@ -19,11 +20,7 @@ export function ArchiveProjectControl({
 
   return (
     <>
-      {state?.error ? (
-        <div className="alert alert-error mb-4" role="alert">
-          <span>{state.error}</span>
-        </div>
-      ) : null}
+      <ErrorToast message={state?.error} />
       <button
         className="btn btn-error btn-outline"
         onClick={() => dialog.current?.showModal()}

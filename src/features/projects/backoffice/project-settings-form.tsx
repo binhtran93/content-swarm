@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import { ProjectFormFields } from "@/features/projects/backoffice/project-form-fields";
 import { updateProjectAction } from "@/features/projects/backoffice/update-project-action.server";
 import type { Project } from "@/features/projects/model/project";
@@ -14,11 +15,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
 
   return (
     <form action={action} className="space-y-6">
-      {state?.error ? (
-        <div className="alert alert-error" role="alert">
-          <span>{state.error}</span>
-        </div>
-      ) : null}
+      <ErrorToast message={state?.error} />
       <ProjectFormFields project={project} />
       <div className="border-base-300 flex justify-end border-t pt-5">
         <button className="btn btn-primary" disabled={pending} type="submit">

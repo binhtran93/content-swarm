@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
   createKeywordGroupAction,
   dissolveKeywordGroupAction,
@@ -112,6 +113,7 @@ export function KeywordBacklog({
 
   return (
     <div className="space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden">
+      <ErrorToast message={state?.error ?? removeState?.error} />
       {groups.length ? (
         <section className="shrink-0 space-y-3" aria-labelledby="groups-title">
           <h2 className="text-lg font-semibold" id="groups-title">
@@ -260,16 +262,6 @@ export function KeywordBacklog({
               <option value="assigned">Assigned</option>
             </select>
           </div>
-          {state?.error ? (
-            <div className="alert alert-error mx-5 mb-3 w-auto" role="alert">
-              {state.error}
-            </div>
-          ) : null}
-          {removeState?.error ? (
-            <div className="alert alert-error mx-5 mb-3 w-auto" role="alert">
-              {removeState.error}
-            </div>
-          ) : null}
           <input name="projectId" type="hidden" value={projectId} />
           {selected.map((id) => (
             <input key={id} name="memberIds" type="hidden" value={id} />

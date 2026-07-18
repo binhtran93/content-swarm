@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import { createProjectAction } from "@/features/projects/backoffice/create-project-action.server";
 import { ProjectFormFields } from "@/features/projects/backoffice/project-form-fields";
 
@@ -11,11 +12,7 @@ export function CreateProjectForm() {
 
   return (
     <form action={action} className="space-y-6">
-      {state?.error ? (
-        <div className="alert alert-error" role="alert">
-          <span>{state.error}</span>
-        </div>
-      ) : null}
+      <ErrorToast message={state?.error} />
       <ProjectFormFields includeProjectId />
       <div className="border-base-300 flex flex-wrap justify-end gap-3 border-t pt-5">
         <Link className="btn btn-ghost" href="/admin/projects">

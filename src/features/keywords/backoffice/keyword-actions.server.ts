@@ -27,27 +27,24 @@ export async function addKeywordAction(
   const countryCode = String(formData.get("countryCode") ?? "");
   const languageCode = String(formData.get("languageCode") ?? "");
   const pasted = String(formData.get("keywords") ?? "");
-  let redirectPath: string;
   try {
     const lines = pasted.split(/\r?\n/);
     if (lines.length > 1) {
-      const result = await addKeywords(
+      await addKeywords(
         projectId,
         lines.map((keyword) => ({ keyword, countryCode, languageCode })),
       );
-      redirectPath = `/admin/projects/${projectId}/keywords?view=backlog&added=${result.created.length}&skipped=${result.skipped}`;
     } else {
       await addKeyword(projectId, {
         keyword: pasted,
         countryCode,
         languageCode,
       });
-      redirectPath = `/admin/projects/${projectId}/keywords?view=backlog&added=1`;
     }
   } catch (error) {
     return { error: message(error) };
   }
-  redirect(redirectPath);
+  redirect(`/admin/projects/${projectId}/keywords?view=backlog`);
 }
 
 export async function createKeywordGroupAction(
@@ -63,7 +60,7 @@ export async function createKeywordGroupAction(
   } catch (error) {
     return { error: message(error) };
   }
-  redirect(`/admin/projects/${projectId}/keywords?view=backlog&grouped=1`);
+  redirect(`/admin/projects/${projectId}/keywords?view=backlog`);
 }
 
 export async function removeSelectedKeywordsAction(
@@ -71,19 +68,12 @@ export async function removeSelectedKeywordsAction(
   formData: FormData,
 ): Promise<KeywordActionState> {
   const projectId = String(formData.get("projectId") ?? "");
-  let removed: number;
   try {
-    const result = await removeKeywords(
-      projectId,
-      formData.getAll("memberIds").map(String),
-    );
-    removed = result.removed;
+    await removeKeywords(projectId, formData.getAll("memberIds").map(String));
   } catch (error) {
     return { error: message(error) };
   }
-  redirect(
-    `/admin/projects/${projectId}/keywords?view=backlog&removed=${removed}`,
-  );
+  redirect(`/admin/projects/${projectId}/keywords?view=backlog`);
 }
 
 export async function dissolveKeywordGroupAction(formData: FormData) {
@@ -96,5 +86,5 @@ export async function dissolveKeywordGroupAction(formData: FormData) {
   } catch {
     redirect(`/admin/projects/${projectId}/keywords?view=backlog&error=group`);
   }
-  redirect(`/admin/projects/${projectId}/keywords?view=backlog&dissolved=1`);
+  redirect(`/admin/projects/${projectId}/keywords?view=backlog`);
 }

@@ -33,5 +33,5 @@ export async function updateProjectAction(
     return { error: "Changes could not be saved. Please try again." };
   }
 
-  redirect(`/admin/projects/${projectId}/settings?saved=1`);
+  redirect(`/admin/projects/${projectId}/settings`);
 }

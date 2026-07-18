@@ -41,16 +41,14 @@ export async function runDiscoveryAction(
 ): Promise<DiscoveryActionState> {
   const projectId = String(formData.get("projectId") ?? "");
   let discoveryId: string;
-  let reused: boolean;
   try {
     const result = await getOrReuseDiscovery(projectId, requestFrom(formData));
     discoveryId = result.discovery.discoveryId;
-    reused = result.reused;
   } catch (error) {
     return { error: message(error) };
   }
   redirect(
-    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&reused=${reused ? "1" : "0"}`,
+    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}`,
   );
 }
 
@@ -60,16 +58,12 @@ export async function addDiscoveryResultsAction(
 ): Promise<AddDiscoveryResultsActionState> {
   const projectId = String(formData.get("projectId") ?? "");
   const discoveryId = String(formData.get("discoveryId") ?? "");
-  let created: number;
-  let skipped: number;
   try {
-    const result = await addResultsToBacklog(
+    await addResultsToBacklog(
       projectId,
       discoveryId,
       formData.getAll("keywords").map(String),
     );
-    created = result.created.length;
-    skipped = result.skipped;
   } catch (error) {
     return {
       error:
@@ -79,6 +73,6 @@ export async function addDiscoveryResultsAction(
     };
   }
   redirect(
-    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}&added=${created}&skipped=${skipped}`,
+    `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}`,
   );
 }

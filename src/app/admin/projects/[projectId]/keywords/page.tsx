@@ -81,31 +81,6 @@ export default async function KeywordsPage({
           Discover
         </Link>
       </div>
-      {value(query, "added") ? (
-        <div className="alert alert-success" role="status">
-          <span>
-            Added {value(query, "added")} keyword(s) to the backlog.
-            {value(query, "skipped")
-              ? ` Skipped ${value(query, "skipped")} blank or duplicate value(s).`
-              : ""}
-          </span>
-        </div>
-      ) : null}
-      {value(query, "grouped") === "1" ? (
-        <div className="alert alert-success" role="status">
-          Keyword group created.
-        </div>
-      ) : null}
-      {value(query, "removed") ? (
-        <div className="alert alert-success" role="status">
-          Removed {value(query, "removed")} keyword(s) from the backlog.
-        </div>
-      ) : null}
-      {value(query, "dissolved") === "1" ? (
-        <div className="alert alert-success" role="status">
-          Keyword group dissolved.
-        </div>
-      ) : null}
       {view === "backlog" ? (
         <div className="space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-6 lg:space-y-0">
           <AddKeywordForm projectId={projectId} />

@@ -2,12 +2,14 @@
 
 import { useActionState } from "react";
 
+import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import { addKeywordAction } from "@/features/keywords/backoffice/keyword-actions.server";
 
 export function AddKeywordForm({ projectId }: { projectId: string }) {
   const [state, action, pending] = useActionState(addKeywordAction, null);
   return (
     <form action={action} className="shrink-0">
+      <ErrorToast message={state?.error} />
       <details
         className="collapse-arrow bg-base-100 border-base-300 collapse border"
         open={state?.error ? true : undefined}
@@ -18,11 +20,6 @@ export function AddKeywordForm({ projectId }: { projectId: string }) {
           </div>
         </summary>
         <div className="collapse-content border-base-300 border-t px-5 pb-5">
-          {state?.error ? (
-            <div className="alert alert-error mt-4" role="alert">
-              {state.error}
-            </div>
-          ) : null}
           <input name="projectId" type="hidden" value={projectId} />
           <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
             <fieldset className="fieldset">

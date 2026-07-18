@@ -31,5 +31,5 @@ export async function createProjectAction(
     return { error: "The project could not be created. Please try again." };
   }
 
-  redirect(`/admin/projects/${projectId}/settings?created=1`);
+  redirect(`/admin/projects/${projectId}/settings`);
 }
