@@ -13,6 +13,15 @@ import type { DiscoveryLocation } from "@/features/keywords/model/discovery-loca
 type ResultSortField = "volume" | "difficulty" | "rank";
 type SortDirection = "asc" | "desc";
 
+function difficultyPresentation(score: number) {
+  if (score <= 14) return { label: "Very easy", className: "badge-success" };
+  if (score <= 29) return { label: "Easy", className: "badge-success" };
+  if (score <= 49) return { label: "Possible", className: "badge-info" };
+  if (score <= 69) return { label: "Difficult", className: "badge-warning" };
+  if (score <= 84) return { label: "Hard", className: "badge-error" };
+  return { label: "Very hard", className: "badge-error" };
+}
+
 function RequestFields({
   discovery,
   locations,
@@ -520,7 +529,26 @@ export function KeywordDiscover({
                                     {result.searchVolume?.toLocaleString() ??
                                       "—"}
                                   </td>
-                                  <td>{result.difficulty ?? "—"}</td>
+                                  <td>
+                                    {result.difficulty === null ||
+                                    result.difficulty === undefined
+                                      ? "—"
+                                      : (() => {
+                                          const presentation =
+                                            difficultyPresentation(
+                                              result.difficulty,
+                                            );
+                                          return (
+                                            <span
+                                              className={`badge badge-sm ${presentation.className}`}
+                                              title={`Keyword difficulty: ${result.difficulty} (${presentation.label})`}
+                                            >
+                                              {result.difficulty} ·{" "}
+                                              {presentation.label}
+                                            </span>
+                                          );
+                                        })()}
+                                  </td>
                                   <td>{result.rank ?? "—"}</td>
                                 </tr>
                               );

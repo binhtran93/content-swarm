@@ -76,6 +76,7 @@ describe("Keyword discovery results actions", () => {
     expect(
       within(selectionForm!).getByLabelText("Select subscription tracker"),
     ).toHaveAttribute("name", "keywords");
+    expect(screen.getByText("20 · Easy")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Run again (paid)" }),
     ).not.toBeInTheDocument();
