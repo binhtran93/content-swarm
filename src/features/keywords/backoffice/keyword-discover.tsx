@@ -274,14 +274,18 @@ export function KeywordDiscover({
                   Add selected to backlog
                 </button>
               </div>
-              {selected.results.length === 0 ? (
+              {availableResults.length === 0 ? (
                 <div className="border-base-300 border-t px-5 py-12 text-center">
                   <p className="font-medium">
-                    This successful discovery returned no results.
+                    {selected.results.length === 0
+                      ? "This successful discovery returned no results."
+                      : "All discovered keywords are already in the backlog."}
                   </p>
-                  <p className="text-base-content/60 mt-1 text-sm">
-                    It remains saved and will be reused.
-                  </p>
+                  {selected.results.length === 0 ? (
+                    <p className="text-base-content/60 mt-1 text-sm">
+                      It remains saved and will be reused.
+                    </p>
+                  ) : null}
                 </div>
               ) : (
                 <form
@@ -309,35 +313,19 @@ export function KeywordDiscover({
                         </tr>
                       </thead>
                       <tbody>
-                        {selected.results.map((result, index) => {
-                          const normalized = result.keyword
-                            .trim()
-                            .replace(/\s+/g, " ")
-                            .toLocaleLowerCase("en-US");
-                          const alreadyAdded = existing.has(normalized);
+                        {availableResults.map((result, index) => {
                           return (
-                            <tr
-                              className={alreadyAdded ? "opacity-50" : ""}
-                              key={`${result.keyword}:${index}`}
-                            >
+                            <tr key={`${result.keyword}:${index}`}>
                               <td>
                                 <input
                                   aria-label={`Select ${result.keyword}`}
                                   className="checkbox checkbox-sm"
-                                  disabled={alreadyAdded}
                                   name="keywords"
                                   type="checkbox"
                                   value={result.keyword}
                                 />
                               </td>
-                              <td>
-                                {result.keyword}
-                                {alreadyAdded ? (
-                                  <span className="badge badge-ghost ml-2">
-                                    In backlog
-                                  </span>
-                                ) : null}
-                              </td>
+                              <td>{result.keyword}</td>
                               <td>
                                 {result.searchVolume?.toLocaleString() ?? "—"}
                               </td>

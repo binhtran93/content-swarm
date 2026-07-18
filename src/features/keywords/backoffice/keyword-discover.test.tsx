@@ -82,5 +82,11 @@ describe("Keyword discovery results actions", () => {
     expect(
       screen.getByRole("button", { name: "Add selected to backlog" }),
     ).toBeDisabled();
+    expect(
+      screen.queryByLabelText("Select subscription tracker"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("All discovered keywords are already in the backlog."),
+    ).toBeInTheDocument();
   });
 });
