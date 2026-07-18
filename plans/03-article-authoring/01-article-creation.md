@@ -82,7 +82,8 @@ Routes:
 
 ## Public behavior
 
-None. Creating or editing an Article does not create a public document.
+A draft is private. A published Article is read directly by the public site, so
+saving a published Article changes its public result immediately.
 
 ## AI behavior and prompt
 
@@ -122,7 +123,7 @@ Group members pointing back to that Article.
 - Stale or already-assigned Keyword selection creates nothing.
 - Group membership is not duplicated into the Article.
 - Assigned Keyword/Group changes are rejected.
-- No public document is created.
+- The Article remains the only content document.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when

@@ -5,15 +5,15 @@ Status: Not started
 ## Goal
 
 Adapt the best public presentation from `tdbinh` into one multi-project public
-platform that reads only real sanitized published data, preserves each
-product’s URLs/SEO, and cuts over without exposing the backoffice.
+platform that reads real published Articles directly, preserves each product's
+URLs/SEO, and cuts over without exposing drafts or the backoffice.
 
 ## Reader journey
 
 ```text
 Open product domain
 → Understand product or browse Blog
-→ Filter/search real published articles
+→ Browse real published articles
 → Open source or exact translated article
 → Read safe MDX content
 → Follow install/support action
@@ -24,8 +24,8 @@ Open product domain
 Public Experience owns:
 
 - Public route composition, shared components, and styling.
-- Read-only query adapters for `publicArticles` and `publicSlugs`.
-- Blog archive, search, locale fallback, SEO, sitemap, and robots behavior.
+- Read-only query adapters for published Articles and approved Translations.
+- Blog archive, locale fallback, SEO, sitemap, and robots behavior.
 - Landing/support/legal page adaptation and production routing.
 - Explicit per-project routes, landing pages, layouts, themes, headers, footers,
   and assets for SubIQ, Jewelry Identifier, SkyLens, and Urge Zero.
@@ -38,7 +38,7 @@ Inputs:
 
 - Project-owned canonical base URL used by published metadata.
 - Site-specific presentation and content implemented directly in code.
-- Sanitized `publicArticles` and `publicSlugs` written by Publishing.
+- Published Articles and their approved Translations.
 
 Outputs:
 
@@ -48,15 +48,15 @@ Outputs:
 ## Implementation sequence
 
 1. [Public Blog](./01-public-blog.md)
-2. [Search, Localization, and SEO](./02-search-localization-seo.md)
+2. [Localization and SEO](./02-search-localization-seo.md)
 3. [Landing Pages and Cutover](./03-landing-pages-and-cutover.md)
 
 ## Shared rules
 
 - No fake fixture is used when real published test/staging data exists.
-- Public code never imports Article Authoring or admin modules.
-- Public article queries are read-only and limited to public collections.
-- Only `status == published` public documents are visible.
+- Public code never imports backoffice components, prompts, or write services.
+- Public article queries are read-only and require `status == published`.
+- A Translation also requires `status == approved` and a published parent.
 - The page owns H1; MDX owns body only.
 - Exact approved locale wins; otherwise show only the declared source with a
   clear noindex fallback.

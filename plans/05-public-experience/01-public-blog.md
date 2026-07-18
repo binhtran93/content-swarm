@@ -4,56 +4,51 @@ Status: Not started
 
 ## Outcome
 
-Readers can browse and open real source-locale published articles through the
-new public application. No fake provider or editorial read remains in the
-production path.
+Readers can browse and open real published source Articles. The public site
+uses the Article as its source of truth and has no fake or copied content path.
 
 ## Depends on
 
-- [Publish, Republish, and Archive](../04-publishing/02-publish-republish-archive.md)
+- [Publishing](../04-publishing/PLAN.md)
 - [Public Experience Overall Plan](./PLAN.md)
 
 ## Firestore access
 
-Read-only paths:
+Source Article path:
 
-- `projects/{projectId}/publicArticles/{publicArticleId}`.
-- `projects/{projectId}/publicSlugs/{locale--slug}`.
+```text
+projects/{projectId}/articles/{articleId}
+```
 
-Initial source archive query:
+Initial blog query:
 
 ```text
 status == published
-isSource == true
-order by publishedAt desc
+order by updatedAt desc
 order by document ID desc
 limit pageSize + 1
 ```
 
-Topic query adds `topic == selectedTopic`.
+Topic browsing adds `topic == selectedTopic`. Add only the Firestore indexes
+required by these implemented queries. Use an opaque cursor containing
+`updatedAt` and document ID; do not use offsets.
 
-Required indexes are added to the version-controlled Firestore index file only
-after implementing these exact queries.
-
-Use opaque cursor values containing `publishedAt` and document ID. Do not
-emulate pages with Firestore offsets.
+Slug resolution queries the same Project's Articles by `slug` and
+`status == published`. Project-scoped slug reservations prevent duplicates,
+but the public page renders the Article itself.
 
 ## Public service contract
 
-Single-responsibility read functions:
+- `listPublishedArticles(input)`.
+- `getPublishedArticleBySlug(input)`.
+- `listPublishedTopics(projectId)`.
 
-- `listPublicArticles(input)`.
-- `resolvePublicArticle(input)`.
-- `listPublicTopics(projectId)`.
-
-Public models are derived from strict Publishing schemas. They do not reuse the
-editable Article model.
-
-Every service call requires `projectId`; no service has a default Project.
+Every function requires `projectId`, returns only the fields needed by the
+public UI, and never has a default Project.
 
 ## Public behavior
 
-Routes for a Project:
+Routes:
 
 ```text
 /{projectId}/blog
@@ -62,24 +57,25 @@ Routes for a Project:
 
 Blog index:
 
-- Real published source articles only for the first pass.
-- Publication order, All/topic controls, opaque next/previous pagination.
-- Title, excerpt, topic, and publication date.
+- Published source Articles only.
+- All/topic controls and cursor pagination.
+- Title, excerpt, topic, and updated time.
 - Loading, empty, error, and Not Found states.
 
 Article page:
 
-- Resolve locale/source slug through `publicSlugs`.
-- One H1 title, metadata, safe MDX, and optional TOC derived from headings.
-- Revalidate MDX defensively before compile; render only the approved Nextra and
-  custom component map shared with the backoffice preview. Invalid public data
-  is unavailable, not executed.
-- Site layout, header, footer, navigation, assets, and CTA come from that
-  Project's public-site code.
+- Resolve a published Article by Project and slug.
+- Render one H1 title, metadata, safe MDX, and an optional heading-derived TOC.
+- Validate MDX before compiling it.
+- Render only the Nextra and future custom components in the explicit shared
+  MDX component map.
+- Use the requested Project's own layout, theme, header, footer, navigation,
+  assets, and CTA.
 
 ## Backoffice behavior
 
-No new behavior. Publish success already shows links to these routes.
+Publish success links to the public route. Saving a published Article changes
+that route immediately.
 
 ## AI behavior and prompt
 
@@ -87,52 +83,46 @@ None. Public requests never invoke AI.
 
 ## Planned implementation links
 
-- [List public Articles](../../src/public-site/services/list-public-articles.server.ts)
-- [Resolve public Article](../../src/public-site/services/resolve-public-article.server.ts)
-- [List public topics](../../src/public-site/services/list-public-topics.server.ts)
+- [List published Articles](../../src/public-site/services/list-published-articles.server.ts)
+- [Get published Article](../../src/public-site/services/get-published-article-by-slug.server.ts)
+- [List published topics](../../src/public-site/services/list-published-topics.server.ts)
 - [Blog index](../../src/public-site/components/blog/blog-index.tsx)
 - [Article view](../../src/public-site/components/blog/blog-article.tsx)
 - [MDX component map](../../src/public-site/components/mdx/article-mdx-components.tsx)
 - [MDX renderer](../../src/public-site/components/mdx/render-article-mdx.server.tsx)
 - [Blog routes](../../src/app/(public)/[projectId]/blog/page.tsx)
-- [Contract tests](../../src/public-site/services/public-blog-service.test.ts)
+- [Service tests](../../src/public-site/services/published-article-service.test.ts)
+
+Each service or main component file has one public export.
 
 ## Implementation order
 
-1. Adapt each real Project site layout needed by Blog.
-2. Remove SubIQ-specific dictionary/component props from shared Blog UI and
-   replace them with generic project Blog contracts.
-3. Implement strict public service models and source archive query.
-4. Implement slug resolution and topic reads.
-5. Adapt shared Blog index/article components without Firestore types in UI.
-6. Adapt safe MDX renderer using the shared MDX contract.
-7. Implement generic project source routes, loading/error/not-found, and
-   pagination.
-8. Add exact query indexes and deploy them in development/staging.
-9. Remove/disable fake provider from the production configuration.
+1. Adapt the Project site layout needed by Blog.
+2. Implement the published Article list query.
+3. Implement published slug resolution and topic reads.
+4. Adapt the Blog index and Article components.
+5. Adapt the safe Nextra MDX renderer.
+6. Implement routes and loading/error/not-found states.
+7. Add the exact required indexes.
+8. Remove the fake provider from production configuration.
 
 ## Tangible output
 
-The real article published in Plan 04 is visible on the new Blog index and
-article route. Its working Article document can change without changing this
-page until Republish.
+The real Article published in Plan 04 appears on the Blog index and Article
+route directly from its Article document.
 
 ## Verification
 
-- Public service cannot read `articles` or translations subcollection.
-- Requesting Project A never returns a document or topic from Project
-  B, including when slugs and article IDs are similar.
-- Unpublished/archived document cannot list or resolve.
-- Cursor pages have no duplicates/skips under deterministic fixture data.
+- Draft and archived Articles cannot list, resolve, or be read directly.
+- Project A cannot return Project B content, including identical slugs.
+- Cursor pages have no duplicates or skips under deterministic test data.
 - Invalid MDX does not execute or render.
-- Article contains exactly one H1.
-- Working edit does not change public route; Republish does.
+- The page contains exactly one H1.
+- Saving a published Article updates the route without a Republish action.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
-- Source Blog works with real Firestore public data.
-- The same shared Blog routes/components work for a second Project
-  without copying them into another project folder.
+- Source Blog works with real published Articles for two Projects.
+- Shared Blog code does not impose one landing-page layout.
 - No production public route uses fake fixture data.
-- Snapshot isolation is visible end to end.

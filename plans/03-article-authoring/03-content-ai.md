@@ -164,7 +164,8 @@ patch. Do not add an H1 or unsupported MDX components.
 
 ## Public behavior
 
-None. Public pages continue reading only published snapshots.
+A draft is private. Public pages read the saved Content directly only when the
+Article is published, so saving published Content changes the page immediately.
 
 ## Planned implementation links
 

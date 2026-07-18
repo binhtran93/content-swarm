@@ -37,8 +37,9 @@ Article Authoring owns:
 - Brief, Outline, Content, and simple SEO fields.
 - Writing and translation prompts.
 
-It does not own public article documents. Publishing validates the working
-Article and builds a separate public snapshot.
+Publishing does not create another Article. It validates this Article and
+changes its existing `status`; the public site then reads the published Article
+directly.
 
 ## Data flow
 
@@ -73,12 +74,13 @@ Outputs:
 - Content MDX is body-only and begins at H2.
 - The same MDX safety contract is used by editor validation and public renderer.
 - Readiness is derived from saved fields and is not another stored status.
-- Saving an already-published Article changes only working data.
+- Saving an already-published Article changes the public result immediately.
+- The backoffice clearly warns the owner while editing published content.
 - Translations are optional per-locale subcollection documents.
 
 ## Final demonstration
 
 Using real SubIQ Backlog data, create one Article and complete it until derived
 readiness passes. Demonstrate one AI proposal without auto-saving. Optionally
-create and approve a Vietnamese Translation. Confirm that no public document
-exists until Publishing runs.
+create and approve a Vietnamese Translation. Confirm that the draft is
+unavailable publicly until Publishing changes its status.

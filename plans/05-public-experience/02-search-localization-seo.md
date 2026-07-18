@@ -1,58 +1,42 @@
-# 05.02 — Search, Localization, and SEO
+# 05.02 — Localization and SEO
 
 Status: Not started
 
 ## Outcome
 
-Readers can search and browse exact-locale content with controlled source
-fallback, while search engines receive consistent canonical, hreflang, sitemap,
-robots, and structured data.
+Readers can open approved translations of published Articles, while search
+engines receive consistent canonical, hreflang, sitemap, robots, and structured
+data.
+
+Full-text search is intentionally outside R1. Firestore is not a full-text
+search engine, and we will not add tokens, copied documents, or complicated
+queries before search is a real requirement.
 
 ## Depends on
 
 - [Public Blog](./01-public-blog.md)
-- At least one real published translation is strongly recommended.
+- At least one approved Translation is recommended.
 
-## Firestore access and indexes
+## Firestore access
 
-Exact-locale archive/search reads `publicArticles` only.
+The public service reads:
 
-All queries begin from the requested Project’s `publicArticles` subcollection;
-global collection-group search is not used unless it still enforces an exact
-validated `projectId` boundary.
+```text
+projects/{projectId}/articles/{articleId}
+projects/{projectId}/articles/{articleId}/translations/{locale}
+projects/{projectId}/articleSlugs/{locale--slug}
+```
 
-Localized archive merges two ordered streams:
+The slug reservation identifies the Article for a source or translated slug;
+it is not a second content document. The resolver must then verify that the
+Article is published and, for a translated route, that the Translation is
+approved. A reservation alone never makes content public.
 
-1. `contentLocale == requestedLocale` exact published documents.
-2. `isSource == true` source documents used only for Article IDs without an
-   exact locale document.
+For the initial small content set, localized archive pages may read a page of
+published Articles and fetch their requested-locale Translation documents.
+Optimize only after measured usage shows this is necessary.
 
-Localized search uses the same streams with
-`searchTokens array-contains normalizedQuery` and suppresses a source match when
-an exact visible translation exists but did not match.
-
-Cursor encodes independent boundaries for both streams. Exact totals may be
-`null` when deduplication would require reading every document.
-
-Required composite indexes are declared alongside the implemented queries:
-
-- State + content locale + publication order.
-- State + content locale + topic + publication order.
-- State + content locale + search token + publication order.
-- State + isSource + equivalent topic/search/order fields.
-
-## Slug resolution and fallback
-
-1. Resolve exact `publicSlugs/{requestedLocale--slug}`.
-2. If missing, resolve a unique published source slug record.
-3. If a valid exact translation now exists for the Article, redirect a
-   locale-prefixed source slug to its translated slug.
-4. Otherwise show the source with a localized fallback notice.
-
-Publishing validation must prevent an ambiguous source-slug fallback within a
-Project. If necessary, enforce source slug uniqueness across source locales.
-
-## Public behavior
+## Locale behavior
 
 Routes:
 
@@ -61,81 +45,78 @@ Routes:
 /{projectId}/{locale}/blog/{slug}
 ```
 
-Default locale omits the locale segment.
+The default locale omits the locale segment.
 
-- Exact approved/published translation uses translated metadata/body/slug.
-- Missing translation uses only declared source language, never nearby locale.
-- Fallback is noindex, canonicalizes to source, and is absent from hreflang and
-  localized sitemap.
-- Search query/topic/cursors live in URL state.
-- Search normalizes Unicode consistently with Publishing token computation.
+- An approved Translation under a published Article uses its translated title,
+  slug, excerpt, Content, SEO title, and SEO description.
+- A draft Translation is never public.
+- If an exact approved Translation is missing, show the source Article with a
+  clear fallback notice.
+- Fallback pages are `noindex`, canonicalize to the source URL, and do not
+  appear in hreflang or a localized sitemap.
+- No nearby or guessed locale is used.
 
-SEO output:
+## SEO output
 
-- Title, description, canonical, robots, and basic Open Graph metadata.
-- Article/BlogPosting JSON-LD and breadcrumb JSON-LD.
-- Source and approved public locale hreflang alternatives.
-- Project sitemap containing only indexable same-site public URLs.
-- Noindex and cross-domain canonical URLs excluded from sitemap.
+- Title and description from the visible source or Translation.
+- Canonical URL from the Project canonical base URL and actual route.
+- `BlogPosting` and breadcrumb JSON-LD.
+- Hreflang entries for the source and approved Translations only.
+- Project sitemap containing only published, indexable URLs.
 - Project robots output.
-- Independent canonical base URL, topic routes, locale alternatives, sitemap, and
-  robots output for every Project site.
+
+Every URL remains scoped to its Project. Presentation, routing, and landing
+pages remain code-owned by each site.
 
 ## Backoffice behavior
 
-Publish Preview already shows locale URLs and indexability. No new editorial
-write behavior.
+Publish Preview shows the source and approved translated URLs. No extra public
+copy or locale publication action exists.
 
 ## AI behavior and prompt
 
-None. Search, fallback, and SEO are deterministic public behavior.
+None. Localization rendering and SEO are deterministic. Translation AI belongs
+to Article Authoring and only proposes private editable content.
 
 ## Planned implementation links
 
-- [List localized Articles](../../src/public-site/services/list-localized-public-articles.server.ts)
-- [Search public Articles](../../src/public-site/services/search-public-articles.server.ts)
-- [Search normalization](../../src/public-site/services/normalize-public-search.ts)
-- [Locale resolver](../../src/public-site/services/resolve-public-locale.ts)
-- [SEO helpers](../../src/public-site/seo/public-article-seo.ts)
+- [Get localized Article](../../src/public-site/services/get-localized-article.server.ts)
+- [List localized Articles](../../src/public-site/services/list-localized-articles.server.ts)
+- [Resolve public locale](../../src/public-site/services/resolve-public-locale.ts)
+- [Article SEO](../../src/public-site/seo/article-seo.ts)
 - [Sitemap](../../src/app/(public)/[projectId]/sitemap.ts)
 - [Localized routes](../../src/app/(public)/[projectId]/[locale]/blog/page.tsx)
-- [SEO/locale tests](../../src/public-site/seo/public-article-seo.test.ts)
+- [SEO and locale tests](../../src/public-site/seo/article-seo.test.ts)
+
+Each service or main model file has one public export.
 
 ## Implementation order
 
-1. Implement exact-locale archive and article projection.
-2. Implement source fallback merge/dedupe and two-stream cursors.
-3. Implement exact/fallback/redirect slug resolution.
-4. Implement localized routes and language notice.
-5. Implement exact and localized search.
-6. Implement canonical/hreflang/robots/JSON-LD.
-7. Implement source/localized sitemap.
-8. Add/deploy exact indexes and backfill public search tokens if required.
-9. Test source, exact translation, fallback, redirect, noindex, and canonical
-   combinations.
+1. Resolve source and translated slugs through existing slug reservations.
+2. Enforce published parent and approved Translation checks.
+3. Implement localized archive and Article routes.
+4. Implement explicit source fallback and notice.
+5. Implement canonical, hreflang, robots, and JSON-LD.
+6. Implement source and localized sitemap entries.
+7. Test source, exact translation, fallback, noindex, and cross-project cases.
 
 ## Tangible output
 
-- Real source and translation public routes.
-- Search results backed by real public search tokens.
-- Valid metadata, JSON-LD, sitemap, and robots for the real published article.
+A real published source Article and approved Translation render at their own
+URLs with correct metadata, without any copied public content document.
 
 ## Verification
 
-- Exact locale always wins over fallback.
-- No unapproved/private translation can appear.
-- Fallback carries correct notice/noindex/canonical and no hreflang entry.
-- Multi-stream results dedupe Article IDs and paginate deterministically.
-- Visible translation must itself match localized search.
-- Sitemap contains no archived/noindex/external-canonical/fallback URL.
-- Structured data agrees with visible content and public dates.
-- Sitemap/robots/canonical generation for one Project contains no URL from
-  another Project.
+- Exact approved Translation wins over fallback.
+- Draft Translation and Translation under a non-published parent never render.
+- Fallback has the correct notice, noindex, and source canonical.
+- Sitemap and hreflang contain only actually public URLs.
+- Structured data agrees with visible content.
+- No Project emits another Project's URL or content.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
-- Source and at least one real locale journey pass end to end.
-- SEO isolation tests cover at least two Projects.
-- Search and SEO use only public documents/configuration.
-- Required Firestore indexes are versioned and deployed in staging.
+- Source and one real translated journey pass end to end.
+- SEO isolation tests cover two Projects.
+- No search-token or public-copy schema has been introduced.

@@ -39,7 +39,7 @@ For each implementation file:
 | 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces with minimal publication URL settings |
 | 02 | [Keyword research](./02-keyword-research/PLAN.md) | Real accepted individual/grouped Backlog topics with reusable discoveries |
 | 03 | [Article authoring](./03-article-authoring/PLAN.md) | A working Article that passes derived readiness, plus optional approved Translations |
-| 04 | [Publishing](./04-publishing/PLAN.md) | Sanitized public Firestore documents created by explicit publication |
+| 04 | [Publishing](./04-publishing/PLAN.md) | A validated Article made public through its existing status |
 | 05 | [Public experience](./05-public-experience/PLAN.md) | Public sites/blogs rendering real published data, followed by production cutover |
 
 ## Firestore ownership map
@@ -53,9 +53,9 @@ its Firestore documents directly.
 | Projects | `projects/{projectId}` including optional `canonicalBaseUrl` |
 | Keyword Research / Backlog | `projects/{projectId}/keywords/{keywordId}` and `keywordGroups/{groupId}` |
 | Keyword Research / Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` with a bounded ordered result array |
-| Articles / Authoring | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
-| Articles / Publishing | `projects/{projectId}/publicArticles/{articleId--locale}` and `publicSlugs/{locale--slug}` |
-| Public Experience | Read-only access to `publicArticles` and `publicSlugs`; owns no editorial data |
+| Articles | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
+| Articles / Publishing | No new collection; validates and changes Article `status` |
+| Public Experience | Read-only access to published Articles and approved Translations; owns no editorial data |
 
 ## Cross-feature rules
 
@@ -64,12 +64,13 @@ its Firestore documents directly.
   where mutation is allowed.
 - Firestore timestamps are stored as Firestore `Timestamp`, not ISO strings.
 - Server services translate timestamps into serializable application models.
-- Public code never reads `articles`, translations, prompts, discoveries, or
-  other editorial documents.
+- Public code reads only published Articles and their approved Translations. It
+  never reads prompts, discoveries, drafts, or archived content.
 - Article Creation stores one primary `keywordId`. An assigned Keyword Group is
   immutable, and Article services resolve its current Keyword documents.
-- Working articles and public articles are different documents.
-- Saving working content never updates a public document.
+- The Article is the single source of truth for backoffice and public content.
+- Saving an Article with `status == "published"` changes the public result
+  immediately; the backoffice must warn the owner before such edits.
 - AI generates an unsaved proposal. It never saves, approves, advances, or
   publishes.
 - Paid provider calls occur only after an explicit owner command.

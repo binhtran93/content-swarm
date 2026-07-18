@@ -42,8 +42,8 @@ content is not embedded in the Article, and the Article does not store a list
 of translation locales.
 
 There is no translation revision, hash, source hash, stale status, featured
-image alt, computed search token, or publication state in this working
-document. Publishing creates independent public locale snapshots.
+image alt, computed search token, or separate publication state. An approved
+Translation is publicly readable only when its parent Article is published.
 
 ## Commands and queries
 
@@ -135,13 +135,9 @@ Output schema:
 
 ## Public behavior
 
-None until Publish. Approved working Translations are private.
-
-When published, each locale receives its own snapshot:
-
-```text
-projects/{projectId}/publicArticles/{articleId}--{normalizedLocale}
-```
+The public site reads an approved Translation directly when its parent Article
+is published. Draft Translations and every Translation under a draft or
+archived Article remain private. No locale snapshot is created.
 
 ## Planned implementation links
 
@@ -177,7 +173,7 @@ approved, while the source Article remains independently publishable.
 - Generate never saves automatically.
 - Prompt contract requires native localization rather than literal translation,
   preserves MDX syntax, and prohibits filler, repetition, and invented facts.
-- Unapproved Translation cannot be selected for Publish.
+- Draft Translation cannot be read publicly.
 - Invalid MDX or duplicate locale slug cannot be approved.
 - Translation content is never embedded in the source Article document.
 - Formatting, lint, type checking, tests, and build pass.

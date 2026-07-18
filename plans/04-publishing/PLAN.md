@@ -1,91 +1,152 @@
-# Publishing — Overall Plan
+# Publishing — Plan
 
 Status: Not started
 
+## Outcome
+
+The owner can preview a ready Article, publish it, and archive it. The Article
+itself remains the single source of truth; Publishing does not create a second
+public copy.
+
 ## Boundary decision
 
-Publishing is an implementation stage of the `articles` code feature, not a
-separate top-level feature. Its models and services live under
+Publishing is part of the `articles` feature. Its services live under
 `src/features/articles/publishing`, and its backoffice controls live under
 `src/features/articles/backoffice/publishing`.
 
-Editable article records and public snapshots remain separate in Firestore.
-That separation protects the public site from draft changes and keeps publish,
-republish, and archive operations explicit.
+Do not create `publicArticles`, `publicSlugs`, publication snapshots, revisions,
+or synchronization services. The existing Article `status` controls whether
+the public site may read it:
 
-## Goal
+```text
+draft      private
+published  public
+archived   private
+```
 
-Convert a validated working Article into sanitized public Firestore documents
-through an explicit, atomic operation. Working edits after publication must not
-change the live result.
+An approved Translation is public only while its parent Article is published.
+A draft Translation is always private.
 
 ## User journey
 
 ```text
-Validated Article
+Ready draft Article
 → Open Publish Preview
-→ Select approved locales
-→ Review exact URLs and candidate data
-→ Confirm Publish or Republish
-→ Public documents become available
-→ Continue editing working Article without changing them
-→ Republish later or Archive explicitly
+→ Review content, metadata, translations, and URLs
+→ Confirm Publish
+→ Article status becomes published
+→ Public site reads the Article directly
+→ Later edits are visible immediately after Save
+→ Archive hides the Article and its translations
 ```
 
-## Ownership
+There is no Republish action. Because there is no separate public copy, saving
+a published Article updates the public result immediately. The backoffice must
+make this behavior clear before the owner edits a published Article.
 
-Publishing owns:
+## Firestore data
 
-- `publicArticles/{articleId--locale}` sanitized public projections.
-- `publicSlugs/{locale--slug}` public resolution records.
-- Public candidate construction.
-- Publish, republish, locale addition, and archive transactions.
+Publishing adds no collection and no publishing-specific document. It updates:
 
-Publishing reads Article Authoring only through a publication-candidate
-contract. Public Experience reads Publishing through a read-only public content
-service.
+```text
+projects/{projectId}/articles/{articleId}.status
+```
 
-Every publication document, slug, candidate, and transaction is scoped to one
-explicit `projectId`. A slug or Article ID from one Project can never resolve
-or overwrite data in another Project.
+The Article and Translation shapes remain owned by Article Authoring. Existing
+Project-scoped slug reservations prevent duplicate source or translated URLs;
+they are not public content copies.
 
-## Data flow
+## Publish
 
-Inputs:
+`publishArticle(projectId, articleId)` performs one server operation:
 
-- Complete source publication candidate.
-- Explicitly selected approved Translations.
-- Owner confirmation.
+1. Read the active Project and Article.
+2. Re-evaluate Article readiness from saved fields.
+3. Validate the source slug and MDX.
+4. Revalidate every approved Translation so an invalid translation cannot
+   become public with the parent.
+5. Change the Article `status` from `draft` to `published` and update
+   `updatedAt`.
 
-Outputs:
+Failure changes nothing. AI cannot publish or choose what becomes public.
 
-- Sanitized source and locale public documents.
-- Stable public slug mappings.
-- Updated Article `status`.
+## Archive
 
-## Implementation sequence
+`archiveArticle(projectId, articleId)` changes the Article `status` to
+`archived` and updates `updatedAt`. The public site stops listing or resolving
+the Article and all its Translations.
 
-1. [Public Snapshot](./01-public-snapshot.md)
-2. [Publish, Republish, and Archive](./02-publish-republish-archive.md)
+R1 has no restore action. Add one later only when it is actually needed.
 
-## Shared rules
+## Backoffice behavior
 
-- Preview and confirmation use the same candidate builder.
-- Publish revalidates everything on the server.
-- Public writes are atomic; failure leaves the previous public version intact.
-- First publish sets `publishedAt`.
-- Republish preserves `publishedAt` and updates public `updatedAt`.
-- Saving working Article data never calls Publishing.
-- Only approved current translations can be selected.
-- Archive removes normal public resolution but retains the sanitized snapshot.
+- Publish Preview renders the exact saved source Article and approved
+  Translations with their public URLs.
+- Readiness blockers are shown before confirmation.
+- Publish requires explicit owner confirmation.
+- A published Article displays a clear notice that saved edits become public
+  immediately.
+- Archive requires explicit confirmation and explains that all locales will be
+  hidden.
+- Draft Translations are shown as private and are never rendered publicly.
 
-## Final demonstration
+## Public access and security
 
-Publish the real validated SubIQ Article and selected approved Translation. Open
-the public documents directly through the read service. Edit/save the working
-Content and prove public content remains unchanged. Republish and observe the update.
-Archive and prove the public slug no longer resolves.
+The public site reads Article Authoring data directly through small read-only
+services. Firestore rules and server queries must enforce:
 
-Repeat a minimal source publication for a second Project before
-declaring multi-project Publishing complete, proving identical slugs can exist
-independently across Projects.
+- Public Article reads require `status == "published"`.
+- Public Translation reads require `status == "approved"` and a published
+  parent Article.
+- Draft and archived Articles are unavailable by list, slug, and direct ID.
+- Every read is scoped to the requested `projectId`.
+- Public code cannot write Article or Translation data.
+
+## AI behavior and prompt
+
+None. Publishing is an owner-controlled deterministic operation.
+
+## Planned implementation links
+
+- [Publish Article](../../src/features/articles/publishing/publish-article.server.ts)
+- [Archive Article](../../src/features/articles/publishing/archive-article.server.ts)
+- [Publish Preview](../../src/features/articles/backoffice/publishing/article-publish-preview.tsx)
+- [Publishing tests](../../src/features/articles/publishing/publish-article.test.ts)
+- [Firestore rules](../../firestore.rules)
+
+Each service or main component file has one public export and one
+responsibility.
+
+## Implementation order
+
+1. Implement and test public read rules for Article and Translation documents.
+2. Implement Publish with server-side readiness validation.
+3. Implement Archive.
+4. Implement Publish Preview and confirmation.
+5. Add the published-edit warning to the Article workspace.
+6. Test draft, published, archived, translated, invalid, and cross-project
+   access.
+
+## Tangible output
+
+One real Article changes from draft to published and appears on its public
+route without creating another content document. Archiving it makes the route
+unavailable.
+
+## Verification
+
+- Publish creates no public copy or slug document.
+- An incomplete Article cannot be published.
+- Saving a published Article changes the public result immediately.
+- Draft and archived Articles cannot be read publicly.
+- Draft Translations remain private.
+- Approved Translations disappear when their parent is archived.
+- Identical slugs in different Projects do not cross-resolve.
+- Formatting, lint, type checking, tests, and build pass.
+
+## Done when
+
+- The full draft → published → archived journey works with real Firestore data.
+- Public visibility is controlled entirely by existing statuses and security
+  rules.
+- No public content-copy collection or synchronization code exists.

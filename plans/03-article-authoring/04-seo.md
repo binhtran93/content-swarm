@@ -61,19 +61,21 @@ Readiness is derived and requires:
 
 ## Public behavior
 
-None. Metadata remains working data until Publishing copies it.
+Metadata is private while the Article is a draft. Once published, the public
+site reads these fields directly from the Article.
 
 ## SEO derivation
 
-Publishing and the public SEO helper derive behavior instead of storing more
-editorial configuration:
+The public SEO helper derives behavior instead of storing more editorial
+configuration:
 
 - Canonical URL: Project canonical base URL plus the Article route.
 - Robots: published source and exact translations are indexable; fallback pages
   are noindex; archived pages do not resolve normally.
 - Structured-data type: always `BlogPosting`.
-- Public `searchTokens`: generated during Publishing from final title, excerpt,
-  and Content.
+
+Full-text search is not part of R1. Do not add search tokens or another content
+copy just to support it; add a search solution later when it is needed.
 
 ## AI behavior and prompt
 
@@ -109,11 +111,11 @@ A real Article with complete editorial and SEO fields for which
 - Duplicate same-locale slug in one Project is rejected.
 - The same slug may exist in another Project.
 - Invalid metadata cannot pass readiness.
-- Saving an already-published Article does not change its public snapshot.
+- Saving an already-published Article changes its public metadata immediately.
 - Formatting, lint, type checking, tests, and build pass.
 
 ## Done when
 
 - One real SubIQ Article passes derived readiness.
 - URL preview uses SubIQ's real canonical base URL.
-- No public document exists until Publish.
+- The Article remains private until Publish changes its status.

@@ -10,7 +10,7 @@ applications in production.
 
 ## Depends on
 
-- [Search, Localization, and SEO](./02-search-localization-seo.md)
+- [Localization and SEO](./02-search-localization-seo.md)
 - All previous plans complete in staging.
 
 ## Firestore migration ownership
@@ -25,11 +25,11 @@ Legacy mapping:
 | Project | Project document including optional `canonicalBaseUrl` |
 | Keywords/groups | Keyword-owned documents |
 | Discoveries | Discovery request and ordered results |
-| Working/unpublished Article | Article working document only |
-| Published valid Article | Working Article plus matching public source/locale documents |
-| Draft translation | Private Translation with `status: draft` |
-| Approved eligible translation | Approved private translation and public document only if confirmed live |
-| Invalid published record | Quarantine report; never create invalid public data |
+| Unpublished Article | Article with `status: draft` |
+| Published valid Article | Article with `status: published` |
+| Draft translation | Translation with `status: draft` |
+| Approved eligible translation | Translation with `status: approved` under its Article |
+| Invalid published record | Quarantine report; do not mark it published |
 
 Migration records legacy ID and migration version. Re-running creates no
 duplicates or extra publication events.
