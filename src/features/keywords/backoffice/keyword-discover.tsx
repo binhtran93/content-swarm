@@ -192,6 +192,9 @@ export function KeywordDiscover({
   locations: DiscoveryLocation[];
 }) {
   const [state, action, pending] = useActionState(runDiscoveryAction, null);
+  const [resultSearch, setResultSearch] = useState("");
+  const [minimumVolumeFilter, setMinimumVolumeFilter] = useState("");
+  const [maximumDifficultyFilter, setMaximumDifficultyFilter] = useState("");
   const existing = new Set(existingNormalizedKeywords);
   const availableResults =
     selected?.results.filter(
@@ -200,6 +203,28 @@ export function KeywordDiscover({
           result.keyword.trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US"),
         ),
     ) ?? [];
+  const normalizedResultSearch = resultSearch.trim().toLocaleLowerCase("en-US");
+  const minimumVolume = minimumVolumeFilter
+    ? Number(minimumVolumeFilter)
+    : null;
+  const maximumDifficulty = maximumDifficultyFilter
+    ? Number(maximumDifficultyFilter)
+    : null;
+  const filteredResults = availableResults.filter(
+    (result) =>
+      (!normalizedResultSearch ||
+        result.keyword
+          .toLocaleLowerCase("en-US")
+          .includes(normalizedResultSearch)) &&
+      (minimumVolume === null ||
+        (result.searchVolume !== null &&
+          result.searchVolume !== undefined &&
+          result.searchVolume >= minimumVolume)) &&
+      (maximumDifficulty === null ||
+        (result.difficulty !== null &&
+          result.difficulty !== undefined &&
+          result.difficulty <= maximumDifficulty)),
+  );
   const resultSelectionFormId = selected
     ? `discovery-results-${selected.discoveryId}`
     : undefined;
@@ -267,7 +292,7 @@ export function KeywordDiscover({
                 </div>
                 <button
                   className="btn btn-primary btn-sm"
-                  disabled={availableResults.length === 0}
+                  disabled={filteredResults.length === 0}
                   form={resultSelectionFormId}
                   type="submit"
                 >
@@ -288,56 +313,120 @@ export function KeywordDiscover({
                   ) : null}
                 </div>
               ) : (
-                <form
-                  action={addDiscoveryResultsAction}
-                  className="flex min-h-0 flex-1 flex-col"
-                  id={resultSelectionFormId}
-                >
-                  <input name="projectId" type="hidden" value={projectId} />
-                  <input
-                    name="discoveryId"
-                    type="hidden"
-                    value={selected.discoveryId}
-                  />
-                  <div className="min-h-0 flex-1 overflow-auto">
-                    <table className="table">
-                      <thead className="bg-base-100 sticky top-0 z-1">
-                        <tr>
-                          <th>
-                            <span className="sr-only">Select</span>
-                          </th>
-                          <th>Keyword</th>
-                          <th>Volume</th>
-                          <th>Difficulty</th>
-                          <th>Rank</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {availableResults.map((result, index) => {
-                          return (
-                            <tr key={`${result.keyword}:${index}`}>
-                              <td>
-                                <input
-                                  aria-label={`Select ${result.keyword}`}
-                                  className="checkbox checkbox-sm"
-                                  name="keywords"
-                                  type="checkbox"
-                                  value={result.keyword}
-                                />
-                              </td>
-                              <td>{result.keyword}</td>
-                              <td>
-                                {result.searchVolume?.toLocaleString() ?? "—"}
-                              </td>
-                              <td>{result.difficulty ?? "—"}</td>
-                              <td>{result.rank ?? "—"}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                <>
+                  <div className="border-base-300 grid gap-3 border-y px-5 py-3 sm:grid-cols-3">
+                    <fieldset className="fieldset p-0">
+                      <legend className="fieldset-legend text-xs">
+                        Search
+                      </legend>
+                      <input
+                        aria-label="Search discovery results"
+                        className="input input-sm w-full"
+                        onChange={(event) =>
+                          setResultSearch(event.target.value)
+                        }
+                        placeholder="Search keywords"
+                        type="search"
+                        value={resultSearch}
+                      />
+                    </fieldset>
+                    <fieldset className="fieldset p-0">
+                      <legend className="fieldset-legend text-xs">
+                        Minimum volume
+                      </legend>
+                      <input
+                        aria-label="Minimum search volume"
+                        className="input input-sm w-full"
+                        min="0"
+                        onChange={(event) =>
+                          setMinimumVolumeFilter(event.target.value)
+                        }
+                        placeholder="Any volume"
+                        type="number"
+                        value={minimumVolumeFilter}
+                      />
+                    </fieldset>
+                    <fieldset className="fieldset p-0">
+                      <legend className="fieldset-legend text-xs">
+                        Maximum difficulty
+                      </legend>
+                      <input
+                        aria-label="Maximum keyword difficulty"
+                        className="input input-sm w-full"
+                        max="100"
+                        min="0"
+                        onChange={(event) =>
+                          setMaximumDifficultyFilter(event.target.value)
+                        }
+                        placeholder="Any difficulty"
+                        type="number"
+                        value={maximumDifficultyFilter}
+                      />
+                    </fieldset>
                   </div>
-                </form>
+                  {filteredResults.length === 0 ? (
+                    <div className="px-5 py-12 text-center">
+                      <p className="font-medium">
+                        No keywords match the filters.
+                      </p>
+                      <p className="text-base-content/60 mt-1 text-sm">
+                        Adjust or clear a filter to see more results.
+                      </p>
+                    </div>
+                  ) : (
+                    <form
+                      action={addDiscoveryResultsAction}
+                      className="flex min-h-0 flex-1 flex-col"
+                      id={resultSelectionFormId}
+                    >
+                      <input name="projectId" type="hidden" value={projectId} />
+                      <input
+                        name="discoveryId"
+                        type="hidden"
+                        value={selected.discoveryId}
+                      />
+                      <div className="min-h-0 flex-1 overflow-auto">
+                        <table className="table">
+                          <thead className="bg-base-100 sticky top-0 z-1">
+                            <tr>
+                              <th>
+                                <span className="sr-only">Select</span>
+                              </th>
+                              <th>Keyword</th>
+                              <th>Volume</th>
+                              <th>Difficulty</th>
+                              <th>Rank</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredResults.map((result, index) => {
+                              return (
+                                <tr key={`${result.keyword}:${index}`}>
+                                  <td>
+                                    <input
+                                      aria-label={`Select ${result.keyword}`}
+                                      className="checkbox checkbox-sm"
+                                      name="keywords"
+                                      type="checkbox"
+                                      value={result.keyword}
+                                    />
+                                  </td>
+                                  <td>{result.keyword}</td>
+                                  <td>
+                                    {result.searchVolume?.toLocaleString() ??
+                                      "—"}
+                                  </td>
+                                  <td>{result.difficulty ?? "—"}</td>
+                                  <td>{result.rank ?? "—"}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </form>
+                  )}
+                </>
               )}
             </div>
           </section>

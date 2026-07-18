@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { KeywordDiscover } from "@/features/keywords/backoffice/keyword-discover";
@@ -38,6 +38,19 @@ const locations = [
     languages: [{ languageCode: "en", languageName: "English" }],
   },
 ];
+
+const filterDiscovery = {
+  ...discovery,
+  results: [
+    discovery.results[0],
+    {
+      keyword: "cancel subscriptions",
+      searchVolume: 50,
+      difficulty: 5,
+      rank: 2,
+    },
+  ],
+};
 
 describe("Keyword discovery results actions", () => {
   it("submits selected rows from the header action", () => {
@@ -87,6 +100,50 @@ describe("Keyword discovery results actions", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByText("All discovered keywords are already in the backlog."),
+    ).toBeInTheDocument();
+  });
+
+  it("filters results by search, minimum volume, and maximum difficulty", () => {
+    render(
+      <KeywordDiscover
+        discoveries={[filterDiscovery]}
+        existingNormalizedKeywords={[]}
+        locations={locations}
+        projectId="subiq"
+        selected={filterDiscovery}
+      />,
+    );
+
+    const search = screen.getByLabelText("Search discovery results");
+    const minimumVolume = screen.getByLabelText("Minimum search volume");
+    const maximumDifficulty = screen.getByLabelText(
+      "Maximum keyword difficulty",
+    );
+
+    fireEvent.change(search, { target: { value: "cancel" } });
+    expect(
+      screen.queryByLabelText("Select subscription tracker"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Select cancel subscriptions"),
+    ).toBeInTheDocument();
+
+    fireEvent.change(search, { target: { value: "" } });
+    fireEvent.change(minimumVolume, { target: { value: "75" } });
+    expect(
+      screen.getByLabelText("Select subscription tracker"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Select cancel subscriptions"),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(minimumVolume, { target: { value: "" } });
+    fireEvent.change(maximumDifficulty, { target: { value: "10" } });
+    expect(
+      screen.queryByLabelText("Select subscription tracker"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Select cancel subscriptions"),
     ).toBeInTheDocument();
   });
 });
