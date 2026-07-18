@@ -13,7 +13,7 @@ Their Firestore records remain separate because they have different lifecycles:
 - `keywords` contains accepted, editable, actionable work.
 - `keywordGroups` contains reviewed grouping decisions.
 - `keywordDiscoveries` contains immutable provider-run history and its bounded
-  candidate array. Accepting a candidate creates a keyword; it does not mutate
+  ordered result array. Accepting a result creates a keyword; it does not mutate
   the discovery record.
 
 ## Goal
@@ -27,7 +27,7 @@ remains an explicit optional tool.
 ```text
 Active Project
 → Add known keywords manually or run an explicit discovery
-→ Accept selected candidates into Backlog
+→ Accept selected results into Backlog
 → Organize compatible keywords into article topics
 → Make unassigned individual/grouped topics available to Article Creation
 ```
@@ -87,5 +87,5 @@ For the real SubIQ project:
 1. Add manual keywords.
 2. Group compatible keywords manually.
 3. Run or reopen one saved discovery.
-4. Accept selected candidates.
+4. Accept selected results.
 5. Show the available-topic query returning real individual/grouped choices.

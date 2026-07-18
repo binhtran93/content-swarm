@@ -5,7 +5,7 @@ Status: Not started
 ## Outcome
 
 The owner can deliberately request or reuse keyword research, inspect real
-candidates, and add selected candidates to Backlog without duplicates.
+results, and add selected results to Backlog without duplicates.
 
 ## Depends on
 
@@ -23,30 +23,43 @@ type KeywordDiscoveryDocument = {
   input: string
   countryCode: string
   languageCode: string
-  limit: 50 | 100
+  limit: 50 | 100 | 250 | 500
   minimumVolume: number | null
   maximumDifficulty: number | null
-  providerTaskId: string | null
-  providerCostUsd: number | null
-  candidates: Array<{
+  orderBy: string[]
+  results: Array<{
     keyword: string
-    normalizedKeyword: string
     searchVolume: number | null
     difficulty: number | null
     rank: number | null
   }>
-  createdBy: string
   createdAt: Timestamp
 }
 ```
 
-Successful Discovery documents are immutable. R1 caps results at 100 small
-candidates, so keep them in the Discovery document instead of creating a
-Candidate subcollection. Do not save the raw provider response.
+Successful Discovery documents are immutable. R1 caps results at 500 small
+projected records, so keep them in the Discovery document instead of creating a
+result subcollection. Do not save the raw provider response.
 
 `requestKey` is calculated internally from the normalized method, input,
-country, language, limit, and filters. It exists only to reopen an identical
-paid result instead of calling DataForSEO again.
+country, language, limit, filters, and ordered `orderBy` array. It exists only
+to reopen an identical paid result instead of calling DataForSEO again.
+
+`orderBy` is the exact ordered array sent to DataForSEO. The first entry is the
+primary order and the next entry, when present, is its tie-breaker:
+
+```ts
+keyword_ideas: ["relevance,desc", "keyword_info.search_volume,desc"]
+related_keywords: ["keyword_data.keyword_info.search_volume,desc"]
+competitor_website: [
+  "ranked_serp_element.serp_item.rank_group,asc",
+  "keyword_data.keyword_info.search_volume,desc",
+]
+```
+
+Firestore preserves the `results` array order returned by DataForSEO, so do not
+store another result-position field. `rank` is the competitor's actual search
+rank and is null for methods where it does not apply; it is not the array index.
 
 The DataForSEO adapter resolves `countryCode` and `languageCode` to the
 provider's numeric `location_code` when making the request. Provider catalogue
@@ -70,7 +83,7 @@ search keywords, so there is no `surface` field.
 
 - `getOrReuseDiscovery(projectId, request)`.
 - `runDiscoveryAgain(projectId, request)`.
-- `addCandidatesToBacklog(projectId, discoveryId, normalizedKeywords)`.
+- `addResultsToBacklog(projectId, discoveryId, keywords)`.
 
 `getOrReuse` computes the normalized request key before any provider
 call. `runAgain` is the only intentional bypass and creates a new Discovery.
@@ -83,7 +96,7 @@ Route: `/admin/projects/{projectId}/keywords?view=discover`
 - `Get keywords` first reuses identical saved data.
 - `Run again` clearly communicates a new paid call.
 - Saved discoveries list and reopen through URL state.
-- Available candidates exclude keywords already in Backlog for the same country
+- Available results exclude keywords already in Backlog for the same country
   and language.
 - Select/filter and Add to Backlog.
 - Empty successful result remains reopenable and reusable.
@@ -91,34 +104,36 @@ Route: `/admin/projects/{projectId}/keywords?view=discover`
 ## AI behavior and prompt
 
 None. DataForSEO is a structured provider, not an AI generation feature. Do not
-use AI to rewrite, score, or silently filter provider candidates in R1.
+use AI to rewrite, score, or silently filter provider results in R1.
 
 ## Planned implementation links
 
 - [Discovery document](../../src/features/keywords/model/keyword-discovery-document.ts)
 - [Request key](../../src/features/keywords/service/discovery-request-key.ts)
-- [DataForSEO client](../../src/features/keywords/provider/data-for-seo-client.server.ts)
-- [Discovery service](../../src/features/keywords/service/discovery-service.server.ts)
+- [DataForSEO request](../../src/features/keywords/provider/fetch-keyword-discovery.server.ts)
+- [Get or reuse](../../src/features/keywords/service/get-or-reuse-discovery.server.ts)
+- [Run again](../../src/features/keywords/service/run-discovery-again.server.ts)
+- [Add results to Backlog](../../src/features/keywords/service/add-results-to-backlog.server.ts)
 - [Discover UI](../../src/features/keywords/backoffice/keyword-discover.tsx)
 - [Provider fixtures](../../src/features/keywords/provider/data-for-seo-fixtures.test.ts)
 
 ## Implementation order
 
 1. Implement the small web-only request schema and request key.
-2. Implement Discovery persistence and saved lookup.
-3. Adapt DataForSEO client with credentials and safe errors.
+2. Implement Discovery persistence and saved lookup with one export per file.
+3. Adapt the DataForSEO request with credentials and safe errors.
 4. Implement methods one at a time with fixture contract tests.
 5. Implement get-or-reuse and explicit rerun orchestration.
 6. Implement query, results, saved discovery, and empty states.
-7. Implement transactional candidate acceptance through Keyword ownership.
+7. Implement transactional result acceptance through Keyword ownership.
 8. Add a test network guard so normal tests cannot make paid calls.
 
 ## Tangible output
 
 - One real successful saved Discovery, or an intentionally approved provider
   fixture in non-paid development.
-- Its candidate array.
-- Selected candidates persisted as real Backlog keywords with
+- Its ordered result array.
+- Selected results persisted as real Backlog keywords with
   `sourceDiscoveryId`.
 
 ## Verification
@@ -126,7 +141,7 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 - Identical Get makes no second provider call.
 - Empty results are stored and reused.
 - Run again creates a new immutable Discovery.
-- Adding candidates never mutates the Discovery document.
+- Adding results never mutates the Discovery document.
 - Backlog duplicates are not created under concurrent acceptance.
 - No provider call happens on page load, field change, tab change, or refresh.
 - Formatting, lint, type checking, tests, and build pass.
@@ -134,5 +149,5 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 ## Done when
 
 - Saved discovery can be reopened after refresh.
-- Candidate acceptance produces real Backlog records.
+- Result acceptance produces real Backlog records.
 - Backlog now contains enough real topic data to begin Article Authoring.
