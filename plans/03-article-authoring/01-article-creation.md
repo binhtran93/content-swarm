@@ -140,8 +140,8 @@ None. Topic selection is an owner decision.
 - [Article document](../../src/features/articles/model/article-document.ts)
 - [Keyword snapshot](../../src/features/articles/model/article-keyword-snapshot.ts)
 - [Article service](../../src/features/articles/service/article-service.server.ts)
-- [Article list](../../src/backoffice/features/articles/article-list.tsx)
-- [Topic picker](../../src/backoffice/features/articles/article-topic-picker.tsx)
+- [Article list](../../src/features/articles/backoffice/article-list.tsx)
+- [Topic picker](../../src/features/articles/backoffice/article-topic-picker.tsx)
 - [Creation tests](../../src/features/articles/service/create-article-from-topic.test.ts)
 
 ## Implementation order

@@ -22,7 +22,7 @@ Legacy mapping:
 
 | Legacy data | New destination |
 | --- | --- |
-| Project | Project document/public-site association |
+| Project | Project document including optional `canonicalBaseUrl` |
 | Keywords/groups | Keyword-owned documents |
 | Discoveries | Discovery metadata/candidates |
 | Working/unpublished Article | Article working document only |
@@ -38,9 +38,10 @@ duplicates or extra publication events.
 
 Adapt from `tdbinh`:
 
-- Shared project site shell, route-prefix behavior, theme tokens, navigation,
-  footer, badges, and locale selector.
-- SubIQ landing page and configured product landing pages in approved scope.
+- Useful shared components such as article cards or a header, only where actual
+  reuse exists.
+- Independent landing pages, site layouts, theme files, headers, navigation,
+  footers, and assets for each product.
 - Support, Privacy, and Terms routes.
 - Canonical domain behavior for dedicated deployments.
 - Existing assets under stable paths.
@@ -49,24 +50,23 @@ Initial Project scope:
 
 - `subiq`: preserve/adapt its complete landing, Blog, localization, and legal
   experience.
-- `jewelry-identifier`: preserve legal/support routes, then add its real typed
-  configuration, landing module, assets, and shared Blog capability when
-  supplied.
-- `skylens`: preserve legal/support routes, then add its real typed
-  configuration, landing module, assets, and shared Blog capability when
-  supplied.
-- `urge-zero`: preserve legal/support routes, then add its real typed
-  configuration, landing module, assets, and shared Blog capability when
-  supplied.
+- `jewelry-identifier`: preserve legal/support routes, then implement its own
+  landing, theme, assets, and shared Blog capability when supplied.
+- `skylens`: preserve legal/support routes, then implement its own landing,
+  theme, assets, and shared Blog capability when supplied.
+- `urge-zero`: preserve legal/support routes, then implement its own landing,
+  theme, assets, and shared Blog capability when supplied.
 
 Each product may deploy from the same repository to its dedicated service/domain
-using an explicit `PUBLIC_SITE_ID` and route-prefix configuration. The main
+using an explicit `PUBLIC_PROJECT_ID` and route-prefix configuration. The main
 ANMISOFT deployment may continue serving `/{projectId}` legacy paths. A service
-configured for one Project must fail startup/build on an unknown/incomplete
-production config; it must never default to SubIQ.
+configured for one Project must return unavailable for missing, disabled, or
+invalid production settings; it must never default to SubIQ.
 
-Do not build a generic page editor. Landing configuration/content remains
-version-controlled in R1.
+Do not build a page editor, template registry, renderer switch, landing schema,
+or database-driven header/navigation system. Each explicit route imports its
+own site layout and landing page. A site may reuse shared components or write
+its own component when its design differs.
 
 ## Backoffice behavior
 
@@ -83,9 +83,11 @@ command.
 
 ## Planned implementation links
 
-- [Site shell](../../src/public-site/components/site/site-shell.tsx)
-- [Site registry](../../src/public-site/config/site-registry.ts)
-- [SubIQ landing page](../../src/public-site/sites/subiq/subiq-landing-page.tsx)
+- [Shared public components](../../src/public-site/components/index.ts)
+- [SubIQ site layout](../../src/public-site/sites/subiq/site-layout.tsx)
+- [SubIQ landing page](../../src/public-site/sites/subiq/landing-page.tsx)
+- [SubIQ route](../../src/app/(public)/subiq/page.tsx)
+- [Urge Zero route](../../src/app/(public)/urge-zero/page.tsx)
 - [Migration scanner](../../scripts/migration/scan-legacy-data.ts)
 - [Migration runner](../../scripts/migration/migrate-legacy-data.ts)
 - [Reconciliation](../../scripts/migration/reconcile-migration.ts)
@@ -95,8 +97,9 @@ command.
 
 1. Inventory current public URLs, assets, metadata, environment variables,
    Firestore indexes, and deployment route prefixes.
-2. Adapt shared site system and SubIQ landing/support/legal pages.
-3. Add remaining approved project public routes without copying shared code.
+2. Adapt SubIQ's route, site layout, theme, landing, support, and legal pages.
+3. Extract a shared component only when another real site needs the same
+   behavior; implement each remaining approved project route directly.
 4. Implement read-only legacy migration scanner/classification report.
 5. Resolve slug, locale, invalid content, and publication ambiguities.
 6. Implement idempotent migration by calling owning feature contracts.

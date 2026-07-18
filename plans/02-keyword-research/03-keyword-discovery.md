@@ -114,13 +114,13 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 
 ## Planned implementation links
 
-- [Discovery document](../../src/features/discoveries/model/keyword-discovery-document.ts)
-- [Candidate document](../../src/features/discoveries/model/keyword-candidate-document.ts)
-- [Fingerprint](../../src/features/discoveries/service/discovery-fingerprint.ts)
-- [DataForSEO client](../../src/features/discoveries/provider/data-for-seo-client.server.ts)
-- [Discovery service](../../src/features/discoveries/service/discovery-service.server.ts)
-- [Discover UI](../../src/backoffice/features/discoveries/keyword-discover.tsx)
-- [Provider fixtures](../../src/features/discoveries/provider/data-for-seo-fixtures.test.ts)
+- [Discovery document](../../src/features/keywords/model/keyword-discovery-document.ts)
+- [Candidate document](../../src/features/keywords/model/keyword-candidate-document.ts)
+- [Fingerprint](../../src/features/keywords/service/discovery-fingerprint.ts)
+- [DataForSEO client](../../src/features/keywords/provider/data-for-seo-client.server.ts)
+- [Discovery service](../../src/features/keywords/service/discovery-service.server.ts)
+- [Discover UI](../../src/features/keywords/backoffice/keyword-discover.tsx)
+- [Provider fixtures](../../src/features/keywords/provider/data-for-seo-fixtures.test.ts)
 
 ## Implementation order
 

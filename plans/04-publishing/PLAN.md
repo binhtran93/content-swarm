@@ -2,6 +2,17 @@
 
 Status: Not started
 
+## Boundary decision
+
+Publishing is an implementation stage of the `articles` code feature, not a
+separate top-level feature. Its models and services live under
+`src/features/articles/publishing`, and its backoffice controls live under
+`src/features/articles/backoffice/publishing`.
+
+Editable article records and public snapshots remain separate in Firestore.
+That separation protects the public site from draft changes and keeps publish,
+republish, and archive operations explicit.
+
 ## Goal
 
 Convert a validated working Article into sanitized public Firestore documents

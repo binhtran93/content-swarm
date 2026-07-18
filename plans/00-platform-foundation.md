@@ -35,30 +35,33 @@ src/
     api/
   features/
     projects/
+      model/
+      service/
+      backoffice/
     keywords/
-    discoveries/
+      model/
+      service/
+      backoffice/
     articles/
-    publishing/
+      model/
+      service/
+      backoffice/
   backoffice/
     components/
       layout/
       ui/
     config/
-    features/
-      projects/
-      keywords/
-      discoveries/
-      articles/
-      publishing/
     styles/
   public-site/
     components/
-    config/
-      sites/
-        subiq.ts
-        jewelry-identifier.ts
-        skylens.ts
-        urge-zero.ts
+    sites/
+      subiq/
+        theme.css
+        site-layout.tsx
+        landing-page.tsx
+      jewelry-identifier/
+      skylens/
+      urge-zero/
     services/
   platform/
     audit/
@@ -71,8 +74,12 @@ src/
 Routes compose feature code. Domain validation and Firestore access do not live
 inside React pages or route handlers.
 
-The `features/` root owns surface-neutral models and server use cases.
-`backoffice/features/` owns authenticated Nexus/DaisyUI presentation.
+Each folder under `features/` is a vertical domain slice. Its `model/` and
+`service/` code stay surface-neutral; its `backoffice/` folder owns that
+domain's authenticated Nexus/DaisyUI presentation.
+
+The root `backoffice/` folder owns only shared admin layout, UI primitives,
+configuration, and styles.
 `public-site/` owns branded reader presentation and public read adapters.
 
 Shared services accept an explicit `projectId`. They never import a single

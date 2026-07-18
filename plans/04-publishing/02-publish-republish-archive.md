@@ -92,12 +92,12 @@ None. AI cannot decide or trigger publication.
 
 ## Planned implementation links
 
-- [Publish command](../../src/features/publishing/service/publish-article.server.ts)
-- [Republish command](../../src/features/publishing/service/republish-article.server.ts)
-- [Archive command](../../src/features/publishing/service/archive-article.server.ts)
-- [Public read service](../../src/features/publishing/service/public-article-reader.server.ts)
-- [Publish controls](../../src/backoffice/features/publishing/publish-controls.tsx)
-- [Transaction tests](../../src/features/publishing/service/publish-article.test.ts)
+- [Publish command](../../src/features/articles/publishing/service/publish-article.server.ts)
+- [Republish command](../../src/features/articles/publishing/service/republish-article.server.ts)
+- [Archive command](../../src/features/articles/publishing/service/archive-article.server.ts)
+- [Public read service](../../src/features/articles/publishing/service/public-article-reader.server.ts)
+- [Publish controls](../../src/features/articles/backoffice/publishing/publish-controls.tsx)
+- [Transaction tests](../../src/features/articles/publishing/service/publish-article.test.ts)
 
 ## Implementation order
 

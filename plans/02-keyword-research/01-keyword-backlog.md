@@ -131,7 +131,7 @@ None in this file. Grouping assistance is implemented by
 - [Target catalogue](../../src/features/keywords/config/search-market-catalog.ts)
 - [Keyword service](../../src/features/keywords/service/keyword-service.server.ts)
 - [Topic query](../../src/features/keywords/service/list-available-article-topics.server.ts)
-- [Backlog UI](../../src/backoffice/features/keywords/keyword-backlog.tsx)
+- [Backlog UI](../../src/features/keywords/backoffice/keyword-backlog.tsx)
 - [Service tests](../../src/features/keywords/service/keyword-service.test.ts)
 
 ## Implementation order

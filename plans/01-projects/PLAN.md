@@ -5,8 +5,8 @@ Status: Not started
 ## Goal
 
 Create the smallest useful multi-product foundation: the owner can create real
-editorial Projects and associate each with one version-controlled public-site
-configuration.
+editorial Projects with only the operational public-site data required by
+publishing.
 
 ## User journey
 
@@ -15,7 +15,7 @@ Open admin
 → View Projects
 → Create Project
 → Enter name and reusable AI description
-→ Associate SubIQ, Jewelry Identifier, SkyLens, Urge Zero, or another configured site
+→ Optionally enter its canonical base URL
 → Open project workspace
 ```
 
@@ -24,12 +24,12 @@ Open admin
 Projects owns:
 
 - `projects/{projectId}`.
-- Project ID, name, description, status, topics, and public-site association.
+- Project ID, name, description, status, topics, and minimal public-site fields.
 - Project list/create/edit/archive commands.
 - Project selection and project availability checks.
 
-Projects does not own public brand/theme configuration. R1 keeps that typed and
-version-controlled under `src/public-site/config/`.
+Projects does not own landing-page presentation. Each public site owns its
+theme, content, composition, navigation, and assets in code.
 
 Project screens use the owned Nexus-derived backoffice shell and DaisyUI
 patterns. They must not import components directly from `/nexus`.
@@ -39,20 +39,16 @@ patterns. They must not import components directly from `/nexus`.
 Inputs:
 
 - Owner-entered project name and description.
-- A known `publicSiteId` from source configuration.
+- Owner-entered optional canonical base URL.
 
 Output:
 
 - An active Project that downstream Keyword and Article features can use.
-- Read-only public context: canonical base URL, supported locales, default locale,
-  topics, MDX contract ID, and install CTA.
-- A registry of independently configured public products that shared Public
-  Experience services can resolve by `projectId`.
+- A canonical base URL that publishing can use to build exact public URLs.
 
 ## Implementation files
 
-1. [Public Site Registry](./00-public-site-registry.md)
-2. [Project Management](./01-project-management.md)
+1. [Project Management](./01-project-management.md)
 
 ## Shared rules
 
@@ -60,16 +56,16 @@ Output:
 - Project name is not its Firestore identity.
 - Archived projects remain readable but reject new paid/editorial/publication
   commands.
-- Unknown public-site configuration blocks article publication later.
+- Archiving a Project does not take its coded website offline or remove existing
+  public articles. Article archive and deployment routing are separate explicit
+  operations.
+- A missing canonical base URL blocks publication, but not authoring.
 - Public-site code never reads private project descriptions.
-- One `publicSiteId` can associate with at most one active editorial Project in
-  R1 unless multi-workspace ownership is deliberately introduced later.
-- All source-controlled site configs implement the same contract, but each can
-  enable landing, blog, localization, and legal surfaces independently while
-  incomplete legacy products are being upgraded.
+- Project presentation is explicit code under `src/public-site/sites/{projectId}`;
+  there is no template registry or database-driven page builder.
 
 ## Final demonstration
 
-Resolve all four initial public-site configurations. Create real Projects for at
-least SubIQ and one additional product from the admin UI, refresh, reopen them,
-and prove each displays its own domain, locales, brand, and capabilities.
+Create real Projects for SubIQ and at least one additional product from the
+admin UI, configure their canonical base URLs, refresh, reopen them, and prove
+publishing resolves each Project's own URL.

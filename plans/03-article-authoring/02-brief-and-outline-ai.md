@@ -118,7 +118,7 @@ None. Brief, Outline, and proposed Title remain editorial.
 - [Writing rules](../../src/features/articles/config/writing-rules.ts)
 - [Generation service](../../src/features/articles/service/generate-writing-step.server.ts)
 - [Save service](../../src/features/articles/service/save-writing-step.server.ts)
-- [Writing editor](../../src/backoffice/features/articles/writing-step-editor.tsx)
+- [Writing editor](../../src/features/articles/backoffice/writing-step-editor.tsx)
 - [Prompt tests](../../src/features/articles/prompts/article-writing-prompts.test.ts)
 
 ## Implementation order

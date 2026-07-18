@@ -87,7 +87,7 @@ description, provider payload, workflow state, or private translation data.
 
 `buildPublicationCandidate(projectId, articleId, expectedRevision, locales)`:
 
-1. Loads active Project/public-site configuration.
+1. Loads the active Project and requires its `canonicalBaseUrl`.
 2. Loads Article and requested Translation documents through Article contracts.
 3. Confirms expected revision and current readiness.
 4. Revalidates Review/translation MDX and metadata.
@@ -98,9 +98,9 @@ description, provider payload, workflow state, or private translation data.
 
 Candidate output is serializable and safe to show in admin preview.
 
-Canonical URL, CTA, locale set, and topic mapping come from the candidate
-Project’s own registry entry. Candidate construction must not import SubIQ
-configuration directly.
+The canonical URL comes from the Project document. Article and translation data
+provide locale and topic information. Candidate construction must not import
+SubIQ presentation code directly.
 
 ## Backoffice behavior
 
@@ -126,12 +126,12 @@ content silently.
 
 ## Planned implementation links
 
-- [Public article schema](../../src/features/publishing/model/public-article-document.ts)
-- [Public slug schema](../../src/features/publishing/model/public-slug-document.ts)
-- [Candidate builder](../../src/features/publishing/service/build-publication-candidate.server.ts)
-- [Candidate result](../../src/features/publishing/model/publication-candidate.ts)
-- [Publish preview](../../src/backoffice/features/publishing/publish-preview.tsx)
-- [Candidate tests](../../src/features/publishing/service/build-publication-candidate.test.ts)
+- [Public article schema](../../src/features/articles/publishing/model/public-article-document.ts)
+- [Public slug schema](../../src/features/articles/publishing/model/public-slug-document.ts)
+- [Candidate builder](../../src/features/articles/publishing/service/build-publication-candidate.server.ts)
+- [Candidate result](../../src/features/articles/publishing/model/publication-candidate.ts)
+- [Publish preview](../../src/features/articles/backoffice/publishing/publish-preview.tsx)
+- [Candidate tests](../../src/features/articles/publishing/service/build-publication-candidate.test.ts)
 
 ## Implementation order
 

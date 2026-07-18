@@ -83,7 +83,8 @@ writing without a demonstrated need.
 
 Source is Ready only when:
 
-- Active Project/public-site configuration exists.
+- Active Project exists. A canonical base URL is required later by Publishing,
+  not by authoring readiness.
 - Title, valid slug, topic, excerpt, and source locale exist.
 - Review MDX exists and passes current validation.
 - SEO title/description resolve to non-empty values.
@@ -99,7 +100,7 @@ Source is Ready only when:
 - [Derived metadata](../../src/features/articles/service/derive-article-metadata.ts)
 - [Readiness](../../src/features/articles/service/evaluate-article-readiness.ts)
 - [Metadata service](../../src/features/articles/service/save-article-metadata.server.ts)
-- [SEO editor](../../src/backoffice/features/articles/article-seo-editor.tsx)
+- [SEO editor](../../src/features/articles/backoffice/article-seo-editor.tsx)
 - [Readiness tests](../../src/features/articles/service/evaluate-article-readiness.test.ts)
 
 ## Implementation order

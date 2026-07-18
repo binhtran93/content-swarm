@@ -2,6 +2,20 @@
 
 Status: Not started
 
+## Boundary decision
+
+Keyword Backlog, AI grouping, and provider-backed discovery are one top-level
+code feature: `keywords`. They share vocabulary, normalization,
+permissions, and backoffice workflows.
+
+Their Firestore records remain separate because they have different lifecycles:
+
+- `keywords` contains accepted, editable, actionable work.
+- `keywordGroups` contains reviewed grouping decisions.
+- `keywordDiscoveries` and its `candidates` contain immutable provider-run
+  history and provenance. Accepting a candidate creates or updates a keyword;
+  it does not mutate the discovery record.
+
 ## Goal
 
 Give the owner a real, reusable topic Backlog before any article is created.
@@ -76,4 +90,3 @@ For the real SubIQ project:
 3. Run or reopen one saved discovery.
 4. Accept selected candidates.
 5. Show the available-topic query returning real individual/grouped choices.
-

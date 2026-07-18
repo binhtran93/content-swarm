@@ -26,7 +26,7 @@ For each implementation file:
 | Order | Plan | Tangible final output |
 | --- | --- | --- |
 | 00 | [Platform foundation](./00-platform-foundation.md) | Buildable app, test harness, Firebase boundary, and emulator/staging connection |
-| 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces associated with independent public-site configurations |
+| 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces with minimal publication URL settings |
 | 02 | [Keyword research](./02-keyword-research/PLAN.md) | Real accepted individual/grouped Backlog topics with reusable discoveries |
 | 03 | [Article authoring](./03-article-authoring/PLAN.md) | A valid Ready working article and optional approved translations |
 | 04 | [Publishing](./04-publishing/PLAN.md) | Sanitized public Firestore documents created by explicit publication |
@@ -40,11 +40,11 @@ its Firestore documents directly.
 
 | Owner | Paths |
 | --- | --- |
-| Projects | `projects/{projectId}` |
-| Keyword Backlog | `projects/{projectId}/keywords/{keywordId}` and `keywordGroups/{groupId}` |
-| Keyword Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` and `candidates/{candidateId}` |
-| Article Authoring | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
-| Publishing | `projects/{projectId}/publicArticles/{articleId--locale}` and `publicSlugs/{locale--slug}` |
+| Projects | `projects/{projectId}` including optional `canonicalBaseUrl` |
+| Keyword Research / Backlog | `projects/{projectId}/keywords/{keywordId}` and `keywordGroups/{groupId}` |
+| Keyword Research / Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` and `candidates/{candidateId}` |
+| Articles / Authoring | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
+| Articles / Publishing | `projects/{projectId}/publicArticles/{articleId--locale}` and `publicSlugs/{locale--slug}` |
 | Platform audit | `projects/{projectId}/auditEvents/{eventId}`; features append through the shared audit contract |
 | Public Experience | Read-only access to `publicArticles` and `publicSlugs`; owns no editorial data |
 
@@ -83,11 +83,11 @@ urge-zero
 ```
 
 SubIQ is the first complete reference implementation, not a hard-coded product
-inside shared services or components. Each Project has its own source-controlled
-site configuration, Firestore data subtree, brand, canonical base URL, locales,
-assets, topics, landing module, and independently enabled public capabilities.
-
-See [Public Site Registry](./01-projects/00-public-site-registry.md).
+inside shared services. Each Project stores only its optional canonical base
+URL for publication. Landing structure, content, theme, header, footer,
+navigation, assets, and other presentation choices belong to that site's code.
+Sites may reuse shared public components without sharing an exact page
+structure.
 
 ## Backoffice UI source: Nexus
 
@@ -122,14 +122,15 @@ The detailed adoption boundary is in
 Presentation code is surface-owned:
 
 ```text
-src/features/                 Shared domain, models, and server application logic
-src/backoffice/features/      Nexus/DaisyUI admin screens and feature components
-src/public-site/              Public branded components, routes, and read services
+src/features/{domain}/        Vertical slice: model, services, prompts/providers, and backoffice UI
+src/backoffice/               Shared Nexus/DaisyUI shell, UI primitives, config, and styles only
+src/public-site/              Shared public components plus independent project sites
 ```
 
-`src/features` must not contain reusable-looking UI that actually assumes one
-surface. Backoffice and public components may share headless logic or schemas,
-but they should not share cards, forms, tables, shells, or styling by default.
+Backoffice-specific UI must stay inside each feature's `backoffice/` folder;
+surface-neutral models and services must not import it. Backoffice and public
+components may share headless logic or schemas, but they should not share
+cards, forms, tables, shells, or styling by default.
 
 ## Prompt ownership
 
