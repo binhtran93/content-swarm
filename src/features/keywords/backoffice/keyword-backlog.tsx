@@ -31,6 +31,8 @@ export function KeywordBacklog({
   const [sortField, setSortField] = useState<BacklogSortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [viewingGroupId, setViewingGroupId] = useState<string | null>(null);
+  const [confirmingRemoval, setConfirmingRemoval] = useState(false);
+  const [confirmingDissolve, setConfirmingDissolve] = useState(false);
   const [state, action, pending] = useActionState(
     createKeywordGroupAction,
     null,
@@ -180,8 +182,8 @@ export function KeywordBacklog({
                 <button
                   className="btn btn-error btn-outline btn-sm"
                   disabled={pending || removePending}
-                  formAction={removeAction}
-                  type="submit"
+                  onClick={() => setConfirmingRemoval(true)}
+                  type="button"
                 >
                   {removePending ? (
                     <span className="loading loading-spinner loading-sm" />
@@ -386,7 +388,7 @@ export function KeywordBacklog({
           )}
         </div>
       </form>
-      {viewingGroup ? (
+      {viewingGroup && !confirmingDissolve ? (
         <div className="modal modal-open" role="dialog" aria-modal="true">
           <div className="modal-box max-w-3xl">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -443,17 +445,13 @@ export function KeywordBacklog({
               </table>
             </div>
             <div className="modal-action">
-              <form action={dissolveKeywordGroupAction}>
-                <input name="projectId" type="hidden" value={projectId} />
-                <input
-                  name="groupId"
-                  type="hidden"
-                  value={viewingGroup.groupId}
-                />
-                <button className="btn btn-error btn-outline" type="submit">
-                  Dissolve group
-                </button>
-              </form>
+              <button
+                className="btn btn-error btn-outline"
+                onClick={() => setConfirmingDissolve(true)}
+                type="button"
+              >
+                Dissolve group
+              </button>
               <button
                 className="btn"
                 onClick={() => setViewingGroupId(null)}
@@ -467,6 +465,89 @@ export function KeywordBacklog({
             aria-label="Close keyword group"
             className="modal-backdrop"
             onClick={() => setViewingGroupId(null)}
+            type="button"
+          >
+            close
+          </button>
+        </div>
+      ) : null}
+      {viewingGroup && confirmingDissolve ? (
+        <div className="modal modal-open" role="dialog" aria-modal="true">
+          <div className="modal-box">
+            <h2 className="text-lg font-semibold">Dissolve this group?</h2>
+            <p className="text-base-content/70 mt-3">
+              All {viewingGroup.memberKeywordIds.length} keywords will return to
+              the backlog as standalone keywords. No keyword will be deleted.
+            </p>
+            <form action={dissolveKeywordGroupAction} className="modal-action">
+              <input name="projectId" type="hidden" value={projectId} />
+              <input
+                name="groupId"
+                type="hidden"
+                value={viewingGroup.groupId}
+              />
+              <button
+                className="btn btn-ghost"
+                onClick={() => setConfirmingDissolve(false)}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button className="btn btn-error" type="submit">
+                Dissolve group
+              </button>
+            </form>
+          </div>
+          <button
+            aria-label="Cancel group dissolution"
+            className="modal-backdrop"
+            onClick={() => setConfirmingDissolve(false)}
+            type="button"
+          >
+            close
+          </button>
+        </div>
+      ) : null}
+      {confirmingRemoval ? (
+        <div className="modal modal-open" role="dialog" aria-modal="true">
+          <div className="modal-box">
+            <h2 className="text-lg font-semibold">
+              Remove selected from backlog?
+            </h2>
+            <p className="text-base-content/70 mt-3">
+              This will remove {selected.length} selected backlog row
+              {selected.length === 1 ? "" : "s"}. Selected groups include all of
+              their member keywords. Saved discovery results are not affected.
+            </p>
+            <form action={removeAction} className="modal-action">
+              <input name="projectId" type="hidden" value={projectId} />
+              {selected.map((id) => (
+                <input key={id} name="memberIds" type="hidden" value={id} />
+              ))}
+              <button
+                className="btn btn-ghost"
+                disabled={removePending}
+                onClick={() => setConfirmingRemoval(false)}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-error"
+                disabled={removePending}
+                type="submit"
+              >
+                {removePending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : null}
+                {removePending ? "Removing…" : "Remove from backlog"}
+              </button>
+            </form>
+          </div>
+          <button
+            aria-label="Cancel backlog removal"
+            className="modal-backdrop"
+            onClick={() => setConfirmingRemoval(false)}
             type="button"
           >
             close

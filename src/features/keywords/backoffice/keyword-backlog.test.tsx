@@ -114,7 +114,14 @@ describe("Keyword backlog grouping", () => {
     expect(within(dialog).getByText("supporting keyword")).toBeInTheDocument();
     expect(within(dialog).getAllByText("primary keyword")).toHaveLength(2);
     expect(within(dialog).getByText("Primary")).toBeInTheDocument();
-    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Dissolve group" }),
+    );
+    expect(screen.getByText("Dissolve this group?")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(
+      within(screen.getByRole("dialog")).getByRole("button", { name: "Close" }),
+    );
 
     fireEvent.click(within(table).getByLabelText("Select primary keyword"));
     fireEvent.click(within(table).getByLabelText("Select single keyword"));
@@ -127,6 +134,18 @@ describe("Keyword backlog grouping", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Remove from backlog" }),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Remove from backlog" }),
+    );
+    const removalDialog = screen.getByRole("dialog");
+    expect(
+      within(removalDialog).getByText("Remove selected from backlog?"),
+    ).toBeInTheDocument();
+    expect(
+      within(removalDialog).getByRole("button", {
+        name: "Remove from backlog",
+      }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Edit" }),
