@@ -15,7 +15,7 @@ Open admin
 → Sign in as the owner when required
 → View Projects
 → Create Project
-→ Enter name and reusable AI description
+→ Enter name and optionally add a reusable AI description
 → Optionally enter its canonical base URL
 → Open project workspace
 ```
@@ -41,7 +41,7 @@ patterns. They must not import components directly from `/nexus`.
 Inputs:
 
 - Verified owner UID from `requireOwner()`.
-- Owner-entered project name and description.
+- Owner-entered project name and optional description.
 - Owner-entered optional canonical base URL.
 
 Output:

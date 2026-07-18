@@ -55,19 +55,22 @@ export function ProjectFormFields({
       </fieldset>
 
       <fieldset className="fieldset">
-        <legend className="fieldset-legend">AI product description</legend>
+        <legend className="fieldset-legend">
+          Description
+          <span className="font-normal opacity-60">(optional)</span>
+        </legend>
         <textarea
-          aria-label="AI product description"
+          aria-label="Description"
           aria-describedby="description-help"
           className="textarea min-h-36 w-full"
           defaultValue={project?.description}
           maxLength={5_000}
           name="description"
           placeholder="Describe the product, its audience, and the value it provides."
-          required
         />
         <p className="label" id="description-help">
-          Private reusable context for later editorial AI. It is never public.
+          Private reusable context for later editorial AI. You can add it later;
+          it is never public.
         </p>
       </fieldset>
 

@@ -39,7 +39,8 @@ Validation:
 - `projectId`: owner-selected stable lowercase route identifier such as
   `subiq`; validated at creation and immutable afterward.
 - `name`: trimmed, 1–100 characters.
-- `description`: trimmed, 1–5,000 characters; used as AI product context.
+- `description`: optional, trimmed, maximum 5,000 characters; used as AI
+  product context when present.
 - `topics`: unique case-insensitively, trimmed, maximum 100, each maximum 80
   characters.
 - `canonicalBaseUrl`: optional while editorial setup is in progress. When
@@ -79,7 +80,8 @@ Routes:
 ```
 
 - Projects page: responsive card list, recent first, New project primary action.
-- Create: stable project ID, name, description, and optional canonical base URL.
+- Create: stable project ID, name, optional description, and optional canonical
+  base URL.
 - Settings: edit Project fields and canonical base URL; archive.
 - Archive requires confirmation and explains that future commands stop.
 - Loading, empty, invalid, unavailable, save failure, and success states are

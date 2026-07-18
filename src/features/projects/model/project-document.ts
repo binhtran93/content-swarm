@@ -26,7 +26,7 @@ export const projectDocumentSchema = z.object({
   schemaVersion: z.literal(1),
   ownerId: z.string().min(1),
   name: z.string().min(1).max(100),
-  description: z.string().min(1).max(5_000),
+  description: z.string().max(5_000),
   topics,
   canonicalBaseUrl: canonicalBaseUrl.nullable(),
   status: z.enum(["active", "archived"]),

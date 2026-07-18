@@ -25,6 +25,15 @@ describe("project input", () => {
     });
   });
 
+  it("accepts an empty optional AI product description", () => {
+    expect(
+      projectInputSchemas.create.parse({
+        ...validInput,
+        description: "  ",
+      }).description,
+    ).toBe("");
+  });
+
   it.each(["SubIQ", "sub_iq", "-subiq", "subiq/keywords"])(
     "rejects unstable project ID %s",
     (projectId) => {
