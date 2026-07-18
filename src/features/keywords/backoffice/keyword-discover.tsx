@@ -215,51 +215,47 @@ export function KeywordDiscover({
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
       <div className="space-y-6">
-        <form action={action} className="card card-border bg-base-100">
-          <div className="card-body">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="card-title">Discover keywords</h2>
-                <p className="text-base-content/60 mt-1 text-sm">
-                  Configure a web keyword request. Matching saved results are
-                  reused.
+        <form action={action}>
+          <details
+            className="collapse-arrow bg-base-100 border-base-300 collapse border"
+            open={state?.error ? true : undefined}
+          >
+            <summary className="collapse-title flex items-center justify-between gap-4 px-5 py-4">
+              <h2 className="font-medium">Discover keywords</h2>
+            </summary>
+            <div className="collapse-content border-base-300 border-t px-5 pb-5">
+              {state?.error ? (
+                <div className="alert alert-error mt-4" role="alert">
+                  {state.error}
+                </div>
+              ) : null}
+              <input name="projectId" type="hidden" value={projectId} />
+              {locations.length === 0 ? (
+                <div className="alert alert-warning mt-4" role="alert">
+                  Country and language options could not be loaded from
+                  DataForSEO.
+                </div>
+              ) : null}
+              <div className="mt-4 grid gap-x-4 gap-y-3 sm:grid-cols-2">
+                <RequestFields discovery={selected} locations={locations} />
+              </div>
+              <div className="border-base-300 mt-5 flex items-center justify-between gap-4 border-t pt-4">
+                <p className="text-base-content/55 text-xs">
+                  Nothing runs until you submit this form.
                 </p>
-              </div>
-              <div className="badge badge-warning badge-soft badge-sm">
-                Provider call
+                <button
+                  className="btn btn-primary btn-sm"
+                  disabled={pending || locations.length === 0}
+                  type="submit"
+                >
+                  {pending ? (
+                    <span className="loading loading-spinner loading-sm" />
+                  ) : null}
+                  {pending ? "Getting keywords…" : "Get keywords"}
+                </button>
               </div>
             </div>
-            {state?.error ? (
-              <div className="alert alert-error mt-4" role="alert">
-                {state.error}
-              </div>
-            ) : null}
-            <input name="projectId" type="hidden" value={projectId} />
-            {locations.length === 0 ? (
-              <div className="alert alert-warning mt-4" role="alert">
-                Country and language options could not be loaded from
-                DataForSEO.
-              </div>
-            ) : null}
-            <div className="mt-5 grid gap-x-4 gap-y-3 sm:grid-cols-2">
-              <RequestFields discovery={selected} locations={locations} />
-            </div>
-            <div className="border-base-300 mt-5 flex items-center justify-between gap-4 border-t pt-4">
-              <p className="text-base-content/55 text-xs">
-                Nothing runs until you submit this form.
-              </p>
-              <button
-                className="btn btn-primary btn-sm"
-                disabled={pending || locations.length === 0}
-                type="submit"
-              >
-                {pending ? (
-                  <span className="loading loading-spinner loading-sm" />
-                ) : null}
-                {pending ? "Getting keywords…" : "Get keywords"}
-              </button>
-            </div>
-          </div>
+          </details>
         </form>
 
         {selected ? (
