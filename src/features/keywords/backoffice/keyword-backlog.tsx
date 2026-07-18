@@ -8,16 +8,11 @@ import {
   dissolveKeywordGroupAction,
   removeSelectedKeywordsAction,
 } from "@/features/keywords/backoffice/keyword-actions.server";
+import { KeywordDifficultyBadge } from "@/features/keywords/backoffice/keyword-difficulty-badge";
 import type { Keyword, KeywordGroup } from "@/features/keywords/model/keyword";
 
-function Metrics({ keyword }: { keyword: Keyword }) {
-  return (
-    <span className="text-base-content/60 text-xs tabular-nums">
-      Vol {keyword.searchVolume?.toLocaleString() ?? "—"} · KD{" "}
-      {keyword.difficulty ?? "—"}
-    </span>
-  );
-}
+type BacklogSortField = "volume" | "difficulty";
+type SortDirection = "asc" | "desc";
 
 export function KeywordBacklog({
   projectId,
@@ -31,7 +26,10 @@ export function KeywordBacklog({
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [market, setMarket] = useState("");
-  const [status, setStatus] = useState("");
+  const [minimumVolumeFilter, setMinimumVolumeFilter] = useState("");
+  const [maximumDifficultyFilter, setMaximumDifficultyFilter] = useState("");
+  const [sortField, setSortField] = useState<BacklogSortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [state, action, pending] = useActionState(
     createKeywordGroupAction,
     null,
@@ -48,20 +46,26 @@ export function KeywordBacklog({
     () => new Map(groups.map((group) => [group.groupId, group])),
     [groups],
   );
+  const backlogGroups = groups.filter((group) =>
+    group.memberKeywordIds.every((id) => !byId.get(id)?.articleId),
+  );
   const backlogRows = keywords.filter((keyword) => {
-    if (!keyword.groupId) return true;
-    const group = groupsById.get(keyword.groupId);
-    return !group || group.primaryKeywordId === keyword.keywordId;
-  });
-  const available = backlogRows.filter((keyword) => {
     if (keyword.articleId) return false;
     if (!keyword.groupId) return true;
     const group = groupsById.get(keyword.groupId);
-    return Boolean(
-      group && group.memberKeywordIds.every((id) => !byId.get(id)?.articleId),
+    if (!group) return true;
+    return (
+      backlogGroups.some((item) => item.groupId === group.groupId) &&
+      group.primaryKeywordId === keyword.keywordId
     );
   });
-  const visibleKeywords = backlogRows.filter((keyword) => {
+  const minimumVolume = minimumVolumeFilter
+    ? Number(minimumVolumeFilter)
+    : null;
+  const maximumDifficulty = maximumDifficultyFilter
+    ? Number(maximumDifficultyFilter)
+    : null;
+  const filteredKeywords = backlogRows.filter((keyword) => {
     if (
       search &&
       !keyword.normalizedKeyword.includes(search.toLocaleLowerCase())
@@ -69,24 +73,42 @@ export function KeywordBacklog({
       return false;
     if (market && `${keyword.countryCode}:${keyword.languageCode}` !== market)
       return false;
-    if (status === "available" && (keyword.articleId || keyword.groupId))
+    if (
+      minimumVolume !== null &&
+      (keyword.searchVolume === null || keyword.searchVolume < minimumVolume)
+    )
       return false;
-    if (status === "grouped" && !keyword.groupId) return false;
-    if (status === "assigned" && !keyword.articleId) return false;
+    if (
+      maximumDifficulty !== null &&
+      (keyword.difficulty === null || keyword.difficulty > maximumDifficulty)
+    )
+      return false;
     return true;
   });
+  const visibleKeywords = sortField
+    ? [...filteredKeywords].sort((left, right) => {
+        const leftValue =
+          sortField === "volume" ? left.searchVolume : left.difficulty;
+        const rightValue =
+          sortField === "volume" ? right.searchVolume : right.difficulty;
+        if (leftValue === null && rightValue === null) return 0;
+        if (leftValue === null) return 1;
+        if (rightValue === null) return -1;
+        return sortDirection === "asc"
+          ? leftValue - rightValue
+          : rightValue - leftValue;
+      })
+    : filteredKeywords;
   const markets = [
     ...new Set(
-      keywords.map(
+      backlogRows.map(
         (keyword) => `${keyword.countryCode}:${keyword.languageCode}`,
       ),
     ),
   ].sort();
-  const visibleSelectableIds = visibleKeywords
-    .filter((keyword) =>
-      available.some((item) => item.keywordId === keyword.keywordId),
-    )
-    .map((keyword) => keyword.keywordId);
+  const visibleSelectableIds = visibleKeywords.map(
+    (keyword) => keyword.keywordId,
+  );
   const allVisibleSelected =
     visibleSelectableIds.length > 0 &&
     visibleSelectableIds.every((id) => selected.includes(id));
@@ -111,15 +133,29 @@ export function KeywordBacklog({
     });
   }
 
+  function sortBacklog(field: BacklogSortField) {
+    if (sortField === field) {
+      setSortDirection((direction) => (direction === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortField(field);
+    setSortDirection(field === "volume" ? "desc" : "asc");
+  }
+
+  function sortIndicator(field: BacklogSortField) {
+    if (sortField !== field) return "↕";
+    return sortDirection === "asc" ? "↑" : "↓";
+  }
+
   return (
     <div className="space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden">
       <ErrorToast message={state?.error ?? removeState?.error} />
-      {groups.length ? (
+      {backlogGroups.length ? (
         <section className="shrink-0 space-y-3" aria-labelledby="groups-title">
           <h2 className="text-lg font-semibold" id="groups-title">
             Keyword groups
           </h2>
-          {groups.map((group) => {
+          {backlogGroups.map((group) => {
             const primary = byId.get(group.primaryKeywordId);
             return (
               <details
@@ -133,9 +169,6 @@ export function KeywordBacklog({
                   <span className="badge badge-outline">
                     {group.memberKeywordIds.length} keywords
                   </span>
-                  {primary?.articleId ? (
-                    <span className="badge badge-neutral">Assigned</span>
-                  ) : null}
                 </summary>
                 <div className="collapse-content">
                   <ul className="divide-base-300 divide-y">
@@ -154,30 +187,32 @@ export function KeywordBacklog({
                               </span>
                             ) : null}
                           </span>
-                          <Metrics keyword={keyword} />
+                          <span className="flex items-center gap-3">
+                            <span className="text-base-content/60 text-xs tabular-nums">
+                              Vol{" "}
+                              {keyword.searchVolume?.toLocaleString() ?? "—"}
+                            </span>
+                            <KeywordDifficultyBadge
+                              score={keyword.difficulty}
+                            />
+                          </span>
                         </li>
                       ) : null;
                     })}
                   </ul>
-                  {!primary?.articleId ? (
-                    <form
-                      action={dissolveKeywordGroupAction}
-                      className="mt-3 flex justify-end"
+                  <form
+                    action={dissolveKeywordGroupAction}
+                    className="mt-3 flex justify-end"
+                  >
+                    <input name="projectId" type="hidden" value={projectId} />
+                    <input name="groupId" type="hidden" value={group.groupId} />
+                    <button
+                      className="btn btn-ghost btn-sm text-error"
+                      type="submit"
                     >
-                      <input name="projectId" type="hidden" value={projectId} />
-                      <input
-                        name="groupId"
-                        type="hidden"
-                        value={group.groupId}
-                      />
-                      <button
-                        className="btn btn-ghost btn-sm text-error"
-                        type="submit"
-                      >
-                        Dissolve group
-                      </button>
-                    </form>
-                  ) : null}
+                      Dissolve group
+                    </button>
+                  </form>
                 </div>
               </details>
             );
@@ -193,10 +228,6 @@ export function KeywordBacklog({
           <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-3">
             <div>
               <h2 className="card-title">Backlog</h2>
-              <p className="text-base-content/60 text-sm">
-                {keywords.length} accepted keyword
-                {keywords.length === 1 ? "" : "s"}
-              </p>
             </div>
             {selected.length ? (
               <div className="flex flex-wrap items-center justify-end gap-2">
@@ -226,9 +257,28 @@ export function KeywordBacklog({
               </div>
             ) : null}
           </div>
-          <div className="grid gap-3 px-5 pb-4 sm:grid-cols-3">
+          <div className="grid gap-3 px-5 pb-4 sm:grid-cols-2 xl:grid-cols-4">
             <label className="input flex w-full items-center gap-2">
-              <span aria-hidden="true">⌕</span>
+              <svg
+                aria-hidden="true"
+                className="size-5 shrink-0 opacity-60"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="m16.5 16.5 4 4"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2"
+                />
+              </svg>
               <input
                 className="grow"
                 onChange={(event) => setSearch(event.target.value)}
@@ -250,23 +300,33 @@ export function KeywordBacklog({
                 </option>
               ))}
             </select>
-            <select
-              aria-label="Filter by status"
-              className="select w-full"
-              onChange={(event) => setStatus(event.target.value)}
-              value={status}
-            >
-              <option value="">All statuses</option>
-              <option value="available">Available</option>
-              <option value="grouped">Grouped</option>
-              <option value="assigned">Assigned</option>
-            </select>
+            <input
+              aria-label="Minimum backlog search volume"
+              className="input w-full"
+              min="0"
+              onChange={(event) => setMinimumVolumeFilter(event.target.value)}
+              placeholder="Minimum volume"
+              type="number"
+              value={minimumVolumeFilter}
+            />
+            <input
+              aria-label="Maximum backlog keyword difficulty"
+              className="input w-full"
+              max="100"
+              min="0"
+              onChange={(event) =>
+                setMaximumDifficultyFilter(event.target.value)
+              }
+              placeholder="Maximum difficulty"
+              type="number"
+              value={maximumDifficultyFilter}
+            />
           </div>
           <input name="projectId" type="hidden" value={projectId} />
           {selected.map((id) => (
             <input key={id} name="memberIds" type="hidden" value={id} />
           ))}
-          {keywords.length === 0 ? (
+          {backlogRows.length === 0 ? (
             <div className="border-base-300 border-t px-5 py-12 text-center">
               <p className="font-medium">No keywords yet</p>
               <p className="text-base-content/60 mt-1 text-sm">
@@ -295,15 +355,52 @@ export function KeywordBacklog({
                     </th>
                     <th>Keyword</th>
                     <th>Market</th>
-                    <th>Metrics</th>
-                    <th>Status</th>
+                    <th
+                      aria-sort={
+                        sortField === "volume"
+                          ? sortDirection === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
+                    >
+                      <button
+                        aria-label="Sort backlog by volume"
+                        className="inline-flex items-center gap-1.5"
+                        onClick={() => sortBacklog("volume")}
+                        type="button"
+                      >
+                        Volume
+                        <span aria-hidden="true" className="text-xs">
+                          {sortIndicator("volume")}
+                        </span>
+                      </button>
+                    </th>
+                    <th
+                      aria-sort={
+                        sortField === "difficulty"
+                          ? sortDirection === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
+                    >
+                      <button
+                        aria-label="Sort backlog by difficulty"
+                        className="inline-flex items-center gap-1.5"
+                        onClick={() => sortBacklog("difficulty")}
+                        type="button"
+                      >
+                        Difficulty
+                        <span aria-hidden="true" className="text-xs">
+                          {sortIndicator("difficulty")}
+                        </span>
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {visibleKeywords.map((keyword) => {
-                    const selectable = available.some(
-                      (item) => item.keywordId === keyword.keywordId,
-                    );
                     return (
                       <tr key={keyword.keywordId}>
                         <td>
@@ -311,7 +408,6 @@ export function KeywordBacklog({
                             aria-label={`Select ${keyword.keyword}`}
                             checked={selected.includes(keyword.keywordId)}
                             className="checkbox checkbox-sm"
-                            disabled={!selectable}
                             onChange={(event) =>
                               toggle(keyword.keywordId, event.target.checked)
                             }
@@ -332,22 +428,12 @@ export function KeywordBacklog({
                           </span>
                         </td>
                         <td>
-                          <Metrics keyword={keyword} />
+                          <span className="tabular-nums">
+                            {keyword.searchVolume?.toLocaleString() ?? "—"}
+                          </span>
                         </td>
                         <td>
-                          {keyword.articleId ? (
-                            <span className="badge badge-neutral">
-                              Assigned
-                            </span>
-                          ) : keyword.groupId ? (
-                            <span className="badge badge-secondary badge-soft">
-                              Grouped
-                            </span>
-                          ) : (
-                            <span className="badge badge-success badge-soft">
-                              Available
-                            </span>
-                          )}
+                          <KeywordDifficultyBadge score={keyword.difficulty} />
                         </td>
                       </tr>
                     );

@@ -53,6 +53,20 @@ const keywords = [
     createdAt: timestamp,
     updatedAt: timestamp,
   },
+  {
+    keywordId: "assigned",
+    keyword: "assigned keyword",
+    normalizedKeyword: "assigned keyword",
+    countryCode: "US",
+    languageCode: "en",
+    searchVolume: 500,
+    difficulty: 80,
+    sourceDiscoveryId: null,
+    groupId: null,
+    articleId: "article-1",
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  },
 ];
 
 const groups = [
@@ -78,6 +92,17 @@ describe("Keyword backlog grouping", () => {
     expect(
       within(table).queryByText("supporting keyword"),
     ).not.toBeInTheDocument();
+    expect(
+      within(table).queryByText("assigned keyword"),
+    ).not.toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "Volume" }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "Difficulty" }),
+    ).toBeInTheDocument();
+    expect(within(table).getByText("5 · Very easy")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Filter by status")).not.toBeInTheDocument();
 
     fireEvent.click(within(table).getByLabelText("Select primary keyword"));
     fireEvent.click(within(table).getByLabelText("Select single keyword"));
@@ -110,5 +135,48 @@ describe("Keyword backlog grouping", () => {
     expect(
       screen.getByRole("button", { name: "Remove from backlog" }),
     ).toBeInTheDocument();
+  });
+
+  it("filters and sorts backlog metrics", () => {
+    render(
+      <KeywordBacklog groups={groups} keywords={keywords} projectId="subiq" />,
+    );
+
+    const table = screen.getByRole("table");
+    const rowOrder = () =>
+      within(table)
+        .getAllByRole("checkbox")
+        .slice(1)
+        .map((checkbox) =>
+          checkbox.getAttribute("aria-label")?.replace("Select ", ""),
+        );
+    const minimumVolume = screen.getByLabelText(
+      "Minimum backlog search volume",
+    );
+    const maximumDifficulty = screen.getByLabelText(
+      "Maximum backlog keyword difficulty",
+    );
+
+    fireEvent.change(minimumVolume, { target: { value: "100" } });
+    expect(rowOrder()).toEqual(["primary keyword"]);
+
+    fireEvent.change(minimumVolume, { target: { value: "" } });
+    fireEvent.change(maximumDifficulty, { target: { value: "10" } });
+    expect(rowOrder()).toEqual(["single keyword"]);
+
+    fireEvent.change(maximumDifficulty, { target: { value: "" } });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sort backlog by volume" }),
+    );
+    expect(rowOrder()).toEqual(["primary keyword", "single keyword"]);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sort backlog by volume" }),
+    );
+    expect(rowOrder()).toEqual(["single keyword", "primary keyword"]);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sort backlog by difficulty" }),
+    );
+    expect(rowOrder()).toEqual(["single keyword", "primary keyword"]);
   });
 });
