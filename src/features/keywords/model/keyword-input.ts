@@ -28,11 +28,3 @@ export const keywordInputSchema = z.object({
   difficulty: z.number().min(0).max(100).nullable().default(null),
   sourceDiscoveryId: z.string().min(1).nullable().default(null),
 });
-
-export const keywordUpdateInputSchema = keywordInputSchema.pick({
-  keyword: true,
-  countryCode: true,
-  languageCode: true,
-  searchVolume: true,
-  difficulty: true,
-});

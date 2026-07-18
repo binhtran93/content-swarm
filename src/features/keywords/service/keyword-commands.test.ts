@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { addKeyword } from "@/features/keywords/service/add-keyword.server";
 import { addKeywords } from "@/features/keywords/service/add-keywords.server";
 import { createKeywordGroup } from "@/features/keywords/service/create-keyword-group.server";
+import { removeKeywords } from "@/features/keywords/service/remove-keywords.server";
 
 const mock = vi.hoisted(() => ({
   documents: new Map<string, Record<string, unknown>>(),
@@ -236,6 +237,37 @@ describe("keyword commands", () => {
       expect(mock.documents.get(`projects/subiq/keywords/${id}`)?.groupId).toBe(
         mergedWithKeyword.groupId,
       );
+    });
+  });
+
+  it("removes standalone backlog rows and complete selected groups", async () => {
+    const added = await addKeywords(
+      "subiq",
+      ["alpha", "beta", "single"].map((keyword) => ({
+        keyword,
+        countryCode: "US",
+        languageCode: "en",
+      })),
+    );
+    const [alpha, beta, single] = added.created;
+    const group = await createKeywordGroup("subiq", [
+      alpha!.keywordId,
+      beta!.keywordId,
+    ]);
+
+    const result = await removeKeywords("subiq", [
+      group.primaryKeywordId,
+      single!.keywordId,
+    ]);
+
+    expect(result.removed).toBe(3);
+    expect(
+      mock.documents.has(`projects/subiq/keywordGroups/${group.groupId}`),
+    ).toBe(false);
+    [alpha, beta, single].forEach((keyword) => {
+      expect(
+        mock.documents.has(`projects/subiq/keywords/${keyword!.keywordId}`),
+      ).toBe(false);
     });
   });
 

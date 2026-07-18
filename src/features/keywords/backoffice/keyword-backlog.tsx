@@ -5,7 +5,7 @@ import { useActionState, useMemo, useState } from "react";
 import {
   createKeywordGroupAction,
   dissolveKeywordGroupAction,
-  updateKeywordAction,
+  removeSelectedKeywordsAction,
 } from "@/features/keywords/backoffice/keyword-actions.server";
 import type { Keyword, KeywordGroup } from "@/features/keywords/model/keyword";
 
@@ -28,7 +28,6 @@ export function KeywordBacklog({
   groups: KeywordGroup[];
 }) {
   const [selected, setSelected] = useState<string[]>([]);
-  const [editing, setEditing] = useState<Keyword | null>(null);
   const [search, setSearch] = useState("");
   const [market, setMarket] = useState("");
   const [status, setStatus] = useState("");
@@ -36,8 +35,8 @@ export function KeywordBacklog({
     createKeywordGroupAction,
     null,
   );
-  const [editState, editAction, editPending] = useActionState(
-    updateKeywordAction,
+  const [removeState, removeAction, removePending] = useActionState(
+    removeSelectedKeywordsAction,
     null,
   );
   const byId = useMemo(
@@ -82,11 +81,33 @@ export function KeywordBacklog({
       ),
     ),
   ].sort();
+  const visibleSelectableIds = visibleKeywords
+    .filter((keyword) =>
+      available.some((item) => item.keywordId === keyword.keywordId),
+    )
+    .map((keyword) => keyword.keywordId);
+  const allVisibleSelected =
+    visibleSelectableIds.length > 0 &&
+    visibleSelectableIds.every((id) => selected.includes(id));
+  const someVisibleSelected = visibleSelectableIds.some((id) =>
+    selected.includes(id),
+  );
 
   function toggle(id: string, checked: boolean) {
     setSelected((current) =>
       checked ? [...current, id] : current.filter((item) => item !== id),
     );
+  }
+
+  function toggleAllVisible() {
+    setSelected((current) => {
+      const next = new Set(current);
+      visibleSelectableIds.forEach((id) => {
+        if (allVisibleSelected) next.delete(id);
+        else next.add(id);
+      });
+      return [...next];
+    });
   }
 
   return (
@@ -175,17 +196,32 @@ export function KeywordBacklog({
                 {keywords.length === 1 ? "" : "s"}
               </p>
             </div>
-            {selected.length >= 2 ? (
-              <button
-                className="btn btn-primary btn-sm"
-                disabled={pending}
-                type="submit"
-              >
-                {pending ? (
-                  <span className="loading loading-spinner loading-sm" />
+            {selected.length ? (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                {selected.length >= 2 ? (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    disabled={pending || removePending}
+                    type="submit"
+                  >
+                    {pending ? (
+                      <span className="loading loading-spinner loading-sm" />
+                    ) : null}
+                    {pending ? "Adding…" : "Add to group"}
+                  </button>
                 ) : null}
-                {pending ? "Adding…" : "Add to group"}
-              </button>
+                <button
+                  className="btn btn-error btn-outline btn-sm"
+                  disabled={pending || removePending}
+                  formAction={removeAction}
+                  type="submit"
+                >
+                  {removePending ? (
+                    <span className="loading loading-spinner loading-sm" />
+                  ) : null}
+                  {removePending ? "Removing…" : "Remove from backlog"}
+                </button>
+              </div>
             ) : null}
           </div>
           <div className="grid gap-3 px-5 pb-4 sm:grid-cols-3">
@@ -229,6 +265,11 @@ export function KeywordBacklog({
               {state.error}
             </div>
           ) : null}
+          {removeState?.error ? (
+            <div className="alert alert-error mx-5 mb-3 w-auto" role="alert">
+              {removeState.error}
+            </div>
+          ) : null}
           <input name="projectId" type="hidden" value={projectId} />
           {selected.map((id) => (
             <input key={id} name="memberIds" type="hidden" value={id} />
@@ -246,7 +287,19 @@ export function KeywordBacklog({
                 <thead className="bg-base-100 sticky top-0 z-1">
                   <tr>
                     <th className="w-10">
-                      <span className="sr-only">Select</span>
+                      <input
+                        aria-label="Select all visible backlog keywords"
+                        checked={allVisibleSelected}
+                        className="checkbox checkbox-sm"
+                        disabled={visibleSelectableIds.length === 0}
+                        onChange={toggleAllVisible}
+                        ref={(checkbox) => {
+                          if (checkbox)
+                            checkbox.indeterminate =
+                              someVisibleSelected && !allVisibleSelected;
+                        }}
+                        type="checkbox"
+                      />
                     </th>
                     <th>Keyword</th>
                     <th>Market</th>
@@ -303,15 +356,6 @@ export function KeywordBacklog({
                               Available
                             </span>
                           )}
-                          {!keyword.articleId ? (
-                            <button
-                              className="btn btn-ghost btn-xs ml-2"
-                              onClick={() => setEditing(keyword)}
-                              type="button"
-                            >
-                              Edit
-                            </button>
-                          ) : null}
                         </td>
                       </tr>
                     );
@@ -322,96 +366,6 @@ export function KeywordBacklog({
           )}
         </div>
       </form>
-      {editing ? (
-        <div className="modal modal-open" role="dialog" aria-modal="true">
-          <div className="modal-box">
-            <h2 className="text-lg font-semibold">Edit keyword</h2>
-            <form action={editAction} className="mt-4 space-y-4">
-              {editState?.error ? (
-                <div className="alert alert-error" role="alert">
-                  {editState.error}
-                </div>
-              ) : null}
-              <input name="projectId" type="hidden" value={projectId} />
-              <input name="keywordId" type="hidden" value={editing.keywordId} />
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Keyword</legend>
-                <input
-                  className="input w-full"
-                  defaultValue={editing.keyword}
-                  name="keyword"
-                  required
-                />
-              </fieldset>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Country</legend>
-                  <input
-                    className="input w-full"
-                    defaultValue={editing.countryCode}
-                    name="countryCode"
-                    required
-                  />
-                </fieldset>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Language</legend>
-                  <input
-                    className="input w-full"
-                    defaultValue={editing.languageCode}
-                    name="languageCode"
-                    required
-                  />
-                </fieldset>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Search volume</legend>
-                  <input
-                    className="input w-full"
-                    defaultValue={editing.searchVolume ?? ""}
-                    min="0"
-                    name="searchVolume"
-                    type="number"
-                  />
-                </fieldset>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Difficulty</legend>
-                  <input
-                    className="input w-full"
-                    defaultValue={editing.difficulty ?? ""}
-                    max="100"
-                    min="0"
-                    name="difficulty"
-                    type="number"
-                  />
-                </fieldset>
-              </div>
-              <div className="modal-action">
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => setEditing(null)}
-                  type="button"
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-primary"
-                  disabled={editPending}
-                  type="submit"
-                >
-                  {editPending ? "Saving…" : "Save keyword"}
-                </button>
-              </div>
-            </form>
-          </div>
-          <button
-            aria-label="Close edit dialog"
-            className="modal-backdrop"
-            onClick={() => setEditing(null)}
-            type="button"
-          >
-            close
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

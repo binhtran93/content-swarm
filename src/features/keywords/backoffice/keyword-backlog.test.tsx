@@ -6,7 +6,7 @@ import { KeywordBacklog } from "@/features/keywords/backoffice/keyword-backlog";
 vi.mock("@/features/keywords/backoffice/keyword-actions.server", () => ({
   createKeywordGroupAction: vi.fn(),
   dissolveKeywordGroupAction: vi.fn(),
-  updateKeywordAction: vi.fn(),
+  removeSelectedKeywordsAction: vi.fn(),
 }));
 
 const timestamp = "2026-07-18T00:00:00.000Z";
@@ -87,6 +87,28 @@ describe("Keyword backlog grouping", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Add to group" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remove from backlog" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("selects all visible selectable backlog rows", () => {
+    render(
+      <KeywordBacklog groups={groups} keywords={keywords} projectId="subiq" />,
+    );
+
+    fireEvent.click(
+      screen.getByLabelText("Select all visible backlog keywords"),
+    );
+
+    expect(screen.getByLabelText("Select primary keyword")).toBeChecked();
+    expect(screen.getByLabelText("Select single keyword")).toBeChecked();
+    expect(
+      screen.getByRole("button", { name: "Remove from backlog" }),
     ).toBeInTheDocument();
   });
 });

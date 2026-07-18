@@ -96,9 +96,9 @@ export default async function KeywordsPage({
           Keyword group created.
         </div>
       ) : null}
-      {value(query, "saved") === "1" ? (
+      {value(query, "removed") ? (
         <div className="alert alert-success" role="status">
-          Keyword saved.
+          Removed {value(query, "removed")} keyword(s) from the backlog.
         </div>
       ) : null}
       {value(query, "dissolved") === "1" ? (

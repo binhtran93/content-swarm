@@ -5,6 +5,7 @@ export class KeywordServiceError extends Error {
       | "archived"
       | "conflict"
       | "invalid-group"
+      | "invalid-selection"
       | "assigned"
       | "provider",
     message: string,

@@ -8,7 +8,7 @@ import { addKeywords } from "@/features/keywords/service/add-keywords.server";
 import { createKeywordGroup } from "@/features/keywords/service/create-keyword-group.server";
 import { dissolveKeywordGroup } from "@/features/keywords/service/dissolve-keyword-group.server";
 import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
-import { updateKeyword } from "@/features/keywords/service/update-keyword.server";
+import { removeKeywords } from "@/features/keywords/service/remove-keywords.server";
 
 export type KeywordActionState = { error?: string } | null;
 
@@ -66,28 +66,24 @@ export async function createKeywordGroupAction(
   redirect(`/admin/projects/${projectId}/keywords?view=backlog&grouped=1`);
 }
 
-export async function updateKeywordAction(
+export async function removeSelectedKeywordsAction(
   _state: KeywordActionState,
   formData: FormData,
 ): Promise<KeywordActionState> {
   const projectId = String(formData.get("projectId") ?? "");
+  let removed: number;
   try {
-    await updateKeyword(projectId, String(formData.get("keywordId") ?? ""), {
-      keyword: String(formData.get("keyword") ?? ""),
-      countryCode: String(formData.get("countryCode") ?? ""),
-      languageCode: String(formData.get("languageCode") ?? ""),
-      searchVolume: nullableNumber(formData.get("searchVolume")),
-      difficulty: nullableNumber(formData.get("difficulty")),
-    });
+    const result = await removeKeywords(
+      projectId,
+      formData.getAll("memberIds").map(String),
+    );
+    removed = result.removed;
   } catch (error) {
     return { error: message(error) };
   }
-  redirect(`/admin/projects/${projectId}/keywords?view=backlog&saved=1`);
-}
-
-function nullableNumber(value: FormDataEntryValue | null) {
-  const text = String(value ?? "").trim();
-  return text ? Number(text) : null;
+  redirect(
+    `/admin/projects/${projectId}/keywords?view=backlog&removed=${removed}`,
+  );
 }
 
 export async function dissolveKeywordGroupAction(formData: FormData) {
