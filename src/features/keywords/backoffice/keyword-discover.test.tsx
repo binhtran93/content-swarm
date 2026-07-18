@@ -146,4 +146,41 @@ describe("Keyword discovery results actions", () => {
       screen.getByLabelText("Select cancel subscriptions"),
     ).toBeInTheDocument();
   });
+
+  it("sorts results from the volume, difficulty, and rank headers", () => {
+    render(
+      <KeywordDiscover
+        discoveries={[filterDiscovery]}
+        existingNormalizedKeywords={[]}
+        locations={locations}
+        projectId="subiq"
+        selected={filterDiscovery}
+      />,
+    );
+
+    const keywordOrder = () =>
+      within(
+        document.getElementById("discovery-results-discovery-1")!,
+      ).getAllByRole("checkbox");
+
+    fireEvent.click(screen.getByRole("button", { name: "Sort by volume" }));
+    expect(
+      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
+    ).toEqual(["subscription tracker", "cancel subscriptions"]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Sort by volume" }));
+    expect(
+      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
+    ).toEqual(["cancel subscriptions", "subscription tracker"]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Sort by difficulty" }));
+    expect(
+      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
+    ).toEqual(["cancel subscriptions", "subscription tracker"]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Sort by rank" }));
+    expect(
+      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
+    ).toEqual(["subscription tracker", "cancel subscriptions"]);
+  });
 });

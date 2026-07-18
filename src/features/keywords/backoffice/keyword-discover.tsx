@@ -10,6 +10,9 @@ import {
 import type { KeywordDiscovery } from "@/features/keywords/model/keyword-discovery";
 import type { DiscoveryLocation } from "@/features/keywords/model/discovery-location";
 
+type ResultSortField = "volume" | "difficulty" | "rank";
+type SortDirection = "asc" | "desc";
+
 function RequestFields({
   discovery,
   locations,
@@ -195,6 +198,10 @@ export function KeywordDiscover({
   const [resultSearch, setResultSearch] = useState("");
   const [minimumVolumeFilter, setMinimumVolumeFilter] = useState("");
   const [maximumDifficultyFilter, setMaximumDifficultyFilter] = useState("");
+  const [resultSortField, setResultSortField] =
+    useState<ResultSortField | null>(null);
+  const [resultSortDirection, setResultSortDirection] =
+    useState<SortDirection>("asc");
   const existing = new Set(existingNormalizedKeywords);
   const availableResults =
     selected?.results.filter(
@@ -225,6 +232,43 @@ export function KeywordDiscover({
           result.difficulty !== undefined &&
           result.difficulty <= maximumDifficulty)),
   );
+  const sortedResults = resultSortField
+    ? [...filteredResults].sort((left, right) => {
+        const value = (result: (typeof filteredResults)[number]) => {
+          if (resultSortField === "volume") return result.searchVolume;
+          if (resultSortField === "difficulty") return result.difficulty;
+          return result.rank;
+        };
+        const leftValue = value(left);
+        const rightValue = value(right);
+        if (
+          (leftValue === null || leftValue === undefined) &&
+          (rightValue === null || rightValue === undefined)
+        )
+          return 0;
+        if (leftValue === null || leftValue === undefined) return 1;
+        if (rightValue === null || rightValue === undefined) return -1;
+        return resultSortDirection === "asc"
+          ? leftValue - rightValue
+          : rightValue - leftValue;
+      })
+    : filteredResults;
+  const sortResults = (field: ResultSortField) => {
+    if (resultSortField === field) {
+      setResultSortDirection((direction) =>
+        direction === "asc" ? "desc" : "asc",
+      );
+      return;
+    }
+    setResultSortField(field);
+    setResultSortDirection(field === "volume" ? "desc" : "asc");
+  };
+  const sortIndicator = (field: ResultSortField) =>
+    resultSortField === field
+      ? resultSortDirection === "asc"
+        ? "↑"
+        : "↓"
+      : "↕";
   const resultSelectionFormId = selected
     ? `discovery-results-${selected.discoveryId}`
     : undefined;
@@ -393,13 +437,73 @@ export function KeywordDiscover({
                                 <span className="sr-only">Select</span>
                               </th>
                               <th>Keyword</th>
-                              <th>Volume</th>
-                              <th>Difficulty</th>
-                              <th>Rank</th>
+                              <th
+                                aria-sort={
+                                  resultSortField === "volume"
+                                    ? resultSortDirection === "asc"
+                                      ? "ascending"
+                                      : "descending"
+                                    : "none"
+                                }
+                              >
+                                <button
+                                  aria-label="Sort by volume"
+                                  className="inline-flex items-center gap-1.5"
+                                  onClick={() => sortResults("volume")}
+                                  type="button"
+                                >
+                                  Volume
+                                  <span aria-hidden="true" className="text-xs">
+                                    {sortIndicator("volume")}
+                                  </span>
+                                </button>
+                              </th>
+                              <th
+                                aria-sort={
+                                  resultSortField === "difficulty"
+                                    ? resultSortDirection === "asc"
+                                      ? "ascending"
+                                      : "descending"
+                                    : "none"
+                                }
+                              >
+                                <button
+                                  aria-label="Sort by difficulty"
+                                  className="inline-flex items-center gap-1.5"
+                                  onClick={() => sortResults("difficulty")}
+                                  type="button"
+                                >
+                                  Difficulty
+                                  <span aria-hidden="true" className="text-xs">
+                                    {sortIndicator("difficulty")}
+                                  </span>
+                                </button>
+                              </th>
+                              <th
+                                aria-sort={
+                                  resultSortField === "rank"
+                                    ? resultSortDirection === "asc"
+                                      ? "ascending"
+                                      : "descending"
+                                    : "none"
+                                }
+                              >
+                                <button
+                                  aria-label="Sort by rank"
+                                  className="inline-flex items-center gap-1.5"
+                                  onClick={() => sortResults("rank")}
+                                  type="button"
+                                >
+                                  Rank
+                                  <span aria-hidden="true" className="text-xs">
+                                    {sortIndicator("rank")}
+                                  </span>
+                                </button>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {filteredResults.map((result, index) => {
+                            {sortedResults.map((result, index) => {
                               return (
                                 <tr key={`${result.keyword}:${index}`}>
                                   <td>
