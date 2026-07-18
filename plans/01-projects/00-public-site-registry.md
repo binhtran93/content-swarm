@@ -29,7 +29,8 @@ type PublicSiteConfig = {
   id: string
   displayName: string
   internalBasePath: `/${string}`
-  canonicalOrigin: `https://${string}`
+  canonicalBaseUrl: string
+  alternateBaseUrls: string[]
   defaultLocale: string
   locales: string[]
   capabilities: {
@@ -74,8 +75,16 @@ Validation rules:
 - `id` matches the Firestore Project/public route key.
 - `internalBasePath` is exactly `/${id}`.
 - Enabled public capabilities require their complete configuration.
-- Canonical origin must be a real dedicated HTTPS origin before production
-  enablement; do not invent domains.
+- `canonicalBaseUrl` is the primary absolute HTTPS location and may include a
+  project path, for example `https://getsubiq.com` or
+  `https://anmisoft.com/skylens`. It has no trailing slash.
+- `alternateBaseUrls` contains other real locations that serve the same Project,
+  such as `https://anmisoft.com/subiq` when SubIQ’s canonical base is
+  `https://getsubiq.com`.
+- Do not infer canonical URLs from the request Host because preview, localhost,
+  shared-domain, and dedicated-domain requests can serve the same route.
+- Canonical and alternate base URLs must be real before production enablement;
+  do not invent domains.
 - Asset paths begin with `/${id}/` and assets live under `public/${id}/`.
 - Default locale appears in locales; locales use full language-region keys.
 - Blog topic slugs are stable and unique within a Project.
@@ -102,7 +111,7 @@ getPublicSiteConfig(projectId): PublicSiteConfig
 listPublicSiteConfigs(): PublicSiteConfig[]
 hasPublicCapability(projectId, capability): boolean
 getProjectRoutePrefix(config, deployment): string
-buildProjectCanonicalUrl(config, pathname): string
+buildProjectCanonicalUrl(config, projectRelativePathname): string
 ```
 
 Unknown/disabled Project surfaces fail clearly rather than falling back to
@@ -155,7 +164,8 @@ products. Each config truthfully states which public surfaces are ready.
 
 ## Verification
 
-- All IDs, base paths, asset prefixes, domains, locale sets, and topic slugs are
+- All IDs, route/base paths, asset prefixes, canonical/alternate URLs, locale
+  sets, and topic slugs are
   validated.
 - Duplicate ID/domain/topic slug fails at build/test time.
 - Unknown Project/capability returns an explicit unavailable result.
@@ -169,4 +179,3 @@ products. Each config truthfully states which public surfaces are ready.
 - Missing information for other products is an explicit capability gap, not an
   architectural limitation.
 - Project Management can safely associate Firestore Projects with configs.
-

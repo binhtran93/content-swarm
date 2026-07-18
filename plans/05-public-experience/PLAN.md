@@ -59,7 +59,8 @@ Outputs:
 - The page owns H1; MDX owns body only.
 - Exact approved locale wins; otherwise show only the declared source with a
   clear noindex fallback.
-- Public configuration owns canonical domain and route prefix.
+- Public configuration owns canonical base URL, alternate served locations, and
+  internal route prefix.
 - Existing canonical URLs are preserved or explicitly redirected.
 - Project ID is always explicit; missing/unknown configuration never falls back
   to SubIQ.

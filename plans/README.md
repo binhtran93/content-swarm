@@ -84,7 +84,7 @@ urge-zero
 
 SubIQ is the first complete reference implementation, not a hard-coded product
 inside shared services or components. Each Project has its own source-controlled
-site configuration, Firestore data subtree, brand, canonical domain, locales,
+site configuration, Firestore data subtree, brand, canonical base URL, locales,
 assets, topics, landing module, and independently enabled public capabilities.
 
 See [Public Site Registry](./01-projects/00-public-site-registry.md).

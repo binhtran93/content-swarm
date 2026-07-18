@@ -78,7 +78,7 @@ SEO output:
 - Project sitemap containing only indexable same-site public URLs.
 - Noindex and cross-domain canonical URLs excluded from sitemap.
 - Project robots output.
-- Independent canonical origin, topic routes, locale alternatives, sitemap, and
+- Independent canonical base URL, topic routes, locale alternatives, sitemap, and
   robots output for every enabled Project.
 
 ## Backoffice behavior

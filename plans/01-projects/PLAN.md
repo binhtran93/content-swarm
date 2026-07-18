@@ -44,7 +44,7 @@ Inputs:
 Output:
 
 - An active Project that downstream Keyword and Article features can use.
-- Read-only public context: canonical origin, supported locales, default locale,
+- Read-only public context: canonical base URL, supported locales, default locale,
   topics, MDX contract ID, and install CTA.
 - A registry of independently configured public products that shared Public
   Experience services can resolve by `projectId`.
