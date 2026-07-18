@@ -97,15 +97,18 @@ R1 has no restore action. Add one later only when it is actually needed.
 
 ## Public access and security
 
-The public site reads Article Authoring data directly through small read-only
-services. Firestore rules and server queries must enforce:
+The public site reads Article Authoring data directly through small server-only
+read services. They use Firebase Admin and must enforce:
 
-- Public Article reads require `status == "published"`.
-- Public Translation reads require `status == "approved"` and a published
-  parent Article.
+- Article results require `status == "published"`.
+- Translation results require `status == "approved"` and a published parent
+  Article.
 - Draft and archived Articles are unavailable by list, slug, and direct ID.
 - Every read is scoped to the requested `projectId`.
 - Public code cannot write Article or Translation data.
+
+Do not expose Firebase Admin credentials to the browser. Firestore browser
+rules remain owner-only for reads and deny browser writes.
 
 ## AI behavior and prompt
 
@@ -124,7 +127,7 @@ responsibility.
 
 ## Implementation order
 
-1. Implement and test public read rules for Article and Translation documents.
+1. Implement and test server-only public Article and Translation read services.
 2. Implement Publish with server-side readiness validation.
 3. Implement Archive.
 4. Implement Publish Preview and confirmation.
@@ -144,6 +147,7 @@ unavailable.
 - An incomplete Article cannot be published.
 - Saving a published Article changes the public result immediately.
 - Draft and archived Articles cannot be read publicly.
+- Anonymous browsers cannot query private Firestore data directly.
 - Draft Translations remain private.
 - Approved Translations disappear when their parent is archived.
 - Identical slugs in different Projects do not cross-resolve.

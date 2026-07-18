@@ -43,8 +43,8 @@ but the public page renders the Article itself.
 - `getPublishedArticleBySlug(input)`.
 - `listPublishedTopics(projectId)`.
 
-Every function requires `projectId`, returns only the fields needed by the
-public UI, and never has a default Project.
+Every function is server-only, requires `projectId`, returns only the fields
+needed by the public UI, and never has a default Project.
 
 ## Public behavior
 

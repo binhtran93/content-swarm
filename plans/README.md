@@ -36,6 +36,7 @@ For each implementation file:
 | Order | Plan | Tangible final output |
 | --- | --- | --- |
 | 00 | [Platform foundation](./00-platform-foundation.md) | Buildable app, test harness, Firebase boundary, and emulator/staging connection |
+| 00.01 | [Owner authentication](./00-owner-authentication.md) | Firebase owner login, secure session, protected backoffice, and sign out |
 | 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces with minimal publication URL settings |
 | 02 | [Keyword research](./02-keyword-research/PLAN.md) | Real accepted individual/grouped Backlog topics with reusable discoveries |
 | 03 | [Article authoring and publishing](./03-article-authoring/PLAN.md) | A real Article written, validated, and made public through its status |
@@ -49,7 +50,7 @@ its Firestore documents directly.
 
 | Owner | Paths |
 | --- | --- |
-| Projects | `projects/{projectId}` including optional `canonicalBaseUrl` |
+| Projects | `projects/{projectId}` including `ownerId` and optional `canonicalBaseUrl` |
 | Keyword Research / Backlog | `projects/{projectId}/keywords/{keywordId}` and `keywordGroups/{groupId}` |
 | Keyword Research / Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` with a bounded ordered result array |
 | Articles | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
@@ -65,6 +66,10 @@ its Firestore documents directly.
 - Server services translate timestamps into serializable application models.
 - Public code reads only published Articles and their approved Translations. It
   never reads prompts, discoveries, drafts, or archived content.
+- Every backoffice page and service requires the verified Firebase owner.
+- `Project.ownerId` is assigned from the verified UID, never from user input.
+- Nested documents inherit ownership through their Project and do not duplicate
+  `ownerId`; services verify the owning Project before access.
 - Article Creation stores one primary `keywordId`. An assigned Keyword Group is
   immutable, and Article services resolve its current Keyword documents.
 - The Article is the single source of truth for backoffice and public content.

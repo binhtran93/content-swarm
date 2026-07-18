@@ -12,6 +12,7 @@ publishing.
 
 ```text
 Open admin
+→ Sign in as the owner when required
 → View Projects
 → Create Project
 → Enter name and reusable AI description
@@ -24,7 +25,8 @@ Open admin
 Projects owns:
 
 - `projects/{projectId}`.
-- Project ID, name, description, status, topics, and minimal public-site fields.
+- Owner ID, Project ID, name, description, status, topics, and minimal
+  public-site fields.
 - Project list/create/edit/archive commands.
 - Project selection and project availability checks.
 
@@ -38,6 +40,7 @@ patterns. They must not import components directly from `/nexus`.
 
 Inputs:
 
+- Verified owner UID from `requireOwner()`.
 - Owner-entered project name and description.
 - Owner-entered optional canonical base URL.
 
@@ -53,6 +56,8 @@ Output:
 ## Shared rules
 
 - Project ID is stable after creation.
+- Project `ownerId` is assigned from the authenticated owner and is immutable.
+- Every query and command verifies ownership before returning Project data.
 - Project name is not its Firestore identity.
 - Archived projects remain readable but reject new paid/editorial/publication
   commands.

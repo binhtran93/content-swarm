@@ -10,6 +10,7 @@ feature receives a valid active `projectId` and public-site context.
 ## Depends on
 
 - [Platform Foundation](../00-platform-foundation.md)
+- [Owner Authentication](../00-owner-authentication.md)
 - [Projects Overall Plan](./PLAN.md)
 
 ## Firestore ownership
@@ -19,6 +20,7 @@ Path: `projects/{projectId}`
 ```ts
 type ProjectDocument = {
   schemaVersion: 1
+  ownerId: string
   name: string
   description: string
   topics: string[]
@@ -32,6 +34,8 @@ type ProjectDocument = {
 
 Validation:
 
+- `ownerId`: the verified Firebase UID returned by `requireOwner()`; assigned
+  during creation, immutable, and never accepted in Project input.
 - `projectId`: owner-selected stable lowercase route identifier such as
   `subiq`; validated at creation and immutable afterward.
 - `name`: trimmed, 1–100 characters.
@@ -43,8 +47,8 @@ Validation:
   `https://anmisoft.com/subiq`, and has no trailing slash. Publishing requires
   it.
 
-Required indexes: none beyond document reads and ordering by `updatedAt` if the
-project count justifies a query. Do not add speculative indexes.
+Add the exact composite index required by the implemented Project list query:
+`ownerId asc, updatedAt desc`. Do not add other speculative indexes.
 
 ## Commands
 
@@ -52,12 +56,14 @@ project count justifies a query. Do not add speculative indexes.
 - `updateProject(projectId, input)`
 - `archiveProject(projectId)`
 
-Every command validates the authenticated owner. Normal application/cloud logs
-handle technical failures; R1 has no separate Firestore audit collection.
+Every command calls `requireOwner()` and verifies `Project.ownerId`. Normal
+application/cloud logs handle technical failures; R1 has no separate Firestore
+audit collection.
 
 ## Queries
 
-- `listActiveProjects()` ordered by `updatedAt desc`.
+- `listActiveProjects()` queries `ownerId == authenticated uid`, then orders by
+  `updatedAt desc`.
 - `getProject(projectId)`.
 - `getProjectContext(projectId)` returning the validated Project data needed by
   downstream feature services.
@@ -109,7 +115,8 @@ creation must not call AI.
 ## Implementation order
 
 1. Implement document/input schemas and Firestore reader.
-2. Implement queries and commands with actor/project validation.
+2. Implement queries and commands with `requireOwner()` and Project ownership
+   validation.
 3. Implement admin project shell and Projects list.
 4. Implement Create and Settings with the optional canonical base URL.
 5. Implement archive protection used by later feature services.
@@ -122,6 +129,7 @@ for example:
 
 ```text
 projects/subiq
+  ownerId: {firebase-owner-uid}
   name: SubIQ
   status: active
   canonicalBaseUrl: https://getsubiq.com
@@ -135,6 +143,8 @@ brands as one Project or share keyword/article subcollections across products.
 ## Verification
 
 - Create and edit survive refresh.
+- Project creation assigns `ownerId` from the session, not request input.
+- Project lists and direct reads reject another owner's Project.
 - An invalid non-null canonical base URL is rejected on the server.
 - Crafted cross-project routes do not expose another project.
 - Archived project is visible in settings but not selectable for new work.

@@ -12,7 +12,6 @@ product feature is copied yet.
 
 - Target repository location and package manager.
 - Supported Node.js version.
-- Authentication choice for the single R1 owner.
 - Local Firestore emulator versus isolated development Firebase project.
 - Separate public/admin deployments from the same codebase or one initial
   deployment with strict route boundaries.
@@ -34,6 +33,10 @@ src/
     admin/
     api/
   features/
+    auth/
+      client/
+      server/
+      backoffice/
     projects/
       model/
       service/
@@ -66,7 +69,6 @@ src/
       urge-zero/
     services/
   platform/
-    auth/
     env/
     firebase/
     result/
@@ -139,7 +141,7 @@ src/backoffice/styles/backoffice.css
   controls without real product behavior.
 - The Nexus landing page; public landing pages come from `tdbinh`.
 - Nexus authentication forms as authentication logic. They may inform styling
-  after the real authentication flow is selected.
+  for the real owner-authentication flow.
 - `Rightbar` theme playground, footer, FilePond, ApexCharts, Swiper, Cally, or
   SimpleBar unless a real accepted feature needs them. Prefer native scrolling
   before keeping SimpleBar.
@@ -206,14 +208,15 @@ These targets may not exist yet. Create them only when implementing this plan.
 7. Implement typed server environment parsing.
 8. Implement Firebase Admin and Firestore access.
 9. Configure emulator or isolated development access.
-10. Create a minimal public placeholder and protected Nexus-based admin shell.
+10. Create a minimal public placeholder and Nexus-based admin shell ready for
+    the next Owner Authentication increment.
 11. Add CI or one local `check` command that runs all required verification.
 
 ## Tangible output
 
 - The application opens a public placeholder.
-- An authenticated or temporary development-only admin gate opens the adapted
-  Nexus-based ANMISOFT shell without demo screens or exposing credentials.
+- The adapted Nexus-based ANMISOFT shell is ready to be protected by the next
+  Owner Authentication increment.
 - An integration test proves isolated emulator/development Firestore access.
 
 Do not create fake Project, Keyword, or Article product data in this increment.

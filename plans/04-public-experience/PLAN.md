@@ -24,7 +24,7 @@ Open product domain
 Public Experience owns:
 
 - Public route composition, shared components, and styling.
-- Read-only query adapters for published Articles and approved Translations.
+- Server-only read adapters for published Articles and approved Translations.
 - Blog archive, locale fallback, SEO, sitemap, and robots behavior.
 - Landing/support/legal page adaptation and production routing.
 - Explicit per-project routes, landing pages, layouts, themes, headers, footers,
@@ -55,7 +55,8 @@ Outputs:
 
 - No fake fixture is used when real published test/staging data exists.
 - Public code never imports backoffice components, prompts, or write services.
-- Public article queries are read-only and require `status == published`.
+- Public Article services are server-only, read-only, and require
+  `status == published`.
 - A Translation also requires `status == approved` and a published parent.
 - The page owns H1; MDX owns body only.
 - Exact approved locale wins; otherwise show only the declared source with a
