@@ -38,9 +38,8 @@ For each implementation file:
 | 00 | [Platform foundation](./00-platform-foundation.md) | Buildable app, test harness, Firebase boundary, and emulator/staging connection |
 | 01 | [Projects](./01-projects/PLAN.md) | Real active product workspaces with minimal publication URL settings |
 | 02 | [Keyword research](./02-keyword-research/PLAN.md) | Real accepted individual/grouped Backlog topics with reusable discoveries |
-| 03 | [Article authoring](./03-article-authoring/PLAN.md) | A working Article that passes derived readiness, plus optional approved Translations |
-| 04 | [Publishing](./04-publishing/PLAN.md) | A validated Article made public through its existing status |
-| 05 | [Public experience](./05-public-experience/PLAN.md) | Public sites/blogs rendering real published data, followed by production cutover |
+| 03 | [Article authoring and publishing](./03-article-authoring/PLAN.md) | A real Article written, validated, and made public through its status |
+| 04 | [Public experience](./04-public-experience/PLAN.md) | Public sites/blogs rendering real published data, followed by production cutover |
 
 ## Firestore ownership map
 

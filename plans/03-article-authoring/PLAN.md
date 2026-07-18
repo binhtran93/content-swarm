@@ -4,9 +4,8 @@ Status: Not started
 
 ## Goal
 
-Turn one real unassigned Backlog topic into a validated, publication-ready
-working article. Every writing step works manually; AI is an explicit proposal
-tool.
+Turn one real unassigned Backlog topic into a validated and published Article.
+Every writing step works manually; AI is an explicit proposal tool.
 
 ## User journey
 
@@ -18,7 +17,7 @@ Choose Backlog topic
 → Save Content MDX
 → Complete SEO
 → Optionally prepare and approve translations
-→ Readiness validation allows Publish
+→ Preview and Publish
 ```
 
 The workspace is revisitable, not an irreversible wizard. The URL identifies
@@ -52,8 +51,8 @@ Inputs:
 
 Outputs:
 
-- A validated source Article and optional approved Translation documents that
-  Publishing can read.
+- A published source Article and optional approved Translation documents that
+  the public site can read directly.
 
 ## Implementation sequence
 
@@ -62,6 +61,7 @@ Outputs:
 3. [Content and AI Assistance](./03-content-ai.md)
 4. [SEO](./04-seo.md)
 5. [Translations AI](./05-translations-ai.md)
+6. [Publishing](./06-publishing.md)
 
 ## Shared rules
 
@@ -82,5 +82,5 @@ Outputs:
 
 Using real SubIQ Backlog data, create one Article and complete it until derived
 readiness passes. Demonstrate one AI proposal without auto-saving. Optionally
-create and approve a Vietnamese Translation. Confirm that the draft is
-unavailable publicly until Publishing changes its status.
+create and approve a Vietnamese Translation. Confirm that the draft is private,
+publish it, and confirm that the public site can read it directly.

@@ -1,6 +1,11 @@
-# Publishing — Plan
+# 03.06 — Publishing
 
 Status: Not started
+
+## Depends on
+
+- [SEO](./04-seo.md)
+- [Translations and AI Assistance](./05-translations-ai.md) for optional locales
 
 ## Outcome
 
@@ -8,7 +13,7 @@ The owner can preview a ready Article, publish it, and archive it. The Article
 itself remains the single source of truth; Publishing does not create a second
 public copy.
 
-## Boundary decision
+## Code ownership
 
 Publishing is part of the `articles` feature. Its services live under
 `src/features/articles/publishing`, and its backoffice controls live under

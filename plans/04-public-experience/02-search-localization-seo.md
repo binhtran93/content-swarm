@@ -1,4 +1,4 @@
-# 05.02 — Localization and SEO
+# 04.02 — Localization and SEO
 
 Status: Not started
 

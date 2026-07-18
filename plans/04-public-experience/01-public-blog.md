@@ -1,4 +1,4 @@
-# 05.01 — Public Blog
+# 04.01 — Public Blog
 
 Status: Not started
 
@@ -9,7 +9,7 @@ uses the Article as its source of truth and has no fake or copied content path.
 
 ## Depends on
 
-- [Publishing](../04-publishing/PLAN.md)
+- [Publishing](../03-article-authoring/06-publishing.md)
 - [Public Experience Overall Plan](./PLAN.md)
 
 ## Firestore access
@@ -108,8 +108,8 @@ Each service or main component file has one public export.
 
 ## Tangible output
 
-The real Article published in Plan 04 appears on the Blog index and Article
-route directly from its Article document.
+The real Article published in Article Authoring step 03.06 appears on the Blog
+index and Article route directly from its Article document.
 
 ## Verification
 
