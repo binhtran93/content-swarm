@@ -20,7 +20,6 @@ Writes:
 - `publicSlugs/{locale--slug}`.
 - Article `publication` summary fields through the Article-owned publication
   update contract.
-- Keyword Used fields through the Keyword-owned first-publish contract.
 - One append-only audit event.
 
 The application-level publication transaction orchestrates these feature-owned
@@ -44,7 +43,6 @@ not guessed here.
 - Write selected locale public documents.
 - Set Article `publication.state = published`, original `publishedAt`, current
   published revision, and content update time.
-- Mark snapshotted keywords Used once.
 - Write success audit event.
 
 ### Republish transaction
@@ -54,7 +52,6 @@ not guessed here.
 - Archive/remove public locale documents no longer selected only after explicit
   owner understanding.
 - Increment public revision and update `contentUpdatedAt`.
-- Do not repeat first-publish Keyword Used effects.
 
 ### Archive transaction
 
@@ -103,7 +100,7 @@ None. AI cannot decide or trigger publication.
 
 1. Implement read-only public article/slug service.
 2. Implement first-publish transaction with optimistic revision.
-3. Implement Keyword Used and Article publication update contracts.
+3. Implement the Article publication update contract.
 4. Implement Republish and locale-add behavior.
 5. Implement Archive.
 6. Implement admin confirmations/results and list labels.
@@ -130,7 +127,7 @@ editorial Article documents.
 - Working Review edit after publish leaves public body/hash unchanged.
 - Stale confirmation writes nothing.
 - Republish updates body/hash/update time but preserves original publish time.
-- First publish marks keyword snapshots Used exactly once.
+- Publishing does not modify Keyword documents.
 - Archive removes slug resolution and active public queries.
 - Failed commands keep previous public version complete.
 - Public read credential/service cannot read editorial collections.

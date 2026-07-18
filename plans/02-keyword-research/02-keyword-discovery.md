@@ -1,4 +1,4 @@
-# 02.03 — Keyword Discovery
+# 02.02 — Keyword Discovery
 
 Status: Not started
 
@@ -11,99 +11,80 @@ candidates, and add selected candidates to Backlog without duplicates.
 
 - [Keyword Backlog](./01-keyword-backlog.md)
 
-Grouping AI is not required.
-
 ## Firestore ownership
-
-### Discovery metadata
 
 Path: `projects/{projectId}/keywordDiscoveries/{discoveryId}`
 
 ```ts
 type KeywordDiscoveryDocument = {
   schemaVersion: 1
-  fingerprint: string
-  requestVersion: string
-  surface: "web" | "google_play" | "app_store"
-  method:
-    | "keyword_ideas"
-    | "related_keywords"
-    | "competitor_website"
-    | "app_keywords"
-  origin: { kind: string; normalizedValue: string; displayValue: string }
-  target: KeywordTarget
-  filters: Record<string, string | number | boolean | null>
-  ordering: string
-  provider: {
-    name: "dataforseo"
-    taskId: string | null
-    costUsd: number | null
-    completedAt: Timestamp
-  }
-  candidateCount: number
+  requestKey: string
+  method: "keyword_ideas" | "related_keywords" | "competitor_website"
+  input: string
+  countryCode: string
+  languageCode: string
+  limit: 50 | 100
+  minimumVolume: number | null
+  maximumDifficulty: number | null
+  providerTaskId: string | null
+  providerCostUsd: number | null
+  candidates: Array<{
+    keyword: string
+    normalizedKeyword: string
+    searchVolume: number | null
+    difficulty: number | null
+    rank: number | null
+  }>
   createdBy: string
   createdAt: Timestamp
 }
 ```
 
-Successful Discovery documents are immutable.
+Successful Discovery documents are immutable. R1 caps results at 100 small
+candidates, so keep them in the Discovery document instead of creating a
+Candidate subcollection. Do not save the raw provider response.
 
-### Candidate
+`requestKey` is calculated internally from the normalized method, input,
+country, language, limit, and filters. It exists only to reopen an identical
+paid result instead of calling DataForSEO again.
 
-Path:
-`projects/{projectId}/keywordDiscoveries/{discoveryId}/candidates/{candidateId}`
-
-```ts
-type KeywordCandidateDocument = {
-  schemaVersion: 1
-  keyword: string
-  normalizedKeyword: string
-  identityKey: string
-  metrics: KeywordMetrics
-  providerOrder: number
-  rawReference: string | null
-  createdAt: Timestamp
-}
-```
-
-Use a subcollection to avoid Firestore’s document-size limit and preserve large
-paid result sets. Do not copy entire raw provider responses unless required for
-diagnostics and sized safely.
+The DataForSEO adapter resolves `countryCode` and `languageCode` to the
+provider's numeric `location_code` when making the request. Provider catalogue
+details do not enter Backlog documents. Discovery accepts uppercase country
+codes such as `US` or `VN` and lowercase language codes such as `en` or `vi`.
 
 Indexes:
 
-- Discovery fingerprint lookup.
-- Discovery list by `createdAt desc`.
-- Candidate order by `providerOrder` if document IDs do not encode it.
+- Discovery request-key lookup and list by `createdAt desc`.
 
 ## Provider methods
 
 - Web Keyword Ideas.
 - Web Related Keywords.
 - Competitor Website Ranked Keywords.
-- Google Play Keywords for App.
-- App Store Keywords for App.
 
-App methods lock market settings where required by current provider capability.
+Google Play and App Store discovery are out of scope. All keywords are web
+search keywords, so there is no `surface` field.
 
 ## Commands
 
 - `getOrReuseDiscovery(projectId, request)`.
 - `runDiscoveryAgain(projectId, request)`.
-- `addCandidatesToBacklog(projectId, discoveryId, candidateIds)`.
+- `addCandidatesToBacklog(projectId, discoveryId, normalizedKeywords)`.
 
-`getOrReuse` computes the normalized versioned fingerprint before any provider
+`getOrReuse` computes the normalized request key before any provider
 call. `runAgain` is the only intentional bypass and creates a new Discovery.
 
 ## Backoffice behavior
 
 Route: `/admin/projects/{projectId}/keywords?view=discover`
 
-- Method-specific origin and market controls.
+- Method, one input value, country, language, limit, and simple metric filters.
 - `Get keywords` first reuses identical saved data.
 - `Run again` clearly communicates a new paid call.
 - Saved discoveries list and reopen through URL state.
-- Available candidates exclude identities already in Backlog.
+- Available candidates exclude keywords already in Backlog for the same country
+  and language.
 - Select/filter and Add to Backlog.
 - Empty successful result remains reopenable and reusable.
 
@@ -115,8 +96,7 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 ## Planned implementation links
 
 - [Discovery document](../../src/features/keywords/model/keyword-discovery-document.ts)
-- [Candidate document](../../src/features/keywords/model/keyword-candidate-document.ts)
-- [Fingerprint](../../src/features/keywords/service/discovery-fingerprint.ts)
+- [Request key](../../src/features/keywords/service/discovery-request-key.ts)
 - [DataForSEO client](../../src/features/keywords/provider/data-for-seo-client.server.ts)
 - [Discovery service](../../src/features/keywords/service/discovery-service.server.ts)
 - [Discover UI](../../src/features/keywords/backoffice/keyword-discover.tsx)
@@ -124,8 +104,8 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 
 ## Implementation order
 
-1. Implement request/method/target schemas and fingerprint.
-2. Implement metadata/candidate persistence and saved lookup.
+1. Implement the small web-only request schema and request key.
+2. Implement Discovery persistence and saved lookup.
 3. Adapt DataForSEO client with credentials and safe errors.
 4. Implement methods one at a time with fixture contract tests.
 5. Implement get-or-reuse and explicit rerun orchestration.
@@ -137,16 +117,16 @@ use AI to rewrite, score, or silently filter provider candidates in R1.
 
 - One real successful saved Discovery, or an intentionally approved provider
   fixture in non-paid development.
-- Its Candidate subcollection.
-- Selected candidates persisted as real Backlog keywords with discovery
-  provenance.
+- Its candidate array.
+- Selected candidates persisted as real Backlog keywords with
+  `sourceDiscoveryId`.
 
 ## Verification
 
 - Identical Get makes no second provider call.
 - Empty results are stored and reused.
 - Run again creates a new immutable Discovery.
-- Adding candidates never mutates Discovery/Candidate documents.
+- Adding candidates never mutates the Discovery document.
 - Backlog duplicates are not created under concurrent acceptance.
 - No provider call happens on page load, field change, tab change, or refresh.
 - Formatting, lint, type checking, tests, and build pass.

@@ -4,8 +4,9 @@ Status: Not started
 
 ## Goal
 
-Turn one real unused Backlog topic into a validated, publication-ready working
-article. Every writing step works manually; AI is an explicit proposal tool.
+Turn one real unassigned Backlog topic into a validated, publication-ready
+working article. Every writing step works manually; AI is an explicit proposal
+tool.
 
 ## User journey
 
@@ -80,4 +81,3 @@ Using real SubIQ Backlog data, create one article and complete it manually to
 Ready. Then demonstrate one AI proposal without auto-saving. Optionally create
 and approve a Vietnamese translation. Confirm that no public document exists
 until Publishing runs.
-

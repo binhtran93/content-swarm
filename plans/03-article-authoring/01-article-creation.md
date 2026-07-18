@@ -5,7 +5,7 @@ Status: Not started
 ## Outcome
 
 The owner can list articles and create one real working Article from exactly one
-unused Backlog topic. The next step receives an immutable keyword snapshot.
+unassigned Backlog topic. The next step receives an immutable keyword snapshot.
 
 ## Depends on
 
@@ -86,11 +86,11 @@ Snapshot every value needed for future prompts and audit:
 type ArticleKeywordSnapshot = {
   keywordId: string
   keyword: string
-  normalizedKeyword: string
-  surface: KeywordSurface
-  target: KeywordTarget
-  metrics: KeywordMetrics
-  provenance: KeywordProvenance
+  countryCode: string
+  languageCode: string
+  searchVolume: number | null
+  difficulty: number | null
+  sourceDiscoveryId: string | null
 }
 ```
 
@@ -107,8 +107,10 @@ added only with their real queries.
 - `createArticleFromTopic(projectId, topicRowId)`.
 - `visitArticleStep(projectId, articleId, step)` without changing completion.
 
-Creation transaction re-reads the Project and current available topic. It does
-not mark keywords Used.
+Creation transaction re-reads the Project and current available topic, creates
+the Article, and sets `articleId` on every selected keyword/group member. The
+whole operation succeeds or fails together, preventing two Articles from
+claiming the same topic.
 
 ## Backoffice behavior
 
@@ -152,7 +154,7 @@ None. Topic selection is an owner decision.
 4. Implement transactional creation.
 5. Implement Article list and New topic picker.
 6. Implement empty/error/responsive states and route protection.
-7. Test concurrency, used/group changes, cross-project IDs, and no-save exit.
+7. Test concurrency, assignment/group changes, cross-project IDs, and no-save exit.
 
 ## Tangible output
 
@@ -164,7 +166,8 @@ real Backlog topic and remains unchanged after editing the Backlog.
 - One click/double submission cannot create two Articles from one command.
 - Ineligible/stale topic fails without creating an Article.
 - Backlog edit after creation does not change the Article snapshot.
-- No keyword becomes Used.
+- Every selected keyword points to the new Article; unrelated keywords remain
+  unassigned.
 - No public document is created.
 - Formatting, lint, type checking, tests, and build pass.
 

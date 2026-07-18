@@ -64,7 +64,6 @@ Outputs:
 - Sanitized source and locale public documents.
 - Stable public slug mappings.
 - Updated Article publication summary.
-- First-publish Keyword Used transition.
 - Audit event and invalidation signal.
 
 ## Implementation sequence

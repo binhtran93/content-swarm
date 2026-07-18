@@ -42,7 +42,7 @@ its Firestore documents directly.
 | --- | --- |
 | Projects | `projects/{projectId}` including optional `canonicalBaseUrl` |
 | Keyword Research / Backlog | `projects/{projectId}/keywords/{keywordId}` and `keywordGroups/{groupId}` |
-| Keyword Research / Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` and `candidates/{candidateId}` |
+| Keyword Research / Discovery | `projects/{projectId}/keywordDiscoveries/{discoveryId}` with a bounded candidate array |
 | Articles / Authoring | `projects/{projectId}/articles/{articleId}`, `translations/{locale}`, and `articleSlugs/{locale--slug}` |
 | Articles / Publishing | `projects/{projectId}/publicArticles/{articleId--locale}` and `publicSlugs/{locale--slug}` |
 | Platform audit | `projects/{projectId}/auditEvents/{eventId}`; features append through the shared audit contract |

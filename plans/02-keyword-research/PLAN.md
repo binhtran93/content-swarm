@@ -4,23 +4,23 @@ Status: Not started
 
 ## Boundary decision
 
-Keyword Backlog, AI grouping, and provider-backed discovery are one top-level
-code feature: `keywords`. They share vocabulary, normalization,
+Keyword Backlog, manual grouping, and provider-backed discovery are one
+top-level code feature: `keywords`. They share vocabulary, normalization,
 permissions, and backoffice workflows.
 
 Their Firestore records remain separate because they have different lifecycles:
 
 - `keywords` contains accepted, editable, actionable work.
 - `keywordGroups` contains reviewed grouping decisions.
-- `keywordDiscoveries` and its `candidates` contain immutable provider-run
-  history and provenance. Accepting a candidate creates or updates a keyword;
-  it does not mutate the discovery record.
+- `keywordDiscoveries` contains immutable provider-run history and its bounded
+  candidate array. Accepting a candidate creates a keyword; it does not mutate
+  the discovery record.
 
 ## Goal
 
 Give the owner a real, reusable topic Backlog before any article is created.
-Manual entry must work without external providers. Paid discovery and AI
-grouping remain explicit optional tools.
+Manual entry and grouping must work without external providers. Paid discovery
+remains an explicit optional tool.
 
 ## User journey
 
@@ -29,18 +29,17 @@ Active Project
 → Add known keywords manually or run an explicit discovery
 → Accept selected candidates into Backlog
 → Organize compatible keywords into article topics
-→ Make unused individual/grouped topics available to Article Creation
+→ Make unassigned individual/grouped topics available to Article Creation
 ```
 
 ## Ownership
 
 Keyword Research owns:
 
-- `keywords`, `keywordGroups`, `keywordDiscoveries`, and discovery `candidates`.
-- Search-market catalogue validation.
-- Keyword identity, metrics, provenance, grouping, and used state.
+- `keywords`, `keywordGroups`, and `keywordDiscoveries`.
+- Web keyword country/language validation.
+- Keyword uniqueness, metrics, source discovery, grouping, and Article assignment.
 - DataForSEO operations and cost-control behavior.
-- Optional AI grouping proposals.
 
 It does not own article keyword data. Article Creation copies an immutable
 keyword snapshot through a Keyword query contract.
@@ -50,7 +49,7 @@ keyword snapshot through a Keyword query contract.
 Inputs:
 
 - Active Project.
-- Manual keyword text or provider origin/market.
+- Manual keyword text or a web discovery request.
 - Owner grouping/acceptance decisions.
 
 Outputs:
@@ -63,30 +62,30 @@ Outputs:
 ## Implementation sequence
 
 1. [Keyword Backlog](./01-keyword-backlog.md)
-2. [Keyword Grouping AI](./02-keyword-grouping-ai.md)
-3. [Keyword Discovery](./03-keyword-discovery.md)
+2. [Keyword Discovery](./02-keyword-discovery.md)
 
 Manual Backlog comes first so Article Creation never depends on paid discovery.
 
 ## Shared rules
 
-- Keyword identity is unique by project, normalized keyword, surface, and
-  market.
-- Target market and discovery origin are different concepts.
-- Groups contain one surface and market only.
+- Keyword identity is unique by Project, normalized keyword, country, and
+  language. The identity is used internally for the document ID and is not
+  stored as another field.
+- All R1 keywords target web search; there is no surface field.
+- Groups contain one country and language only.
 - A keyword belongs to at most one active group.
-- AI proposes grouping but never applies it.
 - Discovery results never enter Backlog automatically.
 - Successful discoveries are immutable, including empty results.
 - Provider calls happen only after an explicit owner request.
-- First successful article publication marks snapshotted keywords Used.
+- Article Creation assigns selected keywords to its new Article. Publishing
+  does not change Keyword documents.
 
 ## Final demonstration
 
 For the real SubIQ project:
 
 1. Add manual keywords.
-2. Group compatible keywords with or without the AI proposal.
+2. Group compatible keywords manually.
 3. Run or reopen one saved discovery.
 4. Accept selected candidates.
 5. Show the available-topic query returning real individual/grouped choices.
