@@ -67,14 +67,16 @@ describe("Keyword discovery results actions", () => {
     const selectionForm = document.getElementById(
       "discovery-results-discovery-1",
     );
-    const addButton = screen.getByRole("button", {
-      name: "Add selected to backlog",
-    });
+    expect(
+      screen.queryByRole("button", { name: "Add to backlog" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("Select subscription tracker"));
+    const addButton = screen.getByRole("button", { name: "Add to backlog" });
 
     expect(selectionForm).toBeInstanceOf(HTMLFormElement);
     expect(addButton).toHaveAttribute("form", selectionForm!.id);
     expect(
-      within(selectionForm!).getByLabelText("Select subscription tracker"),
+      within(selectionForm!).getByDisplayValue("subscription tracker"),
     ).toHaveAttribute("name", "keywords");
     expect(screen.getByText("20 · Easy")).toBeInTheDocument();
     expect(
@@ -94,8 +96,8 @@ describe("Keyword discovery results actions", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: "Add selected to backlog" }),
-    ).toBeDisabled();
+      screen.queryByRole("button", { name: "Add to backlog" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByLabelText("Select subscription tracker"),
     ).not.toBeInTheDocument();
@@ -160,28 +162,62 @@ describe("Keyword discovery results actions", () => {
     );
 
     const keywordOrder = () =>
-      within(
-        document.getElementById("discovery-results-discovery-1")!,
-      ).getAllByRole("checkbox");
+      within(document.getElementById("discovery-results-discovery-1")!)
+        .getAllByRole("checkbox")
+        .slice(1)
+        .map((checkbox) =>
+          checkbox.getAttribute("aria-label")?.replace("Select ", ""),
+        );
 
     fireEvent.click(screen.getByRole("button", { name: "Sort by volume" }));
-    expect(
-      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
-    ).toEqual(["subscription tracker", "cancel subscriptions"]);
+    expect(keywordOrder()).toEqual([
+      "subscription tracker",
+      "cancel subscriptions",
+    ]);
 
     fireEvent.click(screen.getByRole("button", { name: "Sort by volume" }));
-    expect(
-      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
-    ).toEqual(["cancel subscriptions", "subscription tracker"]);
+    expect(keywordOrder()).toEqual([
+      "cancel subscriptions",
+      "subscription tracker",
+    ]);
 
     fireEvent.click(screen.getByRole("button", { name: "Sort by difficulty" }));
-    expect(
-      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
-    ).toEqual(["cancel subscriptions", "subscription tracker"]);
+    expect(keywordOrder()).toEqual([
+      "cancel subscriptions",
+      "subscription tracker",
+    ]);
 
     fireEvent.click(screen.getByRole("button", { name: "Sort by rank" }));
+    expect(keywordOrder()).toEqual([
+      "subscription tracker",
+      "cancel subscriptions",
+    ]);
+  });
+
+  it("selects and clears every visible keyword from the table header", () => {
+    render(
+      <KeywordDiscover
+        discoveries={[filterDiscovery]}
+        existingNormalizedKeywords={[]}
+        locations={locations}
+        projectId="subiq"
+        selected={filterDiscovery}
+      />,
+    );
+
+    const selectAll = screen.getByLabelText("Select all visible keywords");
+    fireEvent.click(selectAll);
+
+    expect(screen.getByLabelText("Select subscription tracker")).toBeChecked();
+    expect(screen.getByLabelText("Select cancel subscriptions")).toBeChecked();
     expect(
-      keywordOrder().map((checkbox) => checkbox.getAttribute("value")),
-    ).toEqual(["subscription tracker", "cancel subscriptions"]);
+      screen.getByRole("button", { name: "Add to backlog" }),
+    ).toBeInTheDocument();
+    expect(document.querySelectorAll('input[name="keywords"]')).toHaveLength(2);
+
+    fireEvent.click(selectAll);
+    expect(
+      screen.queryByRole("button", { name: "Add to backlog" }),
+    ).not.toBeInTheDocument();
   });
 });

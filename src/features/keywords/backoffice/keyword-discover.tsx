@@ -211,6 +211,9 @@ export function KeywordDiscover({
     useState<ResultSortField | null>(null);
   const [resultSortDirection, setResultSortDirection] =
     useState<SortDirection>("asc");
+  const [resultSelections, setResultSelections] = useState<
+    Record<string, string[]>
+  >({});
   const existing = new Set(existingNormalizedKeywords);
   const availableResults =
     selected?.results.filter(
@@ -241,6 +244,36 @@ export function KeywordDiscover({
           result.difficulty !== undefined &&
           result.difficulty <= maximumDifficulty)),
   );
+  const availableKeywordValues = new Set(
+    availableResults.map((result) => result.keyword),
+  );
+  const selectedKeywordValues = selected
+    ? (resultSelections[selected.discoveryId] ?? []).filter((keyword) =>
+        availableKeywordValues.has(keyword),
+      )
+    : [];
+  const selectedKeywordSet = new Set(selectedKeywordValues);
+  const allVisibleSelected =
+    filteredResults.length > 0 &&
+    filteredResults.every((result) => selectedKeywordSet.has(result.keyword));
+  const someVisibleSelected = filteredResults.some((result) =>
+    selectedKeywordSet.has(result.keyword),
+  );
+  const updateSelectedKeywords = (keywords: string[]) => {
+    if (!selected) return;
+    setResultSelections((current) => ({
+      ...current,
+      [selected.discoveryId]: keywords,
+    }));
+  };
+  const toggleAllVisible = () => {
+    const next = new Set(selectedKeywordValues);
+    filteredResults.forEach((result) => {
+      if (allVisibleSelected) next.delete(result.keyword);
+      else next.add(result.keyword);
+    });
+    updateSelectedKeywords([...next]);
+  };
   const sortedResults = resultSortField
     ? [...filteredResults].sort((left, right) => {
         const value = (result: (typeof filteredResults)[number]) => {
@@ -343,14 +376,16 @@ export function KeywordDiscover({
                     Results for “{discoveryLabel(selected)}”
                   </h2>
                 </div>
-                <button
-                  className="btn btn-primary btn-sm"
-                  disabled={filteredResults.length === 0}
-                  form={resultSelectionFormId}
-                  type="submit"
-                >
-                  Add selected to backlog
-                </button>
+                {selectedKeywordValues.length > 0 &&
+                filteredResults.length > 0 ? (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    form={resultSelectionFormId}
+                    type="submit"
+                  >
+                    Add to backlog
+                  </button>
+                ) : null}
               </div>
               {availableResults.length === 0 ? (
                 <div className="border-base-300 border-t px-5 py-12 text-center">
@@ -438,12 +473,32 @@ export function KeywordDiscover({
                         type="hidden"
                         value={selected.discoveryId}
                       />
+                      {selectedKeywordValues.map((keyword) => (
+                        <input
+                          key={keyword}
+                          name="keywords"
+                          type="hidden"
+                          value={keyword}
+                        />
+                      ))}
                       <div className="min-h-0 flex-1 overflow-auto">
                         <table className="table">
                           <thead className="bg-base-100 sticky top-0 z-1">
                             <tr>
                               <th>
-                                <span className="sr-only">Select</span>
+                                <input
+                                  aria-label="Select all visible keywords"
+                                  checked={allVisibleSelected}
+                                  className="checkbox checkbox-sm"
+                                  onChange={toggleAllVisible}
+                                  ref={(checkbox) => {
+                                    if (checkbox)
+                                      checkbox.indeterminate =
+                                        someVisibleSelected &&
+                                        !allVisibleSelected;
+                                  }}
+                                  type="checkbox"
+                                />
                               </th>
                               <th>Keyword</th>
                               <th
@@ -518,10 +573,20 @@ export function KeywordDiscover({
                                   <td>
                                     <input
                                       aria-label={`Select ${result.keyword}`}
+                                      checked={selectedKeywordSet.has(
+                                        result.keyword,
+                                      )}
                                       className="checkbox checkbox-sm"
-                                      name="keywords"
+                                      onChange={(event) => {
+                                        const next = new Set(
+                                          selectedKeywordValues,
+                                        );
+                                        if (event.target.checked)
+                                          next.add(result.keyword);
+                                        else next.delete(result.keyword);
+                                        updateSelectedKeywords([...next]);
+                                      }}
                                       type="checkbox"
-                                      value={result.keyword}
                                     />
                                   </td>
                                   <td>{result.keyword}</td>
