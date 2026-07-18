@@ -57,6 +57,7 @@ const firestore = {
         target: { path: string },
         value: Record<string, unknown>,
       ) => void;
+      delete: (target: { path: string }) => void;
     }) => Promise<T>,
   ) =>
     operation({
@@ -69,6 +70,7 @@ const firestore = {
           ...mock.documents.get(target.path),
           ...value,
         }),
+      delete: (target) => mock.documents.delete(target.path),
     }),
 };
 
@@ -148,11 +150,10 @@ describe("keyword commands", () => {
       { keyword: "huy dang ky", countryCode: "VN", languageCode: "vi" },
     ]);
     const [first, second, third] = added.created;
-    const group = await createKeywordGroup(
-      "subiq",
-      [first!.keywordId, second!.keywordId],
+    const group = await createKeywordGroup("subiq", [
       first!.keywordId,
-    );
+      second!.keywordId,
+    ]);
     expect(group.memberKeywordIds).toEqual([
       first!.keywordId,
       second!.keywordId,
@@ -166,17 +167,76 @@ describe("keyword commands", () => {
       path.includes("/keywordGroups/"),
     ).length;
     await expect(
-      createKeywordGroup(
-        "subiq",
-        [second!.keywordId, third!.keywordId],
-        second!.keywordId,
-      ),
+      createKeywordGroup("subiq", [second!.keywordId, third!.keywordId]),
     ).rejects.toThrow();
     expect(
       [...mock.documents.keys()].filter((path) =>
         path.includes("/keywordGroups/"),
       ),
     ).toHaveLength(groupCount);
+  });
+
+  it("automatically chooses a primary and flattens group merges", async () => {
+    const added = await addKeywords(
+      "subiq",
+      ["alpha", "beta", "gamma", "delta", "epsilon"].map((keyword) => ({
+        keyword,
+        countryCode: "US",
+        languageCode: "en",
+      })),
+    );
+    const [alpha, beta, gamma, delta, epsilon] = added.created;
+    const metrics = [
+      [alpha!.keywordId, 100, 30],
+      [beta!.keywordId, 100, 10],
+      [gamma!.keywordId, 50, 5],
+      [delta!.keywordId, 40, 5],
+      [epsilon!.keywordId, 200, 50],
+    ] as const;
+    metrics.forEach(([id, searchVolume, difficulty]) => {
+      const path = `projects/subiq/keywords/${id}`;
+      mock.documents.set(path, {
+        ...mock.documents.get(path),
+        searchVolume,
+        difficulty,
+      });
+    });
+
+    const firstGroup = await createKeywordGroup("subiq", [
+      alpha!.keywordId,
+      beta!.keywordId,
+    ]);
+    expect(firstGroup.primaryKeywordId).toBe(beta!.keywordId);
+    const secondGroup = await createKeywordGroup("subiq", [
+      gamma!.keywordId,
+      delta!.keywordId,
+    ]);
+
+    const mergedGroups = await createKeywordGroup("subiq", [
+      firstGroup.primaryKeywordId,
+      secondGroup.primaryKeywordId,
+    ]);
+    expect(mergedGroups.memberKeywordIds).toHaveLength(4);
+    expect(mergedGroups.primaryKeywordId).toBe(beta!.keywordId);
+    expect(mergedGroups.groupId).not.toBe(firstGroup.groupId);
+    expect(
+      mock.documents.has(`projects/subiq/keywordGroups/${firstGroup.groupId}`),
+    ).toBe(false);
+    expect(
+      mock.documents.has(`projects/subiq/keywordGroups/${secondGroup.groupId}`),
+    ).toBe(false);
+
+    const mergedWithKeyword = await createKeywordGroup("subiq", [
+      mergedGroups.primaryKeywordId,
+      epsilon!.keywordId,
+    ]);
+    expect(mergedWithKeyword.memberKeywordIds).toHaveLength(5);
+    expect(mergedWithKeyword.primaryKeywordId).toBe(epsilon!.keywordId);
+    mergedWithKeyword.memberKeywordIds.forEach((id) => {
+      expect(mock.documents.get(`projects/subiq/keywords/${id}`)?.groupId).toBe(
+        mergedWithKeyword.groupId,
+      );
+    });
   });
 
   it("keeps project data isolated by verified ownership", async () => {

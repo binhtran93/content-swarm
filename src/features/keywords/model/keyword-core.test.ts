@@ -7,8 +7,9 @@ import {
   normalizeDiscoveryRequest,
 } from "@/features/keywords/service/discovery-request-key";
 import {
-  validateGroupInput,
+  selectPrimaryKeywordId,
   validateGroupKeywords,
+  validateGroupSelection,
 } from "@/features/keywords/service/group-keywords.server";
 import { keywordDocumentId } from "@/features/keywords/service/keyword-document-id";
 
@@ -73,12 +74,37 @@ describe("keyword grouping rules", () => {
     updatedAt: null as never,
   };
 
-  it("requires a unique primary member", () => {
-    expect(validateGroupInput(["a", "b"], "a")).toEqual(["a", "b"]);
-    expect(() => validateGroupInput(["a", "a"], "a")).toThrow("2 to 25");
-    expect(() => validateGroupInput(["a", "b"], "c")).toThrow(
-      "primary keyword",
-    );
+  it("requires multiple selected entities", () => {
+    expect(validateGroupSelection(["a", "b"])).toEqual(["a", "b"]);
+    expect(() => validateGroupSelection(["a", "a"])).toThrow("2 to 25");
+  });
+
+  it("selects the highest-volume, lowest-difficulty primary", () => {
+    expect(
+      selectPrimaryKeywordId(
+        ["a", "b", "c"],
+        [
+          {
+            ...keyword,
+            normalizedKeyword: "a",
+            searchVolume: 100,
+            difficulty: 30,
+          },
+          {
+            ...keyword,
+            normalizedKeyword: "b",
+            searchVolume: 200,
+            difficulty: 40,
+          },
+          {
+            ...keyword,
+            normalizedKeyword: "c",
+            searchVolume: 200,
+            difficulty: 10,
+          },
+        ],
+      ),
+    ).toBe("c");
   });
 
   it("rejects mixed locales and existing groups without mutating input", () => {

@@ -28,7 +28,6 @@ export function KeywordBacklog({
   groups: KeywordGroup[];
 }) {
   const [selected, setSelected] = useState<string[]>([]);
-  const [primaryId, setPrimaryId] = useState("");
   const [editing, setEditing] = useState<Keyword | null>(null);
   const [search, setSearch] = useState("");
   const [market, setMarket] = useState("");
@@ -45,10 +44,24 @@ export function KeywordBacklog({
     () => new Map(keywords.map((keyword) => [keyword.keywordId, keyword])),
     [keywords],
   );
-  const available = keywords.filter(
-    (keyword) => !keyword.groupId && !keyword.articleId,
+  const groupsById = useMemo(
+    () => new Map(groups.map((group) => [group.groupId, group])),
+    [groups],
   );
-  const visibleKeywords = keywords.filter((keyword) => {
+  const backlogRows = keywords.filter((keyword) => {
+    if (!keyword.groupId) return true;
+    const group = groupsById.get(keyword.groupId);
+    return !group || group.primaryKeywordId === keyword.keywordId;
+  });
+  const available = backlogRows.filter((keyword) => {
+    if (keyword.articleId) return false;
+    if (!keyword.groupId) return true;
+    const group = groupsById.get(keyword.groupId);
+    return Boolean(
+      group && group.memberKeywordIds.every((id) => !byId.get(id)?.articleId),
+    );
+  });
+  const visibleKeywords = backlogRows.filter((keyword) => {
     if (
       search &&
       !keyword.normalizedKeyword.includes(search.toLocaleLowerCase())
@@ -74,7 +87,6 @@ export function KeywordBacklog({
     setSelected((current) =>
       checked ? [...current, id] : current.filter((item) => item !== id),
     );
-    if (!checked && primaryId === id) setPrimaryId("");
   }
 
   return (
@@ -164,34 +176,16 @@ export function KeywordBacklog({
               </p>
             </div>
             {selected.length >= 2 ? (
-              <div className="flex flex-wrap items-end gap-2">
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend py-0 text-xs">
-                    Primary keyword
-                  </legend>
-                  <select
-                    className="select select-sm w-full"
-                    name="primaryId"
-                    required
-                    value={primaryId}
-                    onChange={(event) => setPrimaryId(event.target.value)}
-                  >
-                    <option value="">Choose primary</option>
-                    {selected.map((id) => (
-                      <option key={id} value={id}>
-                        {byId.get(id)?.keyword}
-                      </option>
-                    ))}
-                  </select>
-                </fieldset>
-                <button
-                  className="btn btn-primary btn-sm"
-                  disabled={pending || !primaryId}
-                  type="submit"
-                >
-                  {pending ? "Grouping…" : `Group ${selected.length}`}
-                </button>
-              </div>
+              <button
+                className="btn btn-primary btn-sm"
+                disabled={pending}
+                type="submit"
+              >
+                {pending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : null}
+                {pending ? "Adding…" : "Add to group"}
+              </button>
             ) : null}
           </div>
           <div className="grid gap-3 px-5 pb-4 sm:grid-cols-3">

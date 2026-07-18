@@ -59,8 +59,6 @@ export async function createKeywordGroupAction(
     await createKeywordGroup(
       projectId,
       formData.getAll("memberIds").map(String),
-      String(formData.get("primaryId") ?? ""),
-      String(formData.get("name") ?? "") || null,
     );
   } catch (error) {
     return { error: message(error) };
