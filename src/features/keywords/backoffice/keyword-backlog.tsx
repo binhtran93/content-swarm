@@ -30,6 +30,7 @@ export function KeywordBacklog({
   const [maximumDifficultyFilter, setMaximumDifficultyFilter] = useState("");
   const [sortField, setSortField] = useState<BacklogSortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [viewingGroupId, setViewingGroupId] = useState<string | null>(null);
   const [state, action, pending] = useActionState(
     createKeywordGroupAction,
     null,
@@ -49,6 +50,9 @@ export function KeywordBacklog({
   const backlogGroups = groups.filter((group) =>
     group.memberKeywordIds.every((id) => !byId.get(id)?.articleId),
   );
+  const viewingGroup = viewingGroupId
+    ? (groupsById.get(viewingGroupId) ?? null)
+    : null;
   const backlogRows = keywords.filter((keyword) => {
     if (keyword.articleId) return false;
     if (!keyword.groupId) return true;
@@ -150,76 +154,6 @@ export function KeywordBacklog({
   return (
     <div className="space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden">
       <ErrorToast message={state?.error ?? removeState?.error} />
-      {backlogGroups.length ? (
-        <section className="shrink-0 space-y-3" aria-labelledby="groups-title">
-          <h2 className="text-lg font-semibold" id="groups-title">
-            Keyword groups
-          </h2>
-          {backlogGroups.map((group) => {
-            const primary = byId.get(group.primaryKeywordId);
-            return (
-              <details
-                className="collapse-arrow bg-base-100 border-base-300 collapse border"
-                key={group.groupId}
-              >
-                <summary className="collapse-title flex flex-wrap items-center gap-2 font-semibold">
-                  <span>
-                    {group.name ?? primary?.keyword ?? "Keyword group"}
-                  </span>
-                  <span className="badge badge-outline">
-                    {group.memberKeywordIds.length} keywords
-                  </span>
-                </summary>
-                <div className="collapse-content">
-                  <ul className="divide-base-300 divide-y">
-                    {group.memberKeywordIds.map((id) => {
-                      const keyword = byId.get(id);
-                      return keyword ? (
-                        <li
-                          className="flex flex-wrap items-center justify-between gap-2 py-3"
-                          key={id}
-                        >
-                          <span>
-                            {keyword.keyword}
-                            {id === group.primaryKeywordId ? (
-                              <span className="badge badge-primary badge-soft ml-2">
-                                Primary
-                              </span>
-                            ) : null}
-                          </span>
-                          <span className="flex items-center gap-3">
-                            <span className="text-base-content/60 text-xs tabular-nums">
-                              Vol{" "}
-                              {keyword.searchVolume?.toLocaleString() ?? "—"}
-                            </span>
-                            <KeywordDifficultyBadge
-                              score={keyword.difficulty}
-                            />
-                          </span>
-                        </li>
-                      ) : null;
-                    })}
-                  </ul>
-                  <form
-                    action={dissolveKeywordGroupAction}
-                    className="mt-3 flex justify-end"
-                  >
-                    <input name="projectId" type="hidden" value={projectId} />
-                    <input name="groupId" type="hidden" value={group.groupId} />
-                    <button
-                      className="btn btn-ghost btn-sm text-error"
-                      type="submit"
-                    >
-                      Dissolve group
-                    </button>
-                  </form>
-                </div>
-              </details>
-            );
-          })}
-        </section>
-      ) : null}
-
       <form
         action={action}
         className="card card-border bg-base-100 flex min-h-0 flex-1 flex-col overflow-hidden"
@@ -415,12 +349,20 @@ export function KeywordBacklog({
                           />
                         </td>
                         <td>
-                          <span className="font-medium">{keyword.keyword}</span>
-                          {keyword.sourceDiscoveryId ? (
-                            <span className="text-base-content/45 block text-xs">
-                              Discovery
+                          {keyword.groupId ? (
+                            <button
+                              aria-label={`View group for ${keyword.keyword}`}
+                              className="link link-hover text-left font-medium"
+                              onClick={() => setViewingGroupId(keyword.groupId)}
+                              type="button"
+                            >
+                              {keyword.keyword}
+                            </button>
+                          ) : (
+                            <span className="font-medium">
+                              {keyword.keyword}
                             </span>
-                          ) : null}
+                          )}
                         </td>
                         <td>
                           <span className="badge badge-ghost">
@@ -444,6 +386,93 @@ export function KeywordBacklog({
           )}
         </div>
       </form>
+      {viewingGroup ? (
+        <div className="modal modal-open" role="dialog" aria-modal="true">
+          <div className="modal-box max-w-3xl">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold">
+                  {byId.get(viewingGroup.primaryKeywordId)?.keyword ??
+                    "Keyword group"}
+                </h2>
+                <p className="text-base-content/60 text-sm">
+                  {viewingGroup.memberKeywordIds.length} keywords
+                </p>
+              </div>
+              <button
+                aria-label="Close keyword group"
+                className="btn btn-ghost btn-sm btn-circle"
+                onClick={() => setViewingGroupId(null)}
+                type="button"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="border-base-300 rounded-box mt-4 max-h-[60dvh] overflow-auto border">
+              <table className="table">
+                <thead className="bg-base-100 sticky top-0 z-1">
+                  <tr>
+                    <th>Keyword</th>
+                    <th>Volume</th>
+                    <th>Difficulty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {viewingGroup.memberKeywordIds.map((id) => {
+                    const keyword = byId.get(id);
+                    return keyword ? (
+                      <tr key={id}>
+                        <td>
+                          <span className="font-medium">{keyword.keyword}</span>
+                          {id === viewingGroup.primaryKeywordId ? (
+                            <span className="badge badge-primary badge-soft ml-2">
+                              Primary
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="tabular-nums">
+                          {keyword.searchVolume?.toLocaleString() ?? "—"}
+                        </td>
+                        <td>
+                          <KeywordDifficultyBadge score={keyword.difficulty} />
+                        </td>
+                      </tr>
+                    ) : null;
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="modal-action">
+              <form action={dissolveKeywordGroupAction}>
+                <input name="projectId" type="hidden" value={projectId} />
+                <input
+                  name="groupId"
+                  type="hidden"
+                  value={viewingGroup.groupId}
+                />
+                <button className="btn btn-error btn-outline" type="submit">
+                  Dissolve group
+                </button>
+              </form>
+              <button
+                className="btn"
+                onClick={() => setViewingGroupId(null)}
+                type="button"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          <button
+            aria-label="Close keyword group"
+            className="modal-backdrop"
+            onClick={() => setViewingGroupId(null)}
+            type="button"
+          >
+            close
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

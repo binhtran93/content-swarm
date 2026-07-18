@@ -103,6 +103,18 @@ describe("Keyword backlog grouping", () => {
     ).toBeInTheDocument();
     expect(within(table).getByText("5 · Very easy")).toBeInTheDocument();
     expect(screen.queryByLabelText("Filter by status")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyword groups")).not.toBeInTheDocument();
+
+    fireEvent.click(
+      within(table).getByRole("button", {
+        name: "View group for primary keyword",
+      }),
+    );
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText("supporting keyword")).toBeInTheDocument();
+    expect(within(dialog).getAllByText("primary keyword")).toHaveLength(2);
+    expect(within(dialog).getByText("Primary")).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
 
     fireEvent.click(within(table).getByLabelText("Select primary keyword"));
     fireEvent.click(within(table).getByLabelText("Select single keyword"));
