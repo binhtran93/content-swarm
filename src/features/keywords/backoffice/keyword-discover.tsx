@@ -213,8 +213,8 @@ export function KeywordDiscover({
   };
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
-      <div className="space-y-6">
+    <div className="grid min-h-0 flex-1 items-start gap-6 lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
+      <div className="flex min-h-0 flex-col gap-6 lg:h-full">
         <form action={action}>
           <details
             className="collapse-arrow bg-base-100 border-base-300 collapse border"
@@ -259,8 +259,8 @@ export function KeywordDiscover({
         </form>
 
         {selected ? (
-          <section className="card card-border bg-base-100">
-            <div className="card-body p-0">
+          <section className="card card-border bg-base-100 min-h-0 flex-1 overflow-hidden">
+            <div className="card-body flex h-full min-h-0 flex-col p-0">
               <div className="flex flex-wrap items-start justify-between gap-3 p-5">
                 <div>
                   <h2 className="card-title">
@@ -320,16 +320,19 @@ export function KeywordDiscover({
                   </p>
                 </div>
               ) : (
-                <form action={addDiscoveryResultsAction}>
+                <form
+                  action={addDiscoveryResultsAction}
+                  className="flex min-h-0 flex-1 flex-col"
+                >
                   <input name="projectId" type="hidden" value={projectId} />
                   <input
                     name="discoveryId"
                     type="hidden"
                     value={selected.discoveryId}
                   />
-                  <div className="overflow-x-auto">
+                  <div className="min-h-0 flex-1 overflow-auto">
                     <table className="table">
-                      <thead>
+                      <thead className="bg-base-100 sticky top-0 z-1">
                         <tr>
                           <th>
                             <span className="sr-only">Select</span>
@@ -397,15 +400,15 @@ export function KeywordDiscover({
         ) : null}
       </div>
 
-      <aside className="card card-border bg-base-100 h-fit">
-        <div className="card-body">
+      <aside className="card card-border bg-base-100 max-h-full overflow-hidden">
+        <div className="card-body flex min-h-0 flex-col">
           <h2 className="card-title text-base">Saved discoveries</h2>
           {discoveries.length === 0 ? (
             <p className="text-base-content/60 text-sm">
               No provider calls have been saved.
             </p>
           ) : (
-            <ul className="menu -mx-2">
+            <ul className="menu -mx-2 min-h-0 overflow-y-auto">
               {discoveries.map((discovery) => (
                 <li key={discovery.discoveryId}>
                   <Link

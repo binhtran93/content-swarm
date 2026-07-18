@@ -52,7 +52,13 @@ export default async function KeywordsPage({
   const keywords = await listKeywords(projectId);
   const base = `/admin/projects/${projectId}/keywords`;
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div
+      className={`mx-auto max-w-7xl ${
+        view === "discover"
+          ? "space-y-6 lg:flex lg:h-[calc(100dvh-8rem)] lg:flex-col lg:gap-6 lg:space-y-0 lg:overflow-hidden"
+          : "space-y-6"
+      }`}
+    >
       <PageTitle
         action={
           <Link
@@ -62,7 +68,7 @@ export default async function KeywordsPage({
             Project settings
           </Link>
         }
-        description={`Build article topics for ${project.name}.`}
+        description={``}
         title="Keyword research"
       />
       <div className="tabs tabs-border" role="tablist">
