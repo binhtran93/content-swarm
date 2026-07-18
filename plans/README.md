@@ -21,6 +21,33 @@ For each implementation file:
 8. Update the implementation links if paths changed.
 9. Mark the file complete only when every Done condition passes.
 
+## Existing credential source
+
+This is the newer replacement product. When implementation needs an existing
+Firebase, AI-provider, DataForSEO, deployment, or other service credential,
+retrieve it from the local environment files or deployment configuration of:
+
+```text
+/Users/binhtran/projects/seo-pipe-lite
+/Users/binhtran/projects/seo-pipe
+```
+
+Prefer the value from `seo-pipe-lite` when both projects configure the same
+service, unless the implementation confirms that `seo-pipe` contains the
+newer or correct environment value.
+
+- Copy only the required value into this project's ignored local environment
+  file or deployment secret store.
+- Never copy a secret into plans, source code, committed `.env` files, tests,
+  fixtures, logs, screenshots, prompts, or chat output.
+- Do not invent placeholder production credentials or ask for a value before
+  checking both existing local projects.
+- Confirm that a reused credential belongs to the intended Firebase project,
+  provider account, and environment before using it.
+- Use emulators or isolated test credentials for automated tests; never use
+  production credentials in tests.
+- Keep `.env.example` limited to variable names and safe descriptions.
+
 ## File responsibility rule
 
 - A domain entity/model file has one public export.
@@ -78,6 +105,8 @@ its Firestore documents directly.
 - AI generates an unsaved proposal. It never saves, approves, advances, or
   publishes.
 - Paid provider calls occur only after an explicit owner command.
+- Existing service credentials are migrated according to the credential-source
+  rule above and are never persisted in Firestore.
 - A feature is incomplete until its output is visible, persisted, and usable by
   the next feature.
 - Every public query, slug, route, cache key, sitemap, and publication command is

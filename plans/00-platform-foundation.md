@@ -175,6 +175,22 @@ This increment owns no product collection. It provides:
 - Firestore converters/readers that reject malformed product documents.
 - Shared transaction and timestamp conventions.
 
+## Credential migration
+
+Before asking for or creating a credential, inspect the ignored local
+environment files and deployment configuration in:
+
+```text
+/Users/binhtran/projects/seo-pipe-lite
+/Users/binhtran/projects/seo-pipe
+```
+
+Reuse only the values required by the new application. Put local values in the
+new project's ignored `.env.local` and production values in the deployment
+secret store. Never print secret values during inspection or copy them into
+documentation, source code, tests, logs, or committed files. Validate that each
+value belongs to the intended Firebase project or provider environment.
+
 ## AI behavior
 
 None. Do not add an AI abstraction until the first real Article AI feature.
@@ -206,7 +222,9 @@ These targets may not exist yet. Create them only when implementing this plan.
 6. Add a dependency-boundary rule preventing public client code from importing
    server/editorial modules.
 7. Implement typed server environment parsing.
-8. Implement Firebase Admin and Firestore access.
+8. Migrate the required Firebase values from `seo-pipe-lite` or `seo-pipe` into
+   ignored local environment configuration, then implement Firebase Admin and
+   Firestore access.
 9. Configure emulator or isolated development access.
 10. Create a minimal public placeholder and Nexus-based admin shell ready for
     the next Owner Authentication increment.

@@ -28,6 +28,11 @@ the new login presentation; it does not copy the old TailAdmin UI.
 R1 has no signup, password-reset UI, profile, roles, invitations, teams, OAuth,
 or Firestore user document.
 
+Reuse the existing Firebase project settings, owner UID, and local development
+configuration from `seo-pipe-lite` or `seo-pipe` when they belong to the target
+Firebase environment. Credentials remain in ignored environment files or the
+deployment secret store; do not place them in this plan or source code.
+
 ## Authentication flow
 
 ```text
