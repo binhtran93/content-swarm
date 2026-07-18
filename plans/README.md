@@ -127,6 +127,10 @@ src/backoffice/               Shared Nexus/DaisyUI shell, UI primitives, config,
 src/public-site/              Shared public components plus independent project sites
 ```
 
+Shared public components may consume the minimal CSS variables defined in
+`src/public-site/styles/theme-contract.css`. Each site owns scoped overrides in
+its own `theme.css`; the contract does not control its content or layout.
+
 Backoffice-specific UI must stay inside each feature's `backoffice/` folder;
 surface-neutral models and services must not import it. Backoffice and public
 components may share headless logic or schemas, but they should not share

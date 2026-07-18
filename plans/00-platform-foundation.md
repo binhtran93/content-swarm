@@ -54,6 +54,8 @@ src/
     styles/
   public-site/
     components/
+    styles/
+      theme-contract.css
     sites/
       subiq/
         theme.css
@@ -81,6 +83,10 @@ domain's authenticated Nexus/DaisyUI presentation.
 The root `backoffice/` folder owns only shared admin layout, UI primitives,
 configuration, and styles.
 `public-site/` owns branded reader presentation and public read adapters.
+
+Shared public components use a small semantic CSS-variable contract. Each site
+scopes its own values in `sites/{projectId}/theme.css`; themes are not
+TypeScript configuration and are not stored in Firestore.
 
 Shared services accept an explicit `projectId`. They never import a single
 SubIQ constant as their implicit project.

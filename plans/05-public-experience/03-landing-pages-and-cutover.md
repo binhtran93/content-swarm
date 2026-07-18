@@ -60,13 +60,49 @@ Initial Project scope:
 Each product may deploy from the same repository to its dedicated service/domain
 using an explicit `PUBLIC_PROJECT_ID` and route-prefix configuration. The main
 ANMISOFT deployment may continue serving `/{projectId}` legacy paths. A service
-configured for one Project must return unavailable for missing, disabled, or
-invalid production settings; it must never default to SubIQ.
+configured for one Project must fail clearly for an unknown Project ID; it must
+never default to SubIQ.
 
 Do not build a page editor, template registry, renderer switch, landing schema,
 or database-driven header/navigation system. Each explicit route imports its
 own site layout and landing page. A site may reuse shared components or write
 its own component when its design differs.
+
+## Minimal theme contract
+
+Shared public components may use semantic CSS variables defined with safe
+defaults in `src/public-site/styles/theme-contract.css`:
+
+```css
+:root {
+  --site-background: #ffffff;
+  --site-surface: #f8fafc;
+  --site-text: #0f172a;
+  --site-muted-text: #64748b;
+  --site-primary: #2563eb;
+  --site-primary-text: #ffffff;
+  --site-border: #e2e8f0;
+  --site-radius: 0.75rem;
+}
+```
+
+Each site scopes overrides from its own theme file:
+
+```css
+.subiq-site {
+  --site-primary: #6366f1;
+  --site-primary-text: #ffffff;
+  --site-radius: 1rem;
+}
+```
+
+Its `site-layout.tsx` applies the scope class. A shared component consumes only
+the variables it needs. Add a token only when a real shared component requires
+it, and keep text/background pairs accessible.
+
+This contract contains no TypeScript theme object, registry, runtime resolver,
+Firestore data, logo, navigation, content, section ordering, or layout rules.
+A site-specific component may ignore the contract or add local CSS variables.
 
 ## Backoffice behavior
 
@@ -84,6 +120,8 @@ command.
 ## Planned implementation links
 
 - [Shared public components](../../src/public-site/components/index.ts)
+- [Theme contract](../../src/public-site/styles/theme-contract.css)
+- [SubIQ theme](../../src/public-site/sites/subiq/theme.css)
 - [SubIQ site layout](../../src/public-site/sites/subiq/site-layout.tsx)
 - [SubIQ landing page](../../src/public-site/sites/subiq/landing-page.tsx)
 - [SubIQ route](../../src/app/(public)/subiq/page.tsx)
@@ -97,7 +135,8 @@ command.
 
 1. Inventory current public URLs, assets, metadata, environment variables,
    Firestore indexes, and deployment route prefixes.
-2. Adapt SubIQ's route, site layout, theme, landing, support, and legal pages.
+2. Adapt SubIQ's route, site layout, theme, landing, support, and legal pages;
+   define only the theme tokens required by the first real shared components.
 3. Extract a shared component only when another real site needs the same
    behavior; implement each remaining approved project route directly.
 4. Implement read-only legacy migration scanner/classification report.

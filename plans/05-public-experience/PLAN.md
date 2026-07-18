@@ -66,6 +66,9 @@ Outputs:
 - Project ID is explicit in each route; no route falls back to SubIQ.
 - Shared public components are optional building blocks. They do not impose one
   landing structure or require database-driven header/page configuration.
+- Shared components use only a small semantic CSS-variable theme contract.
+  Every site owns scoped overrides in code and may use a site-specific component
+  when the shared component does not fit.
 
 ## Final demonstration
 
