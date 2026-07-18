@@ -5,7 +5,6 @@ import { useActionState, useState } from "react";
 
 import {
   addDiscoveryResultsAction,
-  rerunDiscoveryAction,
   runDiscoveryAction,
 } from "@/features/keywords/backoffice/discovery-actions.server";
 import type { KeywordDiscovery } from "@/features/keywords/model/keyword-discovery";
@@ -193,10 +192,6 @@ export function KeywordDiscover({
   locations: DiscoveryLocation[];
 }) {
   const [state, action, pending] = useActionState(runDiscoveryAction, null);
-  const [rerunState, rerunAction, rerunPending] = useActionState(
-    rerunDiscoveryAction,
-    null,
-  );
   const existing = new Set(existingNormalizedKeywords);
   const availableResults =
     selected?.results.filter(
@@ -270,59 +265,15 @@ export function KeywordDiscover({
                     Results for “{discoveryLabel(selected)}”
                   </h2>
                 </div>
-                <div className="flex flex-wrap items-center justify-end gap-2">
-                  <button
-                    className="btn btn-primary btn-sm"
-                    disabled={availableResults.length === 0}
-                    form={resultSelectionFormId}
-                    type="submit"
-                  >
-                    Add selected to backlog
-                  </button>
-                  <form action={rerunAction}>
-                    <input name="projectId" type="hidden" value={projectId} />
-                    <input
-                      name="method"
-                      type="hidden"
-                      value={selected.method}
-                    />
-                    <input name="input" type="hidden" value={selected.input} />
-                    <input
-                      name="countryCode"
-                      type="hidden"
-                      value={selected.countryCode}
-                    />
-                    <input
-                      name="languageCode"
-                      type="hidden"
-                      value={selected.languageCode}
-                    />
-                    <input name="limit" type="hidden" value={selected.limit} />
-                    <input
-                      name="minimumVolume"
-                      type="hidden"
-                      value={selected.minimumVolume ?? ""}
-                    />
-                    <input
-                      name="maximumDifficulty"
-                      type="hidden"
-                      value={selected.maximumDifficulty ?? ""}
-                    />
-                    <button
-                      className="btn btn-outline btn-sm"
-                      disabled={rerunPending}
-                      type="submit"
-                    >
-                      {rerunPending ? "Running paid call…" : "Run again (paid)"}
-                    </button>
-                  </form>
-                </div>
+                <button
+                  className="btn btn-primary btn-sm"
+                  disabled={availableResults.length === 0}
+                  form={resultSelectionFormId}
+                  type="submit"
+                >
+                  Add selected to backlog
+                </button>
               </div>
-              {rerunState?.error ? (
-                <div className="alert alert-error mx-5 mb-3 w-auto">
-                  {rerunState.error}
-                </div>
-              ) : null}
               {selected.results.length === 0 ? (
                 <div className="border-base-300 border-t px-5 py-12 text-center">
                   <p className="font-medium">

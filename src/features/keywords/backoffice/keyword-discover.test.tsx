@@ -5,7 +5,6 @@ import { KeywordDiscover } from "@/features/keywords/backoffice/keyword-discover
 
 vi.mock("@/features/keywords/backoffice/discovery-actions.server", () => ({
   addDiscoveryResultsAction: vi.fn(),
-  rerunDiscoveryAction: vi.fn(),
   runDiscoveryAction: vi.fn(),
 }));
 
@@ -41,7 +40,7 @@ const locations = [
 ];
 
 describe("Keyword discovery results actions", () => {
-  it("submits selected rows from the header action while keeping rerun isolated", () => {
+  it("submits selected rows from the header action", () => {
     render(
       <KeywordDiscover
         discoveries={[discovery]}
@@ -58,16 +57,15 @@ describe("Keyword discovery results actions", () => {
     const addButton = screen.getByRole("button", {
       name: "Add selected to backlog",
     });
-    const rerunButton = screen.getByRole("button", {
-      name: "Run again (paid)",
-    });
 
     expect(selectionForm).toBeInstanceOf(HTMLFormElement);
     expect(addButton).toHaveAttribute("form", selectionForm!.id);
     expect(
       within(selectionForm!).getByLabelText("Select subscription tracker"),
     ).toHaveAttribute("name", "keywords");
-    expect(rerunButton.closest("form")).not.toBe(selectionForm);
+    expect(
+      screen.queryByRole("button", { name: "Run again (paid)" }),
+    ).not.toBeInTheDocument();
   });
 
   it("disables the header action when every result is already in backlog", () => {
