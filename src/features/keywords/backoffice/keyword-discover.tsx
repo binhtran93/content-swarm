@@ -205,6 +205,9 @@ export function KeywordDiscover({
           result.keyword.trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US"),
         ),
     ) ?? [];
+  const resultSelectionFormId = selected
+    ? `discovery-results-${selected.discoveryId}`
+    : undefined;
   const discoveryLabel = (discovery: KeywordDiscovery) => {
     const inputs = discovery.input.split(/\r?\n/).filter(Boolean);
     return inputs.length > 1
@@ -267,39 +270,53 @@ export function KeywordDiscover({
                     Results for “{discoveryLabel(selected)}”
                   </h2>
                 </div>
-                <form action={rerunAction}>
-                  <input name="projectId" type="hidden" value={projectId} />
-                  <input name="method" type="hidden" value={selected.method} />
-                  <input name="input" type="hidden" value={selected.input} />
-                  <input
-                    name="countryCode"
-                    type="hidden"
-                    value={selected.countryCode}
-                  />
-                  <input
-                    name="languageCode"
-                    type="hidden"
-                    value={selected.languageCode}
-                  />
-                  <input name="limit" type="hidden" value={selected.limit} />
-                  <input
-                    name="minimumVolume"
-                    type="hidden"
-                    value={selected.minimumVolume ?? ""}
-                  />
-                  <input
-                    name="maximumDifficulty"
-                    type="hidden"
-                    value={selected.maximumDifficulty ?? ""}
-                  />
+                <div className="flex flex-wrap items-center justify-end gap-2">
                   <button
-                    className="btn btn-outline btn-sm"
-                    disabled={rerunPending}
+                    className="btn btn-primary btn-sm"
+                    disabled={availableResults.length === 0}
+                    form={resultSelectionFormId}
                     type="submit"
                   >
-                    {rerunPending ? "Running paid call…" : "Run again (paid)"}
+                    Add selected to backlog
                   </button>
-                </form>
+                  <form action={rerunAction}>
+                    <input name="projectId" type="hidden" value={projectId} />
+                    <input
+                      name="method"
+                      type="hidden"
+                      value={selected.method}
+                    />
+                    <input name="input" type="hidden" value={selected.input} />
+                    <input
+                      name="countryCode"
+                      type="hidden"
+                      value={selected.countryCode}
+                    />
+                    <input
+                      name="languageCode"
+                      type="hidden"
+                      value={selected.languageCode}
+                    />
+                    <input name="limit" type="hidden" value={selected.limit} />
+                    <input
+                      name="minimumVolume"
+                      type="hidden"
+                      value={selected.minimumVolume ?? ""}
+                    />
+                    <input
+                      name="maximumDifficulty"
+                      type="hidden"
+                      value={selected.maximumDifficulty ?? ""}
+                    />
+                    <button
+                      className="btn btn-outline btn-sm"
+                      disabled={rerunPending}
+                      type="submit"
+                    >
+                      {rerunPending ? "Running paid call…" : "Run again (paid)"}
+                    </button>
+                  </form>
+                </div>
               </div>
               {rerunState?.error ? (
                 <div className="alert alert-error mx-5 mb-3 w-auto">
@@ -319,6 +336,7 @@ export function KeywordDiscover({
                 <form
                   action={addDiscoveryResultsAction}
                   className="flex min-h-0 flex-1 flex-col"
+                  id={resultSelectionFormId}
                 >
                   <input name="projectId" type="hidden" value={projectId} />
                   <input
@@ -379,15 +397,6 @@ export function KeywordDiscover({
                         })}
                       </tbody>
                     </table>
-                  </div>
-                  <div className="border-base-300 flex justify-end border-t p-4">
-                    <button
-                      className="btn btn-primary"
-                      disabled={availableResults.length === 0}
-                      type="submit"
-                    >
-                      Add selected to backlog
-                    </button>
                   </div>
                 </form>
               )}
