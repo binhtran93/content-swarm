@@ -266,10 +266,6 @@ export function KeywordDiscover({
                   <h2 className="card-title">
                     Results for “{discoveryLabel(selected)}”
                   </h2>
-                  <p className="text-base-content/60 text-sm">
-                    {selected.results.length} saved · {availableResults.length}{" "}
-                    not yet in backlog
-                  </p>
                 </div>
                 <form action={rerunAction}>
                   <input name="projectId" type="hidden" value={projectId} />
