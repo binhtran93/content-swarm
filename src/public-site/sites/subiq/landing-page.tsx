@@ -81,29 +81,34 @@ const analyticsRows = [
 
 const faqs = [
   {
-    question: "What subscriptions can I track with SubIQ?",
+    question: "How can SubIQ help me manage my subscriptions?",
     answer:
-      "You can track subscriptions and other recurring expenses by saving the provider, price, currency, billing period, start date, category, trial details, price changes, renewal information, and reminder preferences.",
+      "SubIQ keeps your recurring expenses, renewal dates, free trials, payment history, and spending insights together in one subscription tracker. Add the services you use to see what is due and how much you are spending in one place.",
   },
   {
-    question: "How do subscription renewal and free-trial reminders work?",
+    question: "How do I track upcoming subscription renewals?",
     answer:
-      "Choose which reminders to enable for each subscription, and SubIQ schedules the selected alerts on your device. Delivery depends on your device notification settings.",
+      "Add each subscription’s billing period and renewal date, then view upcoming charges in the SubIQ renewal calendar. You can also enable reminders for the subscriptions you do not want to miss.",
   },
   {
-    question: "Can SubIQ cancel subscriptions for me?",
+    question: "How can I avoid being charged after a free trial?",
     answer:
-      "No. SubIQ provides informational steps and links for the provider you select, but you complete and confirm each cancellation directly with that provider.",
+      "Save the free trial’s end date in SubIQ and turn on a trial reminder. The alert gives you time to review the subscription and cancel with the provider before the paid plan begins.",
   },
   {
-    question: "How accurate are subscription costs and renewal dates?",
+    question: "How can I see how much I spend on subscriptions?",
     answer:
-      "Displayed amounts and dates are estimates based on the details you enter and general exchange rates. Taxes, fees, provider rules, and currency changes can affect the final charge.",
+      "SubIQ shows estimated monthly costs, lifetime spending, category breakdowns, and month-to-month trends. You can use these insights to find the subscriptions with the biggest effect on your budget.",
   },
   {
-    question: "How does SubIQ store my subscription data?",
+    question: "How do I cancel an Apple App Store subscription?",
     answer:
-      "SubIQ uses Firebase to store subscription records and preferences associated with an anonymous account or, if you choose, a Google-linked account for syncing across supported devices.",
+      "Open SubIQ, tap Tools, then choose App Store Subscriptions. SubIQ opens Apple’s subscription settings, where you can select the subscription and tap Cancel Subscription.",
+  },
+  {
+    question: "How do I cancel a Google Play subscription?",
+    answer:
+      "Open SubIQ, tap Tools, then choose Google Play Subscriptions. SubIQ opens Google Play’s subscription settings, where you can select the subscription, tap Cancel subscription, and follow the instructions.",
   },
 ];
 
@@ -649,7 +654,7 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
           </ContentShell>
         </LandingSection>
 
-        <FaqSection faqs={faqs} />
+        <FaqSection faqs={faqs} title="Subscription tracker FAQs" />
 
         <DownloadCta
           title={
