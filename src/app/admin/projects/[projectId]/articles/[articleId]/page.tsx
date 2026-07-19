@@ -7,6 +7,9 @@ import { getArticle } from "@/features/articles/service/get-article.server";
 import { getArticleReadiness } from "@/features/articles/service/get-article-readiness.server";
 import { listTranslations } from "@/features/articles/service/list-translations.server";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
+import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
+
+import "@/public-site/sites/subiq/theme.css";
 
 type Step = "plan" | "content" | "seo" | "translations" | "publish";
 function firstIncomplete(
@@ -92,6 +95,11 @@ export default async function ArticlePage({
       />
       <ArticleWorkspace
         article={article}
+        articleThemeClassName={
+          projectId === subiqSiteConfig.id
+            ? subiqSiteConfig.scopeClassName
+            : undefined
+        }
         canonicalBaseUrl={project.canonicalBaseUrl}
         projectTopics={project.topics}
         projectId={projectId}

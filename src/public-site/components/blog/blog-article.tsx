@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { SupportedLocaleCode } from "@/config/supported-locales";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
+import articleContentStyles from "@/features/articles/presentation/article-content.module.css";
 import type { ArticleHeading } from "@/public-site/components/mdx/article-mdx-outline";
 import { renderArticleMdx } from "@/public-site/components/mdx/render-article-mdx.server";
 import type { PublicBlogConfig } from "@/public-site/config/blog-config";
@@ -125,7 +126,7 @@ export async function BlogArticle({
                 </details>
               </>
             ) : null}
-            <div className={styles.prose}>
+            <div className={`${styles.prose} ${articleContentStyles.content}`}>
               {renderedArticle.content}
               <section
                 className={styles.installCta}

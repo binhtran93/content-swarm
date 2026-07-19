@@ -7,7 +7,15 @@ import {
   useMdastNodeUpdater,
 } from "@mdxeditor/editor";
 
+import articleContentStyles from "@/features/articles/presentation/article-content.module.css";
 import styles from "./markdown-editor.module.css";
+
+const presentationClasses: Partial<Record<string, string>> = {
+  Callout: articleContentStyles.callout,
+  Cards: articleContentStyles.cards,
+  "Cards.Card": articleContentStyles.card,
+  Steps: articleContentStyles.steps,
+};
 
 export function ArticleMdxComponentEditor({
   descriptor,
@@ -35,7 +43,7 @@ export function ArticleMdxComponentEditor({
 
   return (
     <section
-      className={styles.mdxComponent}
+      className={`${styles.mdxComponent} ${presentationClasses[name] ?? ""}`}
       data-component={name}
       data-variant={variant}
     >

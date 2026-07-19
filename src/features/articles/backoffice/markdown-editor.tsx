@@ -4,6 +4,7 @@ import type { MDXEditorMethods, MDXEditorProps } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 
+import articleContentStyles from "@/features/articles/presentation/article-content.module.css";
 import styles from "./markdown-editor.module.css";
 
 const InitializedMarkdownEditor = dynamic(
@@ -22,6 +23,8 @@ type MarkdownEditorProps = {
   className?: string;
   onChange: (markdown: string) => void;
   placeholder?: string;
+  presentation?: "article" | "document";
+  themeClassName?: string;
   value: string;
 };
 
@@ -29,6 +32,8 @@ export function MarkdownEditor({
   className = "",
   onChange,
   placeholder,
+  presentation = "document",
+  themeClassName = "",
   value,
 }: MarkdownEditorProps) {
   const editorRef = useRef<MDXEditorMethods>(null);
@@ -78,8 +83,12 @@ export function MarkdownEditor({
         </div>
       ) : null}
       <InitializedMarkdownEditor
-        className={`${styles.editor} ${className}`}
-        contentEditableClassName={styles.content}
+        className={`${styles.editor} ${themeClassName} ${className}`}
+        contentEditableClassName={`${styles.content} ${
+          presentation === "article"
+            ? `${styles.articleContent} ${articleContentStyles.content}`
+            : ""
+        }`}
         editorRef={editorRef}
         markdown={value}
         onChange={handleChange}

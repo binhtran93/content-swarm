@@ -212,7 +212,13 @@ function PlanEditor({ article }: { article: Article }) {
   );
 }
 
-function ContentEditor({ article }: { article: Article }) {
+function ContentEditor({
+  article,
+  articleThemeClassName,
+}: {
+  article: Article;
+  articleThemeClassName?: string;
+}) {
   const actionMenuRef = useRef<HTMLDetailsElement>(null);
   const [title, setTitle] = useState(article.title ?? "");
   const [excerpt, setExcerpt] = useState(article.excerpt ?? "");
@@ -425,6 +431,8 @@ function ContentEditor({ article }: { article: Article }) {
           <MarkdownEditor
             onChange={setContent}
             placeholder="Write the article…"
+            presentation="article"
+            themeClassName={articleThemeClassName}
             value={content}
           />
         </div>
@@ -573,9 +581,11 @@ function SeoEditor({
 
 function TranslationEditor({
   article,
+  articleThemeClassName,
   translations,
 }: {
   article: Article;
+  articleThemeClassName?: string;
   translations: Translation[];
 }) {
   const initial = translations[0];
@@ -806,6 +816,8 @@ function TranslationEditor({
               setValues((current) => ({ ...current, content }))
             }
             placeholder="Write the translated article…"
+            presentation="article"
+            themeClassName={articleThemeClassName}
             value={values.content}
           />
         </div>
@@ -901,6 +913,7 @@ function TranslationEditor({
 
 export function ArticleWorkspace({
   article: sourceArticle,
+  articleThemeClassName,
   projectId,
   step,
   canonicalBaseUrl,
@@ -909,6 +922,7 @@ export function ArticleWorkspace({
   publishPreview,
 }: {
   article: Article;
+  articleThemeClassName?: string;
   projectId: string;
   step: Step;
   canonicalBaseUrl: string | null;
@@ -949,7 +963,10 @@ export function ArticleWorkspace({
           {step === "plan" ? (
             <PlanEditor article={article} />
           ) : step === "content" ? (
-            <ContentEditor article={article} />
+            <ContentEditor
+              article={article}
+              articleThemeClassName={articleThemeClassName}
+            />
           ) : step === "seo" ? (
             <SeoEditor
               article={article}
@@ -957,7 +974,11 @@ export function ArticleWorkspace({
               projectTopics={projectTopics}
             />
           ) : step === "translations" ? (
-            <TranslationEditor article={article} translations={translations} />
+            <TranslationEditor
+              article={article}
+              articleThemeClassName={articleThemeClassName}
+              translations={translations}
+            />
           ) : (
             publishPreview
           )}

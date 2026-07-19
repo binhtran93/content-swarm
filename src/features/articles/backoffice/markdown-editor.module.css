@@ -45,69 +45,79 @@
   background: var(--color-base-100);
   color: var(--color-base-content);
   font-family: inherit;
+}
+
+.content:not(.articleContent) {
   font-size: 0.95rem;
   line-height: 1.55;
 }
 
-.content h1,
-.content h2,
-.content h3,
-.content h4 {
+.articleContent {
+  max-width: 780px;
+  margin-inline: auto;
+  padding: clamp(2rem, 4vw, 3.25rem) clamp(1.25rem, 4vw, 2.5rem) 5rem;
+}
+
+.content:not(.articleContent) h1,
+.content:not(.articleContent) h2,
+.content:not(.articleContent) h3,
+.content:not(.articleContent) h4 {
   margin-block: 1em 0.3em;
   line-height: 1.2;
   font-weight: 650;
 }
 
-.content h1:first-child,
-.content h2:first-child,
-.content h3:first-child {
+.content:not(.articleContent) h1:first-child,
+.content:not(.articleContent) h2:first-child,
+.content:not(.articleContent) h3:first-child {
   margin-top: 0;
 }
 
-.content h1 {
+.content:not(.articleContent) h1 {
   font-size: 1.55rem;
 }
 
-.content h2 {
+.content:not(.articleContent) h2 {
   font-size: 1.25rem;
 }
 
-.content h3 {
+.content:not(.articleContent) h3 {
   font-size: 1.05rem;
 }
 
-.content p,
-.content ul,
-.content ol,
-.content blockquote {
+.content:not(.articleContent) p,
+.content:not(.articleContent) ul,
+.content:not(.articleContent) ol,
+.content:not(.articleContent) blockquote {
   margin-block: 0.4rem;
 }
 
-.content ul,
-.content ol {
+.content:not(.articleContent) ul,
+.content:not(.articleContent) ol {
   padding-left: 1.4rem;
 }
 
-.content ul {
+.content:not(.articleContent) ul {
   list-style: disc;
 }
 
-.content ol {
+.content:not(.articleContent) ol {
   list-style: decimal;
 }
 
-.content blockquote {
+.content:not(.articleContent) blockquote {
   border-left: 3px solid var(--color-base-300);
   padding-left: 0.75rem;
   color: color-mix(in oklab, var(--color-base-content) 68%, transparent);
 }
 
-.content hr {
+.content:not(.articleContent) hr {
   margin-block: 0.8rem;
   border-color: var(--color-base-300);
 }
 
 .mdxComponent {
+  position: relative;
   margin-block: 0.7rem;
   border: 1px solid var(--color-base-300);
   border-radius: var(--radius-box);
@@ -115,36 +125,28 @@
   padding: 0.65rem 0.8rem 0.75rem;
 }
 
-.mdxComponent[data-component="Callout"] {
-  border-left: 4px solid var(--color-info);
-  background: color-mix(in oklab, var(--color-info) 8%, var(--color-base-100));
-}
-
-.mdxComponent[data-component="Callout"][data-variant="warning"] {
-  border-left-color: var(--color-warning);
-  background: color-mix(
-    in oklab,
-    var(--color-warning) 9%,
-    var(--color-base-100)
-  );
-}
-
-.mdxComponent[data-component="Steps"] {
-  border-left: 3px solid var(--color-primary);
-}
-
 .mdxComponentLabel {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 0.25rem;
+  position: absolute;
+  z-index: 2;
+  top: 0.45rem;
+  right: 0.55rem;
   color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
   font-size: 0.7rem;
   font-weight: 650;
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 120ms ease;
   user-select: none;
+}
+
+.mdxComponent:hover > .mdxComponentLabel,
+.mdxComponent:focus-within > .mdxComponentLabel {
+  opacity: 1;
 }
 
 .mdxComponentLabel select {
@@ -166,5 +168,9 @@
 @media (max-width: 48rem) {
   .content {
     padding: 0.75rem 1rem 2rem;
+  }
+
+  .articleContent {
+    padding-top: 2rem;
   }
 }
