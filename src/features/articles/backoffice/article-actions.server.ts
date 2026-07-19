@@ -259,14 +259,12 @@ export async function saveTranslationAction(
   const { projectId, articleId } = ids(formData);
   const locale = String(formData.get("locale") ?? "");
   try {
-    await saveTranslation(projectId, articleId, locale, {
-      title: String(formData.get("title") ?? ""),
-      slug: String(formData.get("slug") ?? ""),
-      excerpt: String(formData.get("excerpt") ?? ""),
-      content: String(formData.get("content") ?? ""),
-      seoTitle: String(formData.get("seoTitle") ?? ""),
-      seoDescription: String(formData.get("seoDescription") ?? ""),
-    });
+    await saveTranslation(
+      projectId,
+      articleId,
+      locale,
+      translationInput(formData),
+    );
     revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
     return { saved: true };
   } catch (error) {
@@ -289,16 +287,39 @@ export async function generateTranslationAction(
   }
 }
 
-export async function approveTranslationAction(formData: FormData) {
+export async function approveTranslationAction(
+  _state: ArticleActionState,
+  formData: FormData,
+): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
-  await approveTranslation(
-    projectId,
-    articleId,
-    String(formData.get("locale") ?? ""),
-  );
-  redirect(
-    `/admin/projects/${projectId}/articles/${articleId}?step=translations`,
-  );
+  const locale = String(formData.get("locale") ?? "");
+
+  try {
+    await saveTranslation(
+      projectId,
+      articleId,
+      locale,
+      translationInput(formData),
+    );
+
+    await approveTranslation(projectId, articleId, locale);
+
+    revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
+    return { saved: true };
+  } catch (error) {
+    return { error: message(error) };
+  }
+}
+
+function translationInput(formData: FormData) {
+  return {
+    title: String(formData.get("title") ?? ""),
+    slug: String(formData.get("slug") ?? ""),
+    excerpt: String(formData.get("excerpt") ?? ""),
+    content: String(formData.get("content") ?? ""),
+    seoTitle: String(formData.get("seoTitle") ?? ""),
+    seoDescription: String(formData.get("seoDescription") ?? ""),
+  };
 }
 
 export async function publishArticleAction(formData: FormData) {

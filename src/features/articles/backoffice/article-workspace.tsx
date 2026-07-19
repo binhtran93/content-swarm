@@ -17,6 +17,7 @@ import {
   supportedLocales,
 } from "@/config/supported-locales";
 import {
+  approveTranslationAction,
   applyContentChangesAction,
   generateContentAction,
   generateExcerptAction,
@@ -604,8 +605,47 @@ function TranslationEditor({
     saveTranslationAction,
     null,
   );
+  const [approveState, approveAction, approving] = useActionState(
+    approveTranslationAction,
+    null,
+  );
   const [generating, startGenerating] = useTransition();
   const [generateError, setGenerateError] = useState<string>();
+  const actionMenuRef = useRef<HTMLDetailsElement>(null);
+  const actionPending = generating || saving || approving;
+  const actionDisabled = actionPending || !sourceSupported || !targetSupported;
+  const canApprove = selected?.status !== "approved";
+
+  useEffect(() => {
+    function closeFromOutside(event: PointerEvent) {
+      if (
+        actionMenuRef.current?.open &&
+        !actionMenuRef.current.contains(event.target as Node)
+      ) {
+        actionMenuRef.current.open = false;
+      }
+    }
+
+    function closeFromEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && actionMenuRef.current?.open) {
+        actionMenuRef.current.open = false;
+        actionMenuRef.current.querySelector("summary")?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", closeFromOutside);
+    document.addEventListener("keydown", closeFromEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeFromOutside);
+      document.removeEventListener("keydown", closeFromEscape);
+    };
+  }, []);
+
+  function closeActionMenu() {
+    if (actionMenuRef.current) actionMenuRef.current.open = false;
+  }
+
   function generate() {
     startGenerating(async () => {
       const result = await generateTranslationAction(
@@ -645,7 +685,7 @@ function TranslationEditor({
   return (
     <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
       <ActionNotice
-        error={saveState?.error ?? generateError}
+        error={saveState?.error ?? approveState?.error ?? generateError}
         saved={saveState?.saved}
       />
       <Fields article={article} />
@@ -685,19 +725,77 @@ function TranslationEditor({
           ) : null}
           <button
             className="btn btn-outline btn-sm"
-            disabled={generating || !sourceSupported || !targetSupported}
+            disabled={actionDisabled}
             onClick={generate}
             type="button"
           >
             {generating ? "Generating…" : "Generate proposal"}
           </button>
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={saving || !sourceSupported || !targetSupported}
-            type="submit"
-          >
-            {saving ? "Saving…" : "Save translation"}
-          </button>
+          <div className="join">
+            <button
+              className={`btn btn-primary btn-sm ${canApprove ? "join-item" : ""}`}
+              disabled={actionDisabled}
+              type="submit"
+            >
+              {approving
+                ? "Approving…"
+                : saving
+                  ? "Saving…"
+                  : "Save translation"}
+            </button>
+            {canApprove ? (
+              <details
+                className="dropdown dropdown-end join-item"
+                ref={actionMenuRef}
+              >
+                <summary
+                  aria-disabled={actionDisabled}
+                  aria-label="Choose translation save action"
+                  className={`btn btn-primary btn-sm join-item px-2 ${actionDisabled ? "btn-disabled" : ""}`}
+                  onClick={(event) => {
+                    if (actionDisabled) event.preventDefault();
+                  }}
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="size-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="m7 10 5 5 5-5"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                </summary>
+                <ul className="menu dropdown-content bg-base-100 border-base-300 z-30 mt-1 w-52 border p-2 shadow-lg">
+                  <li>
+                    <button
+                      disabled={actionDisabled}
+                      formAction={saveAction}
+                      onClick={closeActionMenu}
+                      type="submit"
+                    >
+                      Save translation
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      disabled={actionDisabled}
+                      formAction={approveAction}
+                      onClick={closeActionMenu}
+                      type="submit"
+                    >
+                      Save &amp; approve
+                    </button>
+                  </li>
+                </ul>
+              </details>
+            ) : null}
+          </div>
         </div>
       </div>
       <input name="content" type="hidden" value={values.content} />

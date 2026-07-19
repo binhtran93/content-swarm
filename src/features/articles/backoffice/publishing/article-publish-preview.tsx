@@ -1,5 +1,4 @@
 import {
-  approveTranslationAction,
   archiveArticleAction,
   publishArticleAction,
 } from "@/features/articles/backoffice/article-actions.server";
@@ -112,38 +111,13 @@ export async function ArticlePublishPreview({
                       {translation.status}
                     </span>
                   </span>
-                  {translation.status === "draft" ? (
-                    <form action={approveTranslationAction}>
-                      <input name="projectId" type="hidden" value={projectId} />
-                      <input
-                        name="articleId"
-                        type="hidden"
-                        value={article.articleId}
-                      />
-                      <input
-                        name="locale"
-                        type="hidden"
-                        value={translation.locale}
-                      />
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          className="checkbox checkbox-sm"
-                          required
-                          type="checkbox"
-                        />
-                        Reviewed{" "}
-                        <button className="btn btn-sm btn-outline">
-                          Approve
-                        </button>
-                      </label>
-                    </form>
-                  ) : (
+                  {translation.status === "approved" ? (
                     <span className="text-base-content/60 text-sm">
                       {canonicalBaseUrl
                         ? `${canonicalBaseUrl}/${translation.locale}/blog/${translation.slug}`
                         : translation.slug}
                     </span>
-                  )}
+                  ) : null}
                 </div>
               ))}
             </div>
