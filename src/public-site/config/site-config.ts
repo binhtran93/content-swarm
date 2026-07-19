@@ -61,7 +61,7 @@ export function createDefaultWaitlistPresentation(
 ): SiteWaitlistPresentation {
   return {
     ctaLabel: "Join waitlist",
-    title: `Join the ${brandName} waitlist`,
+    title: `Join the waitlist`,
     description: `Get an email when ${brandName} is available`,
     emailLabel: "Email address",
     emailPlaceholder: "you@example.com",
