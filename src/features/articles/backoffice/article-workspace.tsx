@@ -500,34 +500,38 @@ function SeoEditor({
         </button>
       </div>
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1">
-        <label className="fieldset">
-          <span className="fieldset-legend">Slug</span>
-          <input
-            className="input w-full"
-            maxLength={160}
-            name="slug"
-            onChange={(event) => setSlug(event.target.value)}
-            pattern="[a-z0-9]+(-[a-z0-9]+)*"
-            required
-            value={slug}
-          />
-        </label>
-        <p className="text-base-content/60 text-sm break-all">
-          URL:{" "}
-          {canonicalBaseUrl
-            ? `${canonicalBaseUrl}/${article.locale}/blog/${slug || "…"}`
-            : "Set the project's canonical base URL to preview the final URL."}
-        </p>
-        <label className="fieldset">
-          <span className="fieldset-legend">Topic</span>
-          <input
-            className="input w-full"
-            defaultValue={article.topic ?? ""}
-            maxLength={300}
-            name="topic"
-            required
-          />
-        </label>
+        <div className="grid items-start gap-4 md:grid-cols-2">
+          <div className="min-w-0 space-y-2">
+            <label className="fieldset">
+              <span className="fieldset-legend">Slug</span>
+              <input
+                className="input w-full"
+                maxLength={160}
+                name="slug"
+                onChange={(event) => setSlug(event.target.value)}
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                required
+                value={slug}
+              />
+            </label>
+            <p className="text-base-content/60 text-sm break-all">
+              URL:{" "}
+              {canonicalBaseUrl
+                ? `${canonicalBaseUrl}/${article.locale}/blog/${slug || "…"}`
+                : "Set the project's canonical base URL to preview the final URL."}
+            </p>
+          </div>
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">Topic</span>
+            <input
+              className="input w-full"
+              defaultValue={article.topic ?? ""}
+              maxLength={300}
+              name="topic"
+              required
+            />
+          </label>
+        </div>
         <label className="fieldset">
           <span className="fieldset-legend">
             SEO title{" "}
