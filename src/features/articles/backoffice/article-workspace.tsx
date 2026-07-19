@@ -11,17 +11,20 @@ import {
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
+  applyContentChangesAction,
   generateContentAction,
   generateExcerptAction,
   generatePlanAction,
   generateTranslationAction,
-  improveContentAction,
+  reviewContentAction,
   saveContentAction,
   savePlanAction,
   saveSeoAction,
   saveTranslationAction,
 } from "@/features/articles/backoffice/article-actions.server";
+import { ContentImprovementDialog } from "@/features/articles/backoffice/content-improvement-dialog";
 import { MarkdownEditor } from "@/features/articles/backoffice/markdown-editor";
+import type { ArticleContentChange } from "@/features/articles/model/article-content-change";
 import type { ArticleReference } from "@/features/articles/model/article-reference";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
@@ -212,7 +215,12 @@ function ContentEditor({ article }: { article: Article }) {
   );
   const [generating, startGenerating] = useTransition();
   const [generatingExcerpt, startGeneratingExcerpt] = useTransition();
-  const [improving, startImproving] = useTransition();
+  const [reviewing, startReviewing] = useTransition();
+  const [applyingChanges, startApplyingChanges] = useTransition();
+  const [review, setReview] = useState<{
+    changes: ArticleContentChange[];
+    references: ArticleReference[];
+  }>();
   const [generateError, setGenerateError] = useState<string>();
 
   useEffect(() => {
@@ -262,12 +270,47 @@ function ContentEditor({ article }: { article: Article }) {
       apply(await generateContentAction(null, actionData(article))),
     );
   }
-  function improve() {
+  function reviewImprovements() {
     if (actionMenuRef.current) actionMenuRef.current.open = false;
 
-    startImproving(async () =>
-      apply(await improveContentAction(null, actionData(article))),
-    );
+    startReviewing(async () => {
+      const result = await reviewContentAction(
+        null,
+        actionData(article, { content }),
+      );
+
+      setGenerateError(result?.error);
+
+      if (result?.review) setReview(result.review);
+    });
+  }
+
+  function applyChanges(changes: ArticleContentChange[]) {
+    startApplyingChanges(async () => {
+      const result = await applyContentChangesAction(
+        null,
+        actionData(article, {
+          content,
+          changes: JSON.stringify(changes),
+        }),
+      );
+
+      setGenerateError(result?.error);
+
+      if (result?.proposal?.content) {
+        setContent(result.proposal.content);
+        setReferences((current) => {
+          const combined = [...current, ...(review?.references ?? [])];
+
+          return combined.filter(
+            (reference, index) =>
+              combined.findIndex((item) => item.url === reference.url) ===
+              index,
+          );
+        });
+        setReview(undefined);
+      }
+    });
   }
 
   function generateExcerpt() {
@@ -297,7 +340,7 @@ function ContentEditor({ article }: { article: Article }) {
           <div className="join">
             <button
               className="btn btn-outline btn-sm join-item"
-              disabled={generating || improving}
+              disabled={generating || reviewing || applyingChanges}
               onClick={generate}
               type="button"
             >
@@ -329,7 +372,7 @@ function ContentEditor({ article }: { article: Article }) {
               <ul className="menu dropdown-content bg-base-100 border-base-300 z-30 mt-1 w-56 border p-2 shadow-lg">
                 <li>
                   <button
-                    disabled={generating || improving}
+                    disabled={generating || reviewing || applyingChanges}
                     onClick={generate}
                     type="button"
                   >
@@ -338,11 +381,16 @@ function ContentEditor({ article }: { article: Article }) {
                 </li>
                 <li>
                   <button
-                    disabled={generating || improving || !article.content}
-                    onClick={improve}
+                    disabled={
+                      generating ||
+                      reviewing ||
+                      applyingChanges ||
+                      !content.trim()
+                    }
+                    onClick={reviewImprovements}
                     type="button"
                   >
-                    Improve saved content
+                    {reviewing ? "Reviewing…" : "Review improvements"}
                   </button>
                 </li>
               </ul>
@@ -410,6 +458,14 @@ function ContentEditor({ article }: { article: Article }) {
           </fieldset>
         </aside>
       </div>
+      {review ? (
+        <ContentImprovementDialog
+          applying={applyingChanges}
+          changes={review.changes}
+          onApply={applyChanges}
+          onDismiss={() => setReview(undefined)}
+        />
+      ) : null}
     </form>
   );
 }

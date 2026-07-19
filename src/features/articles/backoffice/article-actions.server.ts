@@ -10,14 +10,16 @@ import {
   articleReferencesSchema,
   type ArticleReference,
 } from "@/features/articles/model/article-reference";
+import type { ArticleContentChange } from "@/features/articles/model/article-content-change";
 import { approveTranslation } from "@/features/articles/service/approve-translation.server";
+import { applyArticleContentChanges } from "@/features/articles/service/apply-article-content-changes.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { createArticle } from "@/features/articles/service/create-article.server";
 import { generateArticleContent } from "@/features/articles/service/generate-article-content.server";
 import { generateArticleExcerpt } from "@/features/articles/service/generate-article-excerpt.server";
 import { generateArticlePlan } from "@/features/articles/service/generate-article-plan.server";
 import { generateTranslation } from "@/features/articles/service/generate-translation.server";
-import { improveArticleContent } from "@/features/articles/service/improve-article-content.server";
+import { reviewArticleContent } from "@/features/articles/service/review-article-content.server";
 import { saveArticleContent } from "@/features/articles/service/save-article-content.server";
 import { saveArticlePlan } from "@/features/articles/service/save-article-plan.server";
 import { saveArticleSeo } from "@/features/articles/service/save-article-seo.server";
@@ -25,6 +27,10 @@ import { saveTranslation } from "@/features/articles/service/save-translation.se
 
 export type ArticleActionState = {
   error?: string;
+  review?: {
+    changes: ArticleContentChange[];
+    references: ArticleReference[];
+  };
   saved?: boolean;
   proposal?: {
     content?: string;
@@ -176,18 +182,47 @@ export async function generateContentAction(
   }
 }
 
-export async function improveContentAction(
+export async function reviewContentAction(
   _state: ArticleActionState,
   formData: FormData,
 ): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
+
   try {
-    const result = await improveArticleContent(projectId, articleId);
+    const result = await reviewArticleContent(
+      projectId,
+      articleId,
+      String(formData.get("content") ?? ""),
+    );
+
+    return {
+      review: {
+        changes: result.output.changes,
+        references: result.references,
+      },
+    };
+  } catch (error) {
+    return { error: message(error) };
+  }
+}
+
+export async function applyContentChangesAction(
+  _state: ArticleActionState,
+  formData: FormData,
+): Promise<ArticleActionState> {
+  const { projectId, articleId } = ids(formData);
+
+  try {
+    const result = await applyArticleContentChanges(
+      projectId,
+      articleId,
+      String(formData.get("content") ?? ""),
+      JSON.parse(String(formData.get("changes") ?? "[]")),
+    );
 
     return {
       proposal: {
         content: result.output,
-        references: result.references,
       },
     };
   } catch (error) {

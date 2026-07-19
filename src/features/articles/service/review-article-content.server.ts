@@ -1,26 +1,37 @@
 import "server-only";
 
+import { z } from "zod";
+
 import { articleMdxComponentDescriptions } from "@/features/articles/config/article-mdx-components";
 import { articleWritingRules } from "@/features/articles/config/writing-rules";
-import { articleContentImprovePrompt } from "@/features/articles/prompts/article-content-improve-prompt";
+import {
+  articleContentChangesSchema,
+  assertApplicableContentChanges,
+} from "@/features/articles/model/article-content-change";
+import { articleContentReviewPrompt } from "@/features/articles/prompts/article-content-review-prompt";
 import { generateArticleAi } from "@/features/articles/provider/generate-article-ai.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { getArticleGenerationContext } from "@/features/articles/service/get-article-generation-context.server";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
-import type { AiGeneration } from "@/platform/ai/generate-ai.server";
 
-export async function improveArticleContent(
+const outputSchema = z.object({
+  changes: articleContentChangesSchema,
+});
+
+export async function reviewArticleContent(
   projectId: string,
   articleId: string,
-): Promise<AiGeneration<string>> {
+  content: string,
+) {
+  const currentContent = content.trim();
+  const validation = validateArticleMdx(currentContent);
+
+  if (!validation.valid)
+    throw new ArticleServiceError("invalid", validation.errors[0]!);
+
   const context = await getArticleGenerationContext(projectId, articleId);
-  if (!context.article.content)
-    throw new ArticleServiceError(
-      "invalid",
-      "Save content before asking AI to improve it.",
-    );
-  const proposal = await generateArticleAi(
-    articleContentImprovePrompt.system,
+  const result = await generateArticleAi(
+    articleContentReviewPrompt.system,
     JSON.stringify({
       project: {
         name: context.project.name,
@@ -31,16 +42,28 @@ export async function improveArticleContent(
       supportingKeywords: context.supportingKeywords,
       title: context.article.title,
       plan: context.article.plan,
-      content: context.article.content,
+      currentContent,
       writingRules: articleWritingRules,
       approvedComponents: articleMdxComponentDescriptions,
     }),
+    {
+      format: {
+        name: "article_content_review",
+        schema: outputSchema,
+      },
+    },
   );
-  const validation = validateArticleMdx(proposal.output);
-  if (!validation.valid)
+
+  try {
+    assertApplicableContentChanges(currentContent, result.output.changes);
+  } catch (error) {
     throw new ArticleServiceError(
       "provider",
-      `AI returned invalid MDX: ${validation.errors[0]}`,
+      error instanceof Error
+        ? error.message
+        : "AI returned invalid content changes.",
     );
-  return proposal;
+  }
+
+  return result;
 }

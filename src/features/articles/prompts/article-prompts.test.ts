@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { articleContentImprovePrompt } from "@/features/articles/prompts/article-content-improve-prompt";
+import { articleContentApplyPrompt } from "@/features/articles/prompts/article-content-apply-prompt";
 import { articleContentPrompt } from "@/features/articles/prompts/article-content-prompt";
+import { articleContentReviewPrompt } from "@/features/articles/prompts/article-content-review-prompt";
 import { articleExcerptPrompt } from "@/features/articles/prompts/article-excerpt-prompt";
 import { articlePlanPrompt } from "@/features/articles/prompts/article-plan-prompt";
 import { articleTranslationPrompt } from "@/features/articles/prompts/article-translation-prompt";
@@ -19,17 +20,15 @@ describe("article prompt contracts", () => {
     expect(articleExcerptPrompt.version).toBe("article-excerpt-v1");
     expect(articleExcerptPrompt.system).toContain("current article MDX");
     expect(articleExcerptPrompt.system).toContain("Do not use markdown");
-    expect(articleContentImprovePrompt.version).toBe(
-      "article-content-improve-v3",
+    expect(articleContentReviewPrompt.version).toBe(
+      "article-content-review-v1",
     );
-    expect(articleContentImprovePrompt.system).toContain(
-      "Return the complete improved MDX",
+    expect(articleContentReviewPrompt.system).toContain(
+      "exact, unique, contiguous passage",
     );
-    expect(articleContentImprovePrompt.system).toContain(
-      "Remove every em dash",
-    );
-    expect(articleContentImprovePrompt.system).toContain(
-      "Rewrite legalistic, bureaucratic, and policy-like prose",
+    expect(articleContentApplyPrompt.version).toBe("article-content-apply-v1");
+    expect(articleContentApplyPrompt.system).toContain(
+      "Preserve every unselected passage exactly",
     );
   });
 
