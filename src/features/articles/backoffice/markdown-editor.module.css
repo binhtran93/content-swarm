@@ -1,0 +1,114 @@
+.editor {
+  display: flex;
+  height: 0;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  background: var(--color-base-100);
+}
+
+.editor :global([role="toolbar"]) {
+  min-height: 2.25rem;
+  flex-shrink: 0;
+  gap: 0.125rem;
+  border-bottom: 1px solid var(--color-base-300);
+  border-radius: 0;
+  background: var(--color-base-100);
+  padding: 0.2rem 0.4rem;
+}
+
+.editor :global(.mdxeditor-root-contenteditable) {
+  display: block;
+  height: 0;
+  min-height: 0;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-base-100);
+  scrollbar-gutter: stable;
+}
+
+.editor :global(.mdxeditor-root-contenteditable) > div {
+  min-height: 100%;
+}
+
+.content {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 1rem 1.25rem 2.5rem;
+  background: var(--color-base-100);
+  color: var(--color-base-content);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+  margin-block: 1em 0.3em;
+  line-height: 1.2;
+  font-weight: 650;
+}
+
+.content h1:first-child,
+.content h2:first-child,
+.content h3:first-child {
+  margin-top: 0;
+}
+
+.content h1 {
+  font-size: 1.55rem;
+}
+
+.content h2 {
+  font-size: 1.25rem;
+}
+
+.content h3 {
+  font-size: 1.05rem;
+}
+
+.content p,
+.content ul,
+.content ol,
+.content blockquote {
+  margin-block: 0.4rem;
+}
+
+.content ul,
+.content ol {
+  padding-left: 1.4rem;
+}
+
+.content ul {
+  list-style: disc;
+}
+
+.content ol {
+  list-style: decimal;
+}
+
+.content blockquote {
+  border-left: 3px solid var(--color-base-300);
+  padding-left: 0.75rem;
+  color: color-mix(in oklab, var(--color-base-content) 68%, transparent);
+}
+
+.content hr {
+  margin-block: 0.8rem;
+  border-color: var(--color-base-300);
+}
+
+@media (max-width: 48rem) {
+  .content {
+    padding: 0.75rem 1rem 2rem;
+  }
+}

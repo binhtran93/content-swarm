@@ -18,6 +18,7 @@ import {
 } from "@/features/articles/backoffice/article-actions.server";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
+import { MarkdownEditor } from "@/features/articles/backoffice/markdown-editor";
 
 type Step =
   "brief" | "outline" | "content" | "seo" | "translations" | "publish";
@@ -106,10 +107,9 @@ function BriefEditor({ article }: { article: Article }) {
             </button>
           </div>
         </div>
-        <textarea
-          className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
-          name="brief"
-          onChange={(event) => setBrief(event.target.value)}
+        <input name="brief" type="hidden" value={brief} />
+        <MarkdownEditor
+          onChange={setBrief}
           placeholder="Define reader, goal, intent, coverage, boundaries, tone, and outcome…"
           value={brief}
         />
@@ -182,16 +182,12 @@ function OutlineEditor({ article }: { article: Article }) {
           value={title}
         />
       </label>
-      <label className="fieldset flex min-h-0 flex-1 flex-col">
-        <span className="fieldset-legend">Outline (Markdown)</span>
-        <textarea
-          className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
-          name="outline"
-          onChange={(event) => setOutline(event.target.value)}
-          required
-          value={outline}
-        />
-      </label>
+      <input name="outline" type="hidden" value={outline} />
+      <MarkdownEditor
+        onChange={setOutline}
+        placeholder="Build the article structure…"
+        value={outline}
+      />
     </form>
   );
 }
@@ -260,28 +256,12 @@ function ContentEditor({ article }: { article: Article }) {
           </button>
         </div>
       </div>
-      <div className="grid min-h-0 flex-1 gap-4 overflow-auto xl:grid-cols-2 xl:overflow-hidden">
-        <label className="fieldset flex min-h-[24rem] flex-col xl:min-h-0">
-          <span className="fieldset-legend">
-            Article body (MDX, starting at H2)
-          </span>
-          <textarea
-            className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
-            name="content"
-            onChange={(event) => setContent(event.target.value)}
-            value={content}
-          />
-        </label>
-        <div className="fieldset flex min-h-[24rem] flex-col xl:min-h-0">
-          <span className="fieldset-legend">Safe inert preview</span>
-          <article className="prose bg-base-200 rounded-field border-base-300 min-h-0 flex-1 overflow-auto border p-5">
-            <pre className="font-sans text-sm whitespace-pre-wrap">
-              {content ||
-                "Preview appears here. Exact component rendering is shown in Publish Preview after Save."}
-            </pre>
-          </article>
-        </div>
-      </div>
+      <input name="content" type="hidden" value={content} />
+      <MarkdownEditor
+        onChange={setContent}
+        placeholder="Write the article…"
+        value={content}
+      />
     </form>
   );
 }
@@ -544,21 +524,16 @@ function TranslationEditor({
             </label>
           ))}
         </div>
-        <label className="fieldset flex min-h-[24rem] flex-col xl:min-h-0">
-          <span className="fieldset-legend">Translated MDX</span>
-          <textarea
-            className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
-            name="content"
-            onChange={(event) =>
-              setValues((current) => ({
-                ...current,
-                content: event.target.value,
-              }))
+        <div className="flex min-h-[24rem] flex-col xl:min-h-0">
+          <input name="content" type="hidden" value={values.content} />
+          <MarkdownEditor
+            onChange={(content) =>
+              setValues((current) => ({ ...current, content }))
             }
-            required
+            placeholder="Write the translated article…"
             value={values.content}
           />
-        </label>
+        </div>
       </div>
     </form>
   );
