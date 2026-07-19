@@ -22,7 +22,7 @@ export const subiqSiteConfig: PublicSiteConfig = {
   },
   navigation: [
     { label: "Home", href: "/" },
-    { label: "Blogs", href: "/blog" },
+    { label: "Blog", href: "/blog" },
     { label: "FAQ", href: "/#faq" },
     { label: "Support", href: "/support" },
   ],
