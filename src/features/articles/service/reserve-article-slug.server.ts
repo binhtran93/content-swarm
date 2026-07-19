@@ -17,10 +17,8 @@ export async function reserveArticleSlug(
       "Source locale does not match the article.",
     );
   await saveArticleSeo(projectId, articleId, {
-    title: article.title ?? "",
     slug,
     topic: article.topic ?? "",
-    excerpt: article.excerpt ?? "",
     seoTitle: article.seoTitle ?? "",
     seoDescription: article.seoDescription ?? "",
   });

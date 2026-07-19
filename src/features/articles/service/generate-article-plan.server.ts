@@ -9,7 +9,6 @@ import { generateArticleAi } from "@/features/articles/provider/generate-article
 import { getArticleGenerationContext } from "@/features/articles/service/get-article-generation-context.server";
 
 const outputSchema = z.object({
-  title: z.string().trim().min(1).max(200),
   planMarkdown: z.string().trim().min(1).max(40_000),
 });
 
@@ -29,6 +28,7 @@ export async function generateArticlePlan(
       locale: context.article.locale,
       primaryKeyword: context.primaryKeyword,
       supportingKeywords: context.supportingKeywords,
+      articleTitle: context.article.title,
       writingRules: articleWritingRules,
       approvedComponents: articleMdxComponentDescriptions,
     }),

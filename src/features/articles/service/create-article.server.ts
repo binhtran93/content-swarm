@@ -13,6 +13,13 @@ import { assignKeywordTopic } from "@/features/keywords/service/assign-keyword-t
 import { getServerFirestore } from "@/platform/firebase/firestore.server";
 import { readFirestoreDocument } from "@/platform/firebase/read-firestore-document.server";
 
+function titleFromKeyword(keyword: string): string {
+  const value = keyword.trim();
+  const [first = "", ...rest] = Array.from(value);
+
+  return `${first.toLocaleUpperCase()}${rest.join("")}`;
+}
+
 export async function createArticle(
   projectId: string,
   keywordId: string,
@@ -80,7 +87,7 @@ export async function createArticle(
       schemaVersion: 1,
       locale,
       keywordId,
-      title: null,
+      title: titleFromKeyword(keyword.keyword),
       slug: null,
       topic: null,
       excerpt: null,

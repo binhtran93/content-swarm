@@ -2,12 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { articleContentImprovePrompt } from "@/features/articles/prompts/article-content-improve-prompt";
 import { articleContentPrompt } from "@/features/articles/prompts/article-content-prompt";
+import { articleExcerptPrompt } from "@/features/articles/prompts/article-excerpt-prompt";
 import { articlePlanPrompt } from "@/features/articles/prompts/article-plan-prompt";
 import { articleTranslationPrompt } from "@/features/articles/prompts/article-translation-prompt";
 
 describe("article prompt contracts", () => {
   it("keeps versioned proposals editorial and body-only", () => {
-    expect(articlePlanPrompt.version).toBe("article-plan-v1");
+    expect(articlePlanPrompt.version).toBe("article-plan-v2");
     expect(articlePlanPrompt.system).toContain("Do not write article prose");
     expect(articlePlanPrompt.system).toContain("Use Google Search");
     expect(articleContentPrompt.version).toBe("article-content-v3");
@@ -15,6 +16,9 @@ describe("article prompt contracts", () => {
     expect(articleContentPrompt.system).toContain("do not invent facts");
     expect(articleContentPrompt.system).toContain("Do not use em dashes");
     expect(articleContentPrompt.system).toContain("not like a contract");
+    expect(articleExcerptPrompt.version).toBe("article-excerpt-v1");
+    expect(articleExcerptPrompt.system).toContain("current article MDX");
+    expect(articleExcerptPrompt.system).toContain("Do not use markdown");
     expect(articleContentImprovePrompt.version).toBe(
       "article-content-improve-v3",
     );

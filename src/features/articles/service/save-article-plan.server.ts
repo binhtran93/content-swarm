@@ -9,21 +9,14 @@ export async function saveArticlePlan(
   projectId: string,
   articleId: string,
   plan: string,
-  title: string,
   references: ArticleReference[],
 ): Promise<void> {
   const nextPlan = plan.trim();
-  const nextTitle = title.trim();
 
-  if (
-    !nextPlan ||
-    nextPlan.length > 40_000 ||
-    !nextTitle ||
-    nextTitle.length > 200
-  )
+  if (!nextPlan || nextPlan.length > 40_000)
     throw new ArticleServiceError(
       "invalid",
-      "Enter an article title and plan before saving.",
+      "Enter an article plan before saving.",
     );
 
   const nextReferences = articleReferencesSchema.parse(references);
@@ -31,6 +24,5 @@ export async function saveArticlePlan(
   await updateArticle(projectId, articleId, () => ({
     plan: nextPlan,
     planReferences: nextReferences,
-    title: nextTitle,
   }));
 }

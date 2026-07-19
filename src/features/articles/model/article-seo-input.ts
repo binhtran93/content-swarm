@@ -11,10 +11,8 @@ const slug = z
   );
 
 export const articleSeoInputSchema = z.object({
-  title: z.string().trim().min(1, "Enter a title.").max(200),
   slug,
   topic: z.string().trim().min(1, "Enter a topic.").max(300),
-  excerpt: z.string().trim().min(1, "Enter an excerpt.").max(500),
   seoTitle: z.string().trim().min(1, "Enter an SEO title.").max(200),
   seoDescription: z
     .string()

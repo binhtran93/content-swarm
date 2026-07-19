@@ -12,6 +12,7 @@ import {
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
   generateContentAction,
+  generateExcerptAction,
   generatePlanAction,
   generateTranslationAction,
   improveContentAction,
@@ -129,7 +130,6 @@ function actionData(article: Article, values: Record<string, string> = {}) {
 }
 
 function PlanEditor({ article }: { article: Article }) {
-  const [title, setTitle] = useState(article.title ?? "");
   const [plan, setPlan] = useState(article.plan ?? "");
   const [references, setReferences] = useState(article.planReferences);
   const [saveState, saveAction, saving] = useActionState(savePlanAction, null);
@@ -143,14 +143,12 @@ function PlanEditor({ article }: { article: Article }) {
 
       const proposal = result?.proposal;
       if (
-        proposal?.title &&
-        proposal.plan &&
-        ((title === article.title && plan === article.plan) ||
+        proposal?.plan &&
+        (plan === article.plan ||
           window.confirm(
             "Replace your unsaved article plan with the AI proposal?",
           ))
       ) {
-        setTitle(proposal.title);
         setPlan(proposal.plan);
         setReferences(proposal.references ?? []);
       }
@@ -186,17 +184,6 @@ function PlanEditor({ article }: { article: Article }) {
             </button>
           </div>
         </div>
-        <label className="fieldset shrink-0">
-          <span className="fieldset-legend">Article title</span>
-          <input
-            className="input w-full"
-            maxLength={200}
-            name="title"
-            onChange={(event) => setTitle(event.target.value)}
-            required
-            value={title}
-          />
-        </label>
         <input name="plan" type="hidden" value={plan} />
         <input
           name="references"
@@ -214,6 +201,8 @@ function PlanEditor({ article }: { article: Article }) {
 }
 
 function ContentEditor({ article }: { article: Article }) {
+  const [title, setTitle] = useState(article.title ?? "");
+  const [excerpt, setExcerpt] = useState(article.excerpt ?? "");
   const [content, setContent] = useState(article.content ?? "");
   const [references, setReferences] = useState(article.contentReferences);
   const [saveState, saveAction, saving] = useActionState(
@@ -221,6 +210,7 @@ function ContentEditor({ article }: { article: Article }) {
     null,
   );
   const [generating, startGenerating] = useTransition();
+  const [generatingExcerpt, startGeneratingExcerpt] = useTransition();
   const [improving, startImproving] = useTransition();
   const [generateError, setGenerateError] = useState<string>();
   function apply(result: Awaited<ReturnType<typeof generateContentAction>>) {
@@ -245,6 +235,20 @@ function ContentEditor({ article }: { article: Article }) {
       apply(await improveContentAction(null, actionData(article))),
     );
   }
+
+  function generateExcerpt() {
+    startGeneratingExcerpt(async () => {
+      const result = await generateExcerptAction(
+        null,
+        actionData(article, { content }),
+      );
+
+      setGenerateError(result?.error);
+
+      if (result?.proposal?.excerpt) setExcerpt(result.proposal.excerpt);
+    });
+  }
+
   return (
     <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
       <ActionNotice
@@ -287,11 +291,53 @@ function ContentEditor({ article }: { article: Article }) {
         type="hidden"
         value={JSON.stringify(references)}
       />
-      <MarkdownEditor
-        onChange={setContent}
-        placeholder="Write the article…"
-        value={content}
-      />
+      <div className="flex min-h-0 flex-1 flex-col gap-3 min-[105rem]:grid min-[105rem]:grid-cols-[minmax(0,1fr)_20rem] min-[105rem]:grid-rows-[minmax(0,1fr)]">
+        <div className="flex h-full min-h-0 min-w-0 overflow-hidden">
+          <MarkdownEditor
+            onChange={setContent}
+            placeholder="Write the article…"
+            value={content}
+          />
+        </div>
+        <aside className="min-[105rem]:rounded-box min-[105rem]:border-base-300 min-[105rem]:bg-base-200/40 order-first grid shrink-0 gap-3 md:grid-cols-2 min-[105rem]:order-last min-[105rem]:block min-[105rem]:space-y-4 min-[105rem]:border min-[105rem]:p-4">
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">Title</span>
+            <input
+              className="input w-full"
+              maxLength={200}
+              name="title"
+              onChange={(event) => setTitle(event.target.value)}
+              required
+              value={title}
+            />
+          </label>
+          <fieldset className="fieldset min-w-0">
+            <div className="flex min-h-6 items-center justify-between gap-3">
+              <label className="fieldset-legend" htmlFor="article-excerpt">
+                Excerpt
+              </label>
+              <button
+                className="btn btn-ghost btn-xs"
+                disabled={generatingExcerpt || !content.trim()}
+                onClick={generateExcerpt}
+                type="button"
+              >
+                {generatingExcerpt ? "Generating…" : "Generate with AI"}
+              </button>
+            </div>
+            <textarea
+              className="textarea min-h-28 w-full resize-none"
+              id="article-excerpt"
+              maxLength={500}
+              name="excerpt"
+              onChange={(event) => setExcerpt(event.target.value)}
+              required
+              rows={4}
+              value={excerpt}
+            />
+          </fieldset>
+        </aside>
+      </div>
     </form>
   );
 }
@@ -320,30 +366,18 @@ function SeoEditor({
         </button>
       </div>
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="fieldset">
-            <span className="fieldset-legend">Title</span>
-            <input
-              className="input w-full"
-              defaultValue={article.title ?? ""}
-              maxLength={200}
-              name="title"
-              required
-            />
-          </label>
-          <label className="fieldset">
-            <span className="fieldset-legend">Slug</span>
-            <input
-              className="input w-full"
-              maxLength={160}
-              name="slug"
-              onChange={(event) => setSlug(event.target.value)}
-              pattern="[a-z0-9]+(-[a-z0-9]+)*"
-              required
-              value={slug}
-            />
-          </label>
-        </div>
+        <label className="fieldset">
+          <span className="fieldset-legend">Slug</span>
+          <input
+            className="input w-full"
+            maxLength={160}
+            name="slug"
+            onChange={(event) => setSlug(event.target.value)}
+            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+            required
+            value={slug}
+          />
+        </label>
         <p className="text-base-content/60 text-sm break-all">
           URL:{" "}
           {canonicalBaseUrl
@@ -362,18 +396,6 @@ function SeoEditor({
         </label>
         <label className="fieldset">
           <span className="fieldset-legend">
-            Excerpt <span className="font-normal opacity-60">(up to 500)</span>
-          </span>
-          <textarea
-            className="textarea w-full"
-            defaultValue={article.excerpt ?? ""}
-            maxLength={500}
-            name="excerpt"
-            required
-          />
-        </label>
-        <label className="fieldset">
-          <span className="fieldset-legend">
             SEO title{" "}
             <span className="font-normal opacity-60">
               (typically around 50–60 characters)
@@ -381,7 +403,7 @@ function SeoEditor({
           </span>
           <input
             className="input w-full"
-            defaultValue={article.seoTitle ?? ""}
+            defaultValue={article.seoTitle ?? article.title ?? ""}
             maxLength={200}
             name="seoTitle"
             required
@@ -396,7 +418,7 @@ function SeoEditor({
           </span>
           <textarea
             className="textarea w-full"
-            defaultValue={article.seoDescription ?? ""}
+            defaultValue={article.seoDescription ?? article.excerpt ?? ""}
             maxLength={500}
             name="seoDescription"
             required
@@ -588,7 +610,7 @@ export function ArticleWorkspace({
   const unlocked = {
     plan: true,
     content: Boolean(article.plan && article.title),
-    seo: Boolean(article.content),
+    seo: Boolean(article.title && article.excerpt && article.content),
     translations: true,
     publish: true,
   };

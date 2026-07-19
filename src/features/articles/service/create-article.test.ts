@@ -128,6 +128,7 @@ describe("createArticle", () => {
     seedKeyword("primary", now);
     const article = await createArticle("subiq", "primary", "en-US");
     expect(article.keywordId).toBe("primary");
+    expect(article.title).toBe("Primary");
     expect(article.status).toBe("draft");
     expect(
       mock.documents.get("projects/subiq/keywords/primary")?.articleId,

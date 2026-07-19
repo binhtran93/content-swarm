@@ -14,6 +14,7 @@ import { approveTranslation } from "@/features/articles/service/approve-translat
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { createArticle } from "@/features/articles/service/create-article.server";
 import { generateArticleContent } from "@/features/articles/service/generate-article-content.server";
+import { generateArticleExcerpt } from "@/features/articles/service/generate-article-excerpt.server";
 import { generateArticlePlan } from "@/features/articles/service/generate-article-plan.server";
 import { generateTranslation } from "@/features/articles/service/generate-translation.server";
 import { improveArticleContent } from "@/features/articles/service/improve-article-content.server";
@@ -86,7 +87,6 @@ export async function savePlanAction(
       projectId,
       articleId,
       String(formData.get("plan") ?? ""),
-      String(formData.get("title") ?? ""),
       references(formData),
     );
     revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
@@ -106,7 +106,6 @@ export async function generatePlanAction(
 
     return {
       proposal: {
-        title: result.output.title,
         plan: result.output.planMarkdown,
         references: result.references,
       },
@@ -122,14 +121,37 @@ export async function saveContentAction(
 ): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
   try {
-    await saveArticleContent(
+    await saveArticleContent(projectId, articleId, {
+      title: String(formData.get("title") ?? ""),
+      excerpt: String(formData.get("excerpt") ?? ""),
+      content: String(formData.get("content") ?? ""),
+      references: references(formData),
+    });
+    revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
+    return { saved: true };
+  } catch (error) {
+    return { error: message(error) };
+  }
+}
+
+export async function generateExcerptAction(
+  _state: ArticleActionState,
+  formData: FormData,
+): Promise<ArticleActionState> {
+  const { projectId, articleId } = ids(formData);
+
+  try {
+    const result = await generateArticleExcerpt(
       projectId,
       articleId,
       String(formData.get("content") ?? ""),
-      references(formData),
     );
-    revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
-    return { saved: true };
+
+    return {
+      proposal: {
+        excerpt: result.output.excerpt,
+      },
+    };
   } catch (error) {
     return { error: message(error) };
   }
@@ -180,10 +202,8 @@ export async function saveSeoAction(
   const { projectId, articleId } = ids(formData);
   try {
     await saveArticleSeo(projectId, articleId, {
-      title: String(formData.get("title") ?? ""),
       slug: String(formData.get("slug") ?? ""),
       topic: String(formData.get("topic") ?? ""),
-      excerpt: String(formData.get("excerpt") ?? ""),
       seoTitle: String(formData.get("seoTitle") ?? ""),
       seoDescription: String(formData.get("seoDescription") ?? ""),
     });

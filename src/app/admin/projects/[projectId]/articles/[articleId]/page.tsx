@@ -13,11 +13,10 @@ function firstIncomplete(
   article: Awaited<ReturnType<typeof getArticle>>,
 ): Step {
   if (!article.plan || !article.title) return "plan";
-  if (!article.content) return "content";
+  if (!article.content || !article.excerpt) return "content";
   if (
     !article.slug ||
     !article.topic ||
-    !article.excerpt ||
     !article.seoTitle ||
     !article.seoDescription
   )
@@ -61,7 +60,8 @@ export default async function ArticlePage({
     : firstIncomplete(article);
   const step =
     (valid === "content" && (!article.plan || !article.title)) ||
-    (valid === "seo" && !article.content)
+    (valid === "seo" &&
+      (!article.content || !article.title || !article.excerpt))
       ? firstIncomplete(article)
       : valid;
   const preview =
@@ -75,7 +75,11 @@ export default async function ArticlePage({
       />
     ) : undefined;
   return (
-    <div className="mx-auto h-[calc(100dvh-6rem)] max-w-7xl sm:h-[calc(100dvh-7rem)] lg:h-[calc(100dvh-8rem)]">
+    <div
+      className={`mx-auto h-[calc(100dvh-6rem)] sm:h-[calc(100dvh-7rem)] lg:h-[calc(100dvh-8rem)] ${
+        step === "content" ? "max-w-[101rem]" : "max-w-7xl"
+      }`}
+    >
       <PageTitle
         title={article.title ?? "Untitled article"}
         action={
