@@ -55,7 +55,7 @@ describe("article content improvement services", () => {
     expect(options).not.toHaveProperty("searchGrounding");
   });
 
-  it("rejects malformed review passages", async () => {
+  it("allows the user to review non-exact AI excerpts", async () => {
     mocks.generateArticleAi.mockResolvedValue({
       output: {
         changes: [{ before: "Missing passage.", after: "Replacement." }],
@@ -65,7 +65,13 @@ describe("article content improvement services", () => {
 
     await expect(
       reviewArticleContent("project", "article", "## Current draft"),
-    ).rejects.toThrow("no longer exists");
+    ).resolves.toEqual(
+      expect.objectContaining({
+        output: expect.objectContaining({
+          changes: [{ before: "Missing passage.", after: "Replacement." }],
+        }),
+      }),
+    );
   });
 
   it("applies only approved changes without search grounding", async () => {

@@ -422,12 +422,15 @@ function ContentEditor({ article }: { article: Article }) {
         <aside className="min-[105rem]:rounded-box min-[105rem]:border-base-300 min-[105rem]:bg-base-200/40 order-first grid shrink-0 gap-3 md:grid-cols-2 min-[105rem]:order-last min-[105rem]:block min-[105rem]:space-y-4 min-[105rem]:border min-[105rem]:p-4">
           <label className="fieldset min-w-0">
             <span className="fieldset-legend">Title</span>
-            <input
-              className="input w-full"
+            <textarea
+              className="textarea min-h-20 w-full resize-y"
               maxLength={200}
               name="title"
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={(event) =>
+                setTitle(event.target.value.replace(/\s*\n+\s*/g, " "))
+              }
               required
+              rows={2}
               value={title}
             />
           </label>

@@ -24,11 +24,11 @@ describe("article prompt contracts", () => {
       "article-content-review-v1",
     );
     expect(articleContentReviewPrompt.system).toContain(
-      "exact, unique, contiguous passage",
+      "clear excerpt that lets the user recognize",
     );
     expect(articleContentApplyPrompt.version).toBe("article-content-apply-v1");
     expect(articleContentApplyPrompt.system).toContain(
-      "Preserve every unselected passage exactly",
+      "Preserve every unselected passage",
     );
   });
 

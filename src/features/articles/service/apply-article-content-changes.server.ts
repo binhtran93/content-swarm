@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  articleContentChangesSchema,
-  assertApplicableContentChanges,
-} from "@/features/articles/model/article-content-change";
+import { articleContentChangesSchema } from "@/features/articles/model/article-content-change";
 import { articleContentApplyPrompt } from "@/features/articles/prompts/article-content-apply-prompt";
 import { generateArticleAi } from "@/features/articles/provider/generate-article-ai.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
@@ -25,17 +22,6 @@ export async function applyArticleContentChanges(
     throw new ArticleServiceError("invalid", validation.errors[0]!);
 
   const changes = articleContentChangesSchema.min(1).parse(changesInput);
-
-  try {
-    assertApplicableContentChanges(content, changes);
-  } catch (error) {
-    throw new ArticleServiceError(
-      "conflict",
-      error instanceof Error
-        ? error.message
-        : "The selected changes no longer match the content.",
-    );
-  }
 
   const result = await generateArticleAi(
     articleContentApplyPrompt.system,

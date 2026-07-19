@@ -4,10 +4,7 @@ import { z } from "zod";
 
 import { articleMdxComponentDescriptions } from "@/features/articles/config/article-mdx-components";
 import { articleWritingRules } from "@/features/articles/config/writing-rules";
-import {
-  articleContentChangesSchema,
-  assertApplicableContentChanges,
-} from "@/features/articles/model/article-content-change";
+import { articleContentChangesSchema } from "@/features/articles/model/article-content-change";
 import { articleContentReviewPrompt } from "@/features/articles/prompts/article-content-review-prompt";
 import { generateArticleAi } from "@/features/articles/provider/generate-article-ai.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
@@ -53,17 +50,6 @@ export async function reviewArticleContent(
       },
     },
   );
-
-  try {
-    assertApplicableContentChanges(currentContent, result.output.changes);
-  } catch (error) {
-    throw new ArticleServiceError(
-      "provider",
-      error instanceof Error
-        ? error.message
-        : "AI returned invalid content changes.",
-    );
-  }
 
   return result;
 }

@@ -14,27 +14,3 @@ export const articleContentChangesSchema = z
   .max(30);
 
 export type ArticleContentChange = z.infer<typeof articleContentChangeSchema>;
-
-export function assertApplicableContentChanges(
-  content: string,
-  changes: ArticleContentChange[],
-): void {
-  const ranges = changes.map((change) => {
-    const start = content.indexOf(change.before);
-
-    if (start < 0)
-      throw new Error("A proposed passage no longer exists in the content.");
-
-    if (content.indexOf(change.before, start + 1) >= 0)
-      throw new Error("A proposed passage is not unique in the content.");
-
-    return { start, end: start + change.before.length };
-  });
-
-  const ordered = ranges.toSorted((left, right) => left.start - right.start);
-
-  for (let index = 1; index < ordered.length; index += 1) {
-    if (ordered[index]!.start < ordered[index - 1]!.end)
-      throw new Error("Proposed content changes overlap.");
-  }
-}
