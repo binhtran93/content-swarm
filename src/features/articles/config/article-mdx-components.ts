@@ -1,8 +1,36 @@
-export const articleMdxComponentDescriptions = {
-  Bleed: "A full-width visual or content region.",
-  Callout: "A short note, warning, tip, or important aside.",
-  Cards: "A small collection of related linked choices.",
-  Steps: "An ordered sequence of actions.",
-  Table: "Structured comparable values in rows and columns.",
-  Tabs: "Parallel alternatives that readers switch between.",
+export const articleMdxComponentDefinitions = {
+  Bleed: {
+    description: "A full-width visual or content region.",
+    properties: [],
+  },
+  Callout: {
+    description: "A short note, warning, tip, or important aside.",
+    properties: [{ name: "type", type: "string" }],
+  },
+  Cards: {
+    description: "A small collection of related linked choices.",
+    properties: [],
+  },
+  Steps: {
+    description: "An ordered sequence of actions.",
+    properties: [],
+  },
+  Table: {
+    description: "Structured comparable values in rows and columns.",
+    properties: [],
+  },
+  Tabs: {
+    description: "Parallel alternatives that readers switch between.",
+    properties: [],
+  },
 } as const;
+
+export type ArticleMdxComponentName =
+  keyof typeof articleMdxComponentDefinitions;
+
+export const articleMdxComponentDescriptions = Object.fromEntries(
+  Object.entries(articleMdxComponentDefinitions).map(([name, definition]) => [
+    name,
+    definition.description,
+  ]),
+) as Record<ArticleMdxComponentName, string>;

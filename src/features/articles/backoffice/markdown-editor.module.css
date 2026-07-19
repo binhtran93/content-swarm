@@ -107,6 +107,62 @@
   border-color: var(--color-base-300);
 }
 
+.mdxComponent {
+  margin-block: 0.7rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  background: color-mix(in oklab, var(--color-base-200) 45%, transparent);
+  padding: 0.65rem 0.8rem 0.75rem;
+}
+
+.mdxComponent[data-component="Callout"] {
+  border-left: 4px solid var(--color-info);
+  background: color-mix(in oklab, var(--color-info) 8%, var(--color-base-100));
+}
+
+.mdxComponent[data-component="Callout"][data-variant="warning"] {
+  border-left-color: var(--color-warning);
+  background: color-mix(
+    in oklab,
+    var(--color-warning) 9%,
+    var(--color-base-100)
+  );
+}
+
+.mdxComponent[data-component="Steps"] {
+  border-left: 3px solid var(--color-primary);
+}
+
+.mdxComponentLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+  color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.mdxComponentLabel select {
+  border-radius: var(--radius-selector);
+  border: 0;
+  background: var(--color-base-200);
+  padding: 0.15rem 0.3rem;
+  color: var(--color-base-content);
+  font-size: 0.65rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mdxComponent :global([contenteditable="true"]) {
+  min-height: 1.5rem;
+  outline: none;
+}
+
 @media (max-width: 48rem) {
   .content {
     padding: 0.75rem 1rem 2rem;
