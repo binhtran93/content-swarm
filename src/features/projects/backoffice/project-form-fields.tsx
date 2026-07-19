@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import type { Project } from "@/features/projects/model/project";
 
 export function ProjectFormFields({
@@ -7,10 +11,14 @@ export function ProjectFormFields({
   project?: Project;
   includeProjectId?: boolean;
 }) {
+  const [acquisitionMode, setAcquisitionMode] = useState(
+    project?.acquisition.mode ?? "waitlist",
+  );
+
   return (
     <>
       {includeProjectId ? (
-        <fieldset className="fieldset">
+        <fieldset className="fieldset gap-1.5">
           <legend className="fieldset-legend">Project ID</legend>
           <input
             aria-label="Project ID"
@@ -28,7 +36,7 @@ export function ProjectFormFields({
           </p>
         </fieldset>
       ) : (
-        <fieldset className="fieldset">
+        <fieldset className="fieldset gap-1.5">
           <legend className="fieldset-legend">Project ID</legend>
           <input
             aria-label="Project ID"
@@ -36,11 +44,10 @@ export function ProjectFormFields({
             disabled
             value={project?.projectId ?? ""}
           />
-          <p className="label">This stable identifier cannot be changed.</p>
         </fieldset>
       )}
 
-      <fieldset className="fieldset">
+      <fieldset className="fieldset gap-1.5">
         <legend className="fieldset-legend">Name</legend>
         <input
           aria-label="Name"
@@ -54,29 +61,24 @@ export function ProjectFormFields({
         />
       </fieldset>
 
-      <fieldset className="fieldset">
+      <fieldset className="fieldset gap-1.5">
         <legend className="fieldset-legend">
           Description
           <span className="font-normal opacity-60">(optional)</span>
         </legend>
         <textarea
           aria-label="Description"
-          aria-describedby="description-help"
-          className="textarea min-h-36 w-full"
+          className="textarea min-h-24 w-full"
           defaultValue={project?.description}
           maxLength={5_000}
           name="description"
           placeholder="Describe the product, its audience, and the value it provides."
         />
-        <p className="label" id="description-help">
-          Private reusable context for later editorial AI. You can add it later;
-          it is never public.
-        </p>
       </fieldset>
 
       {project ? (
         <>
-          <fieldset className="fieldset">
+          <fieldset className="fieldset gap-1.5">
             <legend className="fieldset-legend">App availability</legend>
             <div className="join w-fit">
               <label className="btn join-item has-checked:btn-primary">
@@ -84,6 +86,7 @@ export function ProjectFormFields({
                   className="sr-only"
                   defaultChecked={project.acquisition.mode === "waitlist"}
                   name="acquisitionMode"
+                  onChange={() => setAcquisitionMode("waitlist")}
                   type="radio"
                   value="waitlist"
                 />
@@ -94,67 +97,82 @@ export function ProjectFormFields({
                   className="sr-only"
                   defaultChecked={project.acquisition.mode === "stores"}
                   name="acquisitionMode"
+                  onChange={() => setAcquisitionMode("stores")}
                   type="radio"
                   value="stores"
                 />
                 App stores
               </label>
             </div>
-            <p className="label">
-              Waitlist mode replaces every download action with an email signup.
-              App stores mode requires at least one store URL.
+            <p className="label max-w-xl leading-relaxed">
+              {acquisitionMode === "waitlist"
+                ? "Download actions will collect email signups."
+                : "Add at least one store URL for download actions."}
             </p>
           </fieldset>
 
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">
-              App Store URL
-              <span className="font-normal opacity-60">(optional)</span>
-            </legend>
-            <input
-              aria-label="App Store URL"
-              autoCapitalize="none"
-              autoComplete="url"
-              className="input w-full"
-              defaultValue={project.acquisition.appStoreUrl ?? ""}
-              inputMode="url"
-              name="appStoreUrl"
-              placeholder="https://apps.apple.com/app/id…"
-              type="url"
-            />
-          </fieldset>
+          {acquisitionMode === "stores" ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              <fieldset className="fieldset gap-1.5">
+                <legend className="fieldset-legend">
+                  App Store URL
+                  <span className="font-normal opacity-60">(optional)</span>
+                </legend>
+                <input
+                  aria-label="App Store URL"
+                  autoCapitalize="none"
+                  autoComplete="url"
+                  className="input w-full"
+                  defaultValue={project.acquisition.appStoreUrl ?? ""}
+                  inputMode="url"
+                  name="appStoreUrl"
+                  placeholder="https://apps.apple.com/app/id…"
+                  type="url"
+                />
+              </fieldset>
 
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">
-              Google Play URL
-              <span className="font-normal opacity-60">(optional)</span>
-            </legend>
-            <input
-              aria-label="Google Play URL"
-              autoCapitalize="none"
-              autoComplete="url"
-              className="input w-full"
-              defaultValue={project.acquisition.googlePlayUrl ?? ""}
-              inputMode="url"
-              name="googlePlayUrl"
-              placeholder="https://play.google.com/store/apps/details?id=…"
-              type="url"
-            />
-          </fieldset>
+              <fieldset className="fieldset gap-1.5">
+                <legend className="fieldset-legend">
+                  Google Play URL
+                  <span className="font-normal opacity-60">(optional)</span>
+                </legend>
+                <input
+                  aria-label="Google Play URL"
+                  autoCapitalize="none"
+                  autoComplete="url"
+                  className="input w-full"
+                  defaultValue={project.acquisition.googlePlayUrl ?? ""}
+                  inputMode="url"
+                  name="googlePlayUrl"
+                  placeholder="https://play.google.com/store/apps/details?id=…"
+                  type="url"
+                />
+              </fieldset>
+            </div>
+          ) : (
+            <>
+              <input
+                name="appStoreUrl"
+                type="hidden"
+                value={project.acquisition.appStoreUrl ?? ""}
+              />
+              <input
+                name="googlePlayUrl"
+                type="hidden"
+                value={project.acquisition.googlePlayUrl ?? ""}
+              />
+            </>
+          )}
 
-          <fieldset className="fieldset">
+          <fieldset className="fieldset gap-1.5">
             <legend className="fieldset-legend">Topics</legend>
             <textarea
               aria-label="Topics"
-              aria-describedby="topics-help"
-              className="textarea min-h-28 w-full"
+              className="textarea min-h-20 w-full"
               defaultValue={project.topics.join("\n")}
               name="topics"
               placeholder={"SEO\nContent marketing"}
             />
-            <p className="label" id="topics-help">
-              Up to 100 unique topics, separated by commas or new lines.
-            </p>
           </fieldset>
         </>
       ) : null}

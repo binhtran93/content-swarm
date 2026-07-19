@@ -37,7 +37,7 @@ export default async function ProjectSettingsPage({
 
   const archived = project.status === "archived";
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <PageTitle
         action={
           <Link className="btn btn-ghost btn-sm" href="/admin/projects">
@@ -57,7 +57,7 @@ export default async function ProjectSettingsPage({
       ) : null}
 
       <section className="card bg-base-100 border-base-300 border shadow-sm">
-        <div className="card-body">
+        <div className="card-body gap-0 p-5 sm:p-6">
           <h2 className="card-title">Project settings</h2>
           {archived ? (
             <dl className="mt-3 grid gap-5">

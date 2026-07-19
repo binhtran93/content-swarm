@@ -11,10 +11,10 @@ export function CreateProjectForm() {
   const [state, action, pending] = useActionState(createProjectAction, null);
 
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-2">
       <ErrorToast message={state?.error} />
       <ProjectFormFields includeProjectId />
-      <div className="border-base-300 flex flex-wrap justify-end gap-3 border-t pt-5">
+      <div className="flex flex-wrap justify-end gap-3 pt-2">
         <Link className="btn btn-ghost" href="/admin/projects">
           Cancel
         </Link>

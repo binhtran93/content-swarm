@@ -32,12 +32,11 @@ const project = {
 };
 
 describe("Project backoffice forms", () => {
-  it("explains immutable IDs and private descriptions during creation", () => {
+  it("explains immutable IDs during creation", () => {
     render(<CreateProjectForm />);
 
     expect(screen.getByLabelText("Project ID")).toBeRequired();
     expect(screen.getByText(/cannot be changed later/i)).toBeInTheDocument();
-    expect(screen.getByText(/never public/i)).toBeInTheDocument();
   });
 
   it("renders persisted settings and keeps the project ID disabled", () => {
@@ -47,6 +46,11 @@ describe("Project backoffice forms", () => {
     expect(screen.getByDisplayValue("SubIQ")).toBeInTheDocument();
     expect(screen.getByDisplayValue("SaaS")).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Waitlist" })).toBeChecked();
+    expect(screen.queryByLabelText("App Store URL")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Google Play URL")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("radio", { name: "App stores" }));
+
     expect(screen.getByLabelText("App Store URL")).toHaveValue("");
     expect(screen.getByLabelText("Google Play URL")).toHaveValue("");
   });

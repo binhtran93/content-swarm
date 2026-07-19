@@ -14,10 +14,10 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
   );
 
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-2">
       <ErrorToast message={state?.error} />
       <ProjectFormFields project={project} />
-      <div className="border-base-300 flex justify-end border-t pt-5">
+      <div className="flex justify-end pt-2">
         <button className="btn btn-primary" disabled={pending} type="submit">
           {pending ? (
             <span className="loading loading-spinner loading-sm" />
