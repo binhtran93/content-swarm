@@ -651,14 +651,38 @@ function TranslationEditor({
       <Fields article={article} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-medium">Translations</h2>
-        <div className="flex gap-2">
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={saving || !sourceSupported || !targetSupported}
-            type="submit"
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <select
+            aria-label="Target locale"
+            className="select select-sm w-full min-w-52 sm:w-auto"
+            name="locale"
+            onChange={(event) => choose(event.target.value)}
+            required
+            value={locale}
           >
-            {saving ? "Saving…" : "Save translation"}
-          </button>
+            {!sourceSupported ? (
+              <option value="">Unsupported source locale</option>
+            ) : null}
+            {supportedLocales
+              .filter((item) => item.locale !== article.locale)
+              .map((item) => (
+                <option key={item.locale} value={item.locale}>
+                  {item.label}
+                </option>
+              ))}
+            {legacyLocales.map((translation) => (
+              <option key={translation.locale} value={translation.locale}>
+                {localeLabel(translation.locale)} (legacy, read-only)
+              </option>
+            ))}
+          </select>
+          {selected ? (
+            <span
+              className={`badge badge-sm ${selected.status === "approved" ? "badge-success" : "badge-ghost"}`}
+            >
+              {selected.status}
+            </span>
+          ) : null}
           <button
             className="btn btn-outline btn-sm"
             disabled={generating || !sourceSupported || !targetSupported}
@@ -667,85 +691,18 @@ function TranslationEditor({
           >
             {generating ? "Generating…" : "Generate proposal"}
           </button>
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={saving || !sourceSupported || !targetSupported}
+            type="submit"
+          >
+            {saving ? "Saving…" : "Save translation"}
+          </button>
         </div>
       </div>
-      <div className="grid min-h-0 flex-1 gap-4 overflow-auto xl:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] xl:overflow-hidden">
-        <div className="min-h-0 space-y-4 xl:overflow-y-auto xl:pr-1">
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="fieldset">
-              <span className="fieldset-legend">Target locale</span>
-              <select
-                className="select"
-                name="locale"
-                onChange={(event) => choose(event.target.value)}
-                required
-                value={locale}
-              >
-                {!sourceSupported ? (
-                  <option value="">Unsupported source locale</option>
-                ) : null}
-                {supportedLocales
-                  .filter((item) => item.locale !== article.locale)
-                  .map((item) => (
-                    <option key={item.locale} value={item.locale}>
-                      {item.label}
-                    </option>
-                  ))}
-                {legacyLocales.map((translation) => (
-                  <option key={translation.locale} value={translation.locale}>
-                    {localeLabel(translation.locale)} (legacy, read-only)
-                  </option>
-                ))}
-              </select>
-            </label>
-            {selected ? (
-              <span
-                className={`badge mb-3 ${selected.status === "approved" ? "badge-success" : "badge-ghost"}`}
-              >
-                {selected.status}
-              </span>
-            ) : (
-              <span className="text-base-content/60 mb-3 text-sm">
-                New draft translation
-              </span>
-            )}
-          </div>
-          {(
-            ["title", "slug", "excerpt", "seoTitle", "seoDescription"] as const
-          ).map((name) => (
-            <label className="fieldset" key={name}>
-              <span className="fieldset-legend">
-                {name === "seoTitle"
-                  ? "SEO title"
-                  : name === "seoDescription"
-                    ? "SEO description"
-                    : name[0]!.toUpperCase() + name.slice(1)}
-              </span>
-              <input
-                className="input w-full"
-                maxLength={
-                  name === "slug"
-                    ? 160
-                    : name === "excerpt" || name === "seoDescription"
-                      ? 500
-                      : 200
-                }
-                name={name}
-                onChange={(event) =>
-                  setValues((current) => ({
-                    ...current,
-                    [name]: event.target.value,
-                  }))
-                }
-                pattern={name === "slug" ? "[a-z0-9]+(-[a-z0-9]+)*" : undefined}
-                required
-                value={values[name]}
-              />
-            </label>
-          ))}
-        </div>
-        <div className="flex min-h-[24rem] flex-col xl:min-h-0">
-          <input name="content" type="hidden" value={values.content} />
+      <input name="content" type="hidden" value={values.content} />
+      <div className="flex min-h-0 flex-1 flex-col gap-3 min-[105rem]:grid min-[105rem]:grid-cols-[minmax(0,1fr)_20rem] min-[105rem]:grid-rows-[minmax(0,1fr)]">
+        <div className="flex h-full min-h-[24rem] min-w-0 overflow-hidden min-[105rem]:min-h-0">
           <MarkdownEditor
             onChange={(content) =>
               setValues((current) => ({ ...current, content }))
@@ -754,6 +711,91 @@ function TranslationEditor({
             value={values.content}
           />
         </div>
+        <aside className="min-[105rem]:rounded-box min-[105rem]:border-base-300 min-[105rem]:bg-base-200/40 order-first grid shrink-0 gap-3 md:grid-cols-2 min-[105rem]:order-last min-[105rem]:block min-[105rem]:space-y-4 min-[105rem]:overflow-y-auto min-[105rem]:border min-[105rem]:p-4">
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">Title</span>
+            <textarea
+              className="textarea [field-sizing:content] min-h-20 w-full resize-none overflow-hidden"
+              maxLength={200}
+              name="title"
+              onChange={(event) =>
+                setValues((current) => ({
+                  ...current,
+                  title: event.target.value.replace(/\s*\n+\s*/g, " "),
+                }))
+              }
+              required
+              rows={2}
+              value={values.title}
+            />
+          </label>
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">Slug</span>
+            <input
+              className="input w-full"
+              maxLength={160}
+              name="slug"
+              onChange={(event) =>
+                setValues((current) => ({
+                  ...current,
+                  slug: event.target.value,
+                }))
+              }
+              pattern="[a-z0-9]+(-[a-z0-9]+)*"
+              required
+              value={values.slug}
+            />
+          </label>
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">Excerpt</span>
+            <textarea
+              className="textarea min-h-28 w-full resize-y"
+              maxLength={500}
+              name="excerpt"
+              onChange={(event) =>
+                setValues((current) => ({
+                  ...current,
+                  excerpt: event.target.value,
+                }))
+              }
+              required
+              value={values.excerpt}
+            />
+          </label>
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">SEO title</span>
+            <textarea
+              className="textarea [field-sizing:content] min-h-20 w-full resize-none overflow-hidden"
+              maxLength={200}
+              name="seoTitle"
+              onChange={(event) =>
+                setValues((current) => ({
+                  ...current,
+                  seoTitle: event.target.value.replace(/\s*\n+\s*/g, " "),
+                }))
+              }
+              required
+              rows={2}
+              value={values.seoTitle}
+            />
+          </label>
+          <label className="fieldset min-w-0">
+            <span className="fieldset-legend">SEO description</span>
+            <textarea
+              className="textarea min-h-28 w-full resize-y"
+              maxLength={500}
+              name="seoDescription"
+              onChange={(event) =>
+                setValues((current) => ({
+                  ...current,
+                  seoDescription: event.target.value,
+                }))
+              }
+              required
+              value={values.seoDescription}
+            />
+          </label>
+        </aside>
       </div>
     </form>
   );
