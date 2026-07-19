@@ -32,12 +32,13 @@ export function MarkdownEditor({
   value,
 }: MarkdownEditorProps) {
   const editorRef = useRef<MDXEditorMethods>(null);
+  const mountedRef = useRef(false);
   const parseErrorRef = useRef<string | undefined>(undefined);
   const [parseError, setParseError] = useState<string>();
 
   const handleChange: NonNullable<MDXEditorProps["onChange"]> = (markdown) => {
     queueMicrotask(() => {
-      if (!parseErrorRef.current) onChange(markdown);
+      if (mountedRef.current && !parseErrorRef.current) onChange(markdown);
     });
   };
 
@@ -45,6 +46,14 @@ export function MarkdownEditor({
     parseErrorRef.current = error;
     setParseError(error);
   };
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const editor = editorRef.current;
