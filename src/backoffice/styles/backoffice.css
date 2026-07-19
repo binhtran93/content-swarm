@@ -36,6 +36,22 @@
   font-weight: 500;
 }
 
+.keyword-results-table,
+.keyword-results-table thead,
+.keyword-results-table tbody {
+  display: block;
+}
+
+.keyword-results-table tr {
+  display: grid;
+  grid-template-columns: 5rem minmax(16rem, 1fr) 10rem 12rem 11rem;
+  align-items: center;
+}
+
+.keyword-results-table :is(th, td) {
+  min-width: 0;
+}
+
 .admin-sidebar-open {
   transform: translateX(0);
 }

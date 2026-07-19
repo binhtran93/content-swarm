@@ -186,7 +186,7 @@ describe("Keyword discovery results actions", () => {
     ).toBeInTheDocument();
   });
 
-  it("sorts results from the volume, difficulty, and rank headers", () => {
+  it("sorts results from the volume, difficulty, and relevance order headers", () => {
     render(
       <KeywordDiscover
         discoveries={[filterDiscovery]}
@@ -222,10 +222,20 @@ describe("Keyword discovery results actions", () => {
       "subscription tracker",
     ]);
 
-    fireEvent.click(screen.getByRole("button", { name: "Sort by rank" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sort by relevance order" }),
+    );
     expect(keywordOrder()).toEqual([
       "subscription tracker",
       "cancel subscriptions",
+    ]);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sort by relevance order" }),
+    );
+    expect(keywordOrder()).toEqual([
+      "cancel subscriptions",
+      "subscription tracker",
     ]);
   });
 

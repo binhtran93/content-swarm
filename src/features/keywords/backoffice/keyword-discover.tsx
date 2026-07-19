@@ -18,7 +18,7 @@ import {
 import { KeywordDifficultyBadge } from "@/features/keywords/backoffice/keyword-difficulty-badge";
 import type { KeywordDiscovery } from "@/features/keywords/model/keyword-discovery";
 
-type ResultSortField = "volume" | "difficulty" | "rank";
+type ResultSortField = "volume" | "difficulty" | "relevanceOrder";
 type SortDirection = "asc" | "desc";
 
 function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
@@ -236,7 +236,7 @@ export function KeywordDiscover({
         const value = (result: (typeof filteredResults)[number]) => {
           if (resultSortField === "volume") return result.searchVolume;
           if (resultSortField === "difficulty") return result.difficulty;
-          return result.rank;
+          return result.relevanceOrder;
         };
         const leftValue = value(left);
         const rightValue = value(right);
@@ -435,7 +435,7 @@ export function KeywordDiscover({
                         />
                       ))}
                       <div className="min-h-0 flex-1 overflow-auto">
-                        <table className="table">
+                        <table className="keyword-results-table table min-w-[48rem]">
                           <thead className="bg-base-100 sticky top-0 z-1">
                             <tr>
                               <th>
@@ -498,7 +498,7 @@ export function KeywordDiscover({
                               </th>
                               <th
                                 aria-sort={
-                                  resultSortField === "rank"
+                                  resultSortField === "relevanceOrder"
                                     ? resultSortDirection === "asc"
                                       ? "ascending"
                                       : "descending"
@@ -506,14 +506,14 @@ export function KeywordDiscover({
                                 }
                               >
                                 <button
-                                  aria-label="Sort by rank"
+                                  aria-label="Sort by relevance order"
                                   className="inline-flex items-center gap-1.5"
-                                  onClick={() => sortResults("rank")}
+                                  onClick={() => sortResults("relevanceOrder")}
                                   type="button"
                                 >
-                                  Rank
+                                  Relevance
                                   <span aria-hidden="true" className="text-xs">
-                                    {sortIndicator("rank")}
+                                    {sortIndicator("relevanceOrder")}
                                   </span>
                                 </button>
                               </th>
@@ -552,7 +552,9 @@ export function KeywordDiscover({
                                       score={result.difficulty ?? null}
                                     />
                                   </td>
-                                  <td>{result.rank ?? "—"}</td>
+                                  <td className="tabular-nums">
+                                    {result.relevanceOrder ?? "—"}
+                                  </td>
                                 </tr>
                               );
                             })}
