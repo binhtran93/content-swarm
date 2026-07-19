@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import NextTopLoader from "nextjs-toploader";
 import type { ReactNode } from "react";
+
+import { ThemedTopLoader } from "@/app/themed-top-loader";
 
 import "@mdxeditor/editor/style.css";
 import "./globals.css";
@@ -29,12 +30,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body>
-        <NextTopLoader
-          color="#167bff"
-          height={3}
-          shadow="0 0 8px rgba(22, 123, 255, 0.45)"
-          showSpinner={false}
-          zIndex={9999}
+        <ThemedTopLoader
+          dedicatedSubiq={
+            process.env.PUBLIC_ROUTE_MODE === "root" &&
+            process.env.PUBLIC_PROJECT_ID === "subiq"
+          }
         />
         {children}
       </body>

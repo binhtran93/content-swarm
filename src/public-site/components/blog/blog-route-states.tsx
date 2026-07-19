@@ -2,14 +2,6 @@ import Link from "next/link";
 
 import styles from "./blog.module.css";
 
-export function BlogLoadingState() {
-  return (
-    <main className={styles.routeState} aria-busy="true" aria-live="polite">
-      <p>Loading guides…</p>
-    </main>
-  );
-}
-
 export function BlogErrorState({ reset }: { reset: () => void }) {
   return (
     <main className={styles.routeState}>
