@@ -23,12 +23,12 @@ export async function generateArticleAi<T = string>(
       outputName: format?.name,
       timeoutMs: 240_000,
     });
-    if (!format && !result.text.trim())
+    if (!format && typeof result === "string" && !result.trim())
       throw new ArticleServiceError(
         "provider",
         "AI returned no usable proposal.",
       );
-    return result.output;
+    return result;
   } catch (error) {
     if (error instanceof ArticleServiceError) throw error;
     if (error instanceof Error && error.message === "AI_NOT_CONFIGURED")

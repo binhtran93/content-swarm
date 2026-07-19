@@ -12,10 +12,7 @@ describe("generateArticleAi", () => {
   beforeEach(() => {
     vi.stubEnv("NODE_ENV", "production");
     mocks.generateAi.mockReset();
-    mocks.generateAi.mockResolvedValue({
-      output: "Proposal",
-      text: "Proposal",
-    });
+    mocks.generateAi.mockResolvedValue("Proposal");
   });
 
   it("delegates provider selection to the shared AI gateway", async () => {

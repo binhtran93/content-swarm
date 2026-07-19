@@ -4,9 +4,6 @@ import { z } from "zod";
 const mocks = vi.hoisted(() => ({
   generateText: vi.fn(),
   googleModel: vi.fn((id: string) => ({ provider: "google", id })),
-  googleSearch: vi.fn(() => ({ type: "google-search" })),
-  openaiModel: vi.fn((id: string) => ({ provider: "openai", id })),
-  openaiSearch: vi.fn(() => ({ type: "openai-search" })),
 }));
 
 vi.mock("ai", async () => {
@@ -14,16 +11,7 @@ vi.mock("ai", async () => {
   return { ...actual, generateText: mocks.generateText };
 });
 vi.mock("@ai-sdk/google", () => ({
-  createGoogleGenerativeAI: () =>
-    Object.assign(mocks.googleModel, {
-      tools: { googleSearch: mocks.googleSearch },
-    }),
-}));
-vi.mock("@ai-sdk/openai", () => ({
-  createOpenAI: () => ({
-    responses: mocks.openaiModel,
-    tools: { webSearch: mocks.openaiSearch },
-  }),
+  createGoogleGenerativeAI: () => mocks.googleModel,
 }));
 
 import { generateAi } from "@/platform/ai/generate-ai.server";
@@ -31,7 +19,6 @@ import { generateAi } from "@/platform/ai/generate-ai.server";
 describe("generateAi", () => {
   beforeEach(() => {
     process.env.GEMINI_API_KEY = "gemini-key";
-    process.env.OPENAI_API_KEY = "openai-key";
     mocks.generateText.mockResolvedValue({
       output: "Generated text",
       text: "Generated text",
@@ -41,112 +28,49 @@ describe("generateAi", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    delete process.env.GEMINI_API_KEY;
-    delete process.env.OPENAI_API_KEY;
-    delete process.env.GEMINI_MODEL;
-    delete process.env.OPENAI_MODEL;
     delete process.env.AI_PROVIDER;
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.GEMINI_MODEL;
   });
 
-  it("defaults to Gemini and accepts Google-specific grounding options", async () => {
-    const result = await generateAi({
-      provider: "gemini",
-      prompt: "What changed?",
-      providerOptions: {
-        googleSearch: true,
-        thinking: { level: "low", includeThoughts: false },
-      },
-    });
-
+  it("uses Gemini by default", async () => {
+    await expect(generateAi({ prompt: "Write something" })).resolves.toBe(
+      "Generated text",
+    );
     expect(mocks.googleModel).toHaveBeenCalledWith("gemini-3.5-flash");
-    expect(mocks.googleSearch).toHaveBeenCalledOnce();
-    expect(mocks.generateText).toHaveBeenCalledWith(
-      expect.objectContaining({
-        tools: { google_search: { type: "google-search" } },
-        providerOptions: {
-          google: {
-            thinkingConfig: {
-              thinkingBudget: undefined,
-              thinkingLevel: "low",
-              includeThoughts: false,
-            },
-          },
-        },
-      }),
-    );
-    expect(result).toMatchObject({
-      output: "Generated text",
-      provider: "gemini",
-      model: "gemini-3.5-flash",
-    });
+    expect(mocks.generateText).toHaveBeenCalledOnce();
   });
 
-  it("routes explicit OpenAI models and Responses API options", async () => {
-    await generateAi({
-      provider: "openai",
-      model: "gpt-5-mini",
-      prompt: "Write something",
-      providerOptions: {
-        responses: { reasoningEffort: "low", textVerbosity: "low" },
-        webSearch: { searchContextSize: "low" },
-      },
-    });
+  it("uses an explicitly configured model", async () => {
+    process.env.GEMINI_MODEL = "gemini-custom";
 
-    expect(mocks.openaiModel).toHaveBeenCalledWith("gpt-5-mini");
-    expect(mocks.openaiSearch).toHaveBeenCalledWith({
-      searchContextSize: "low",
-    });
-    expect(mocks.generateText).toHaveBeenCalledWith(
-      expect.objectContaining({
-        providerOptions: {
-          openai: { reasoningEffort: "low", textVerbosity: "low" },
-        },
-      }),
-    );
+    await generateAi({ prompt: "Write something" });
+
+    expect(mocks.googleModel).toHaveBeenCalledWith("gemini-custom");
   });
 
-  it("routes the globally configured provider when none is explicit", async () => {
-    process.env.AI_PROVIDER = "openai";
-
-    const result = await generateAi({ prompt: "Write something" });
-
-    expect(mocks.openaiModel).toHaveBeenCalledWith("gpt-5-mini");
-    expect(result.provider).toBe("openai");
-  });
-
-  it("rejects an unsupported globally configured provider", async () => {
-    process.env.AI_PROVIDER = "unsupported";
-
-    await expect(generateAi({ prompt: "Write something" })).rejects.toThrow(
-      "AI_UNSUPPORTED_PROVIDER",
-    );
-    expect(mocks.generateText).not.toHaveBeenCalled();
-  });
-
-  it("returns schema-validated structured output", async () => {
+  it("returns schema output directly", async () => {
     mocks.generateText.mockResolvedValue({
       output: { title: "Structured" },
       text: '{"title":"Structured"}',
       sources: [],
     });
-    const result = await generateAi({
-      prompt: "Return a title",
-      outputSchema: z.object({ title: z.string() }),
-      outputName: "title_result",
-    });
-    expect(result.output).toEqual({ title: "Structured" });
-  });
 
-  it("rejects incompatible Gemini thinking settings before calling AI", async () => {
     await expect(
       generateAi({
-        provider: "gemini",
-        prompt: "Think",
-        providerOptions: {
-          thinking: { budget: 100, level: "low" },
-        },
+        prompt: "Return a title",
+        outputSchema: z.object({ title: z.string() }),
+        outputName: "title_result",
       }),
-    ).rejects.toThrow("AI_INVALID_PROVIDER_OPTIONS");
+    ).resolves.toEqual({ title: "Structured" });
+  });
+
+  it("rejects unsupported global configuration", async () => {
+    process.env.AI_PROVIDER = "unsupported";
+
+    await expect(generateAi({ prompt: "Write something" })).rejects.toThrow(
+      "AI_UNSUPPORTED_PROVIDER",
+    );
     expect(mocks.generateText).not.toHaveBeenCalled();
   });
 });
