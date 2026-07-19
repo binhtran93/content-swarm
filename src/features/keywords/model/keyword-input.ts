@@ -30,6 +30,7 @@ export const keywordInputSchema = z
     searchVolume: z.number().int().nonnegative().nullable().default(null),
     difficulty: z.number().min(0).max(100).nullable().default(null),
     sourceDiscoveryId: z.string().min(1).nullable().default(null),
+    relevanceOrder: z.number().int().positive().nullable().default(null),
   })
   .refine(
     (input) => findSupportedMarket(input.countryCode, input.languageCode),

@@ -38,6 +38,7 @@ describe("DataForSEO projected response contracts", () => {
         searchVolume: 1200,
         difficulty: 42,
         rank: null,
+        relevanceOrder: 1,
       },
     ]);
   });
@@ -63,8 +64,32 @@ describe("DataForSEO projected response contracts", () => {
         searchVolume: 900,
         difficulty: 31,
         rank: 4,
+        relevanceOrder: 1,
       },
     ]);
+  });
+
+  it("preserves the one-based position from the provider response", () => {
+    const items = [
+      null,
+      {
+        keyword: "second valid result",
+        keyword_info: { search_volume: 10 },
+        keyword_properties: { keyword_difficulty: 5 },
+      },
+    ];
+
+    expect(parseDiscoveryPayload("keyword_ideas", response(items), 50)).toEqual(
+      [
+        {
+          keyword: "second valid result",
+          searchVolume: 10,
+          difficulty: 5,
+          rank: null,
+          relevanceOrder: 2,
+        },
+      ],
+    );
   });
 
   it("preserves successful empty results", () => {

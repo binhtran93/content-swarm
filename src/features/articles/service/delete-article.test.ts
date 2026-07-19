@@ -118,6 +118,7 @@ function seed() {
       searchVolume: 100,
       difficulty: 10,
       sourceDiscoveryId: null,
+      relevanceOrder: null,
       groupId: "group-1",
       articleId: "article-1",
       createdAt: now,

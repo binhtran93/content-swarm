@@ -7,6 +7,7 @@ export type Keyword = {
   searchVolume: number | null;
   difficulty: number | null;
   sourceDiscoveryId: string | null;
+  relevanceOrder: number | null;
   groupId: string | null;
   articleId: string | null;
   createdAt: string;

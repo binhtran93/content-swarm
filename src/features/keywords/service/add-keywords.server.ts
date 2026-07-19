@@ -83,6 +83,7 @@ export async function addKeywords(
         searchVolume: entry.input.searchVolume,
         difficulty: entry.input.difficulty,
         sourceDiscoveryId: entry.input.sourceDiscoveryId,
+        relevanceOrder: entry.input.relevanceOrder,
         groupId: null,
         articleId: null,
         createdAt: now,

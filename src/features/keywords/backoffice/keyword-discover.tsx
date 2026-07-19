@@ -12,6 +12,7 @@ import {
 } from "@/config/supported-locales";
 import {
   addDiscoveryResultsAction,
+  removeDiscoveryAction,
   runDiscoveryAction,
 } from "@/features/keywords/backoffice/discovery-actions.server";
 import { KeywordDifficultyBadge } from "@/features/keywords/backoffice/keyword-difficulty-badge";
@@ -154,6 +155,12 @@ export function KeywordDiscover({
     addDiscoveryResultsAction,
     null,
   );
+  const [removeState, removeAction, removePending] = useActionState(
+    removeDiscoveryAction,
+    null,
+  );
+  const [removingDiscovery, setRemovingDiscovery] =
+    useState<KeywordDiscovery | null>(null);
   const [resultSearch, setResultSearch] = useState("");
   const [minimumVolumeFilter, setMinimumVolumeFilter] = useState("");
   const [maximumDifficultyFilter, setMaximumDifficultyFilter] = useState("");
@@ -273,7 +280,9 @@ export function KeywordDiscover({
 
   return (
     <div className="grid min-h-0 flex-1 items-start gap-6 lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
-      <ErrorToast message={state?.error ?? addState?.error} />
+      <ErrorToast
+        message={state?.error ?? addState?.error ?? removeState?.error}
+      />
       <div className="flex min-h-0 flex-col gap-6 lg:h-full">
         <form action={action}>
           <details
@@ -569,13 +578,16 @@ export function KeywordDiscover({
           ) : (
             <ul className="menu -mx-2 min-h-0 overflow-y-auto">
               {discoveries.map((discovery) => (
-                <li key={discovery.discoveryId}>
+                <li
+                  className="flex-row items-center gap-1"
+                  key={discovery.discoveryId}
+                >
                   <Link
-                    className={
+                    className={`min-w-0 flex-1 ${
                       selected?.discoveryId === discovery.discoveryId
                         ? "active"
                         : ""
-                    }
+                    }`}
                     href={`/admin/projects/${projectId}/keywords?view=discover&discovery=${discovery.discoveryId}`}
                   >
                     <span className="min-w-0">
@@ -592,12 +604,81 @@ export function KeywordDiscover({
                       </span>
                     </span>
                   </Link>
+                  <button
+                    aria-label={`Remove ${discoveryLabel(discovery)}`}
+                    className="btn btn-ghost btn-square btn-sm text-base-content/55 hover:text-error shrink-0"
+                    onClick={() => setRemovingDiscovery(discovery)}
+                    title="Remove saved discovery"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      className="size-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        d="M4 7h16m-10 4v6m4-6v6M9 7l1-3h4l1 3m3 0-1 13H7L6 7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
                 </li>
               ))}
             </ul>
           )}
         </div>
       </aside>
+      {removingDiscovery ? (
+        <div aria-modal="true" className="modal modal-open" role="dialog">
+          <div className="modal-box">
+            <h2 className="text-lg font-semibold">
+              Remove {discoveryLabel(removingDiscovery)}?
+            </h2>
+            <p className="text-base-content/70 mt-3">
+              This permanently removes the saved discovery and its results.
+              Keywords already added to the backlog are not affected.
+            </p>
+            <form action={removeAction} className="modal-action">
+              <input name="projectId" type="hidden" value={projectId} />
+              <input
+                name="discoveryId"
+                type="hidden"
+                value={removingDiscovery.discoveryId}
+              />
+              <button
+                className="btn btn-ghost"
+                disabled={removePending}
+                onClick={() => setRemovingDiscovery(null)}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-error"
+                disabled={removePending}
+                type="submit"
+              >
+                {removePending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : null}
+                {removePending ? "Removing…" : "Remove discovery"}
+              </button>
+            </form>
+          </div>
+          <button
+            aria-label="Cancel discovery removal"
+            className="modal-backdrop"
+            onClick={() => setRemovingDiscovery(null)}
+            type="button"
+          >
+            close
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

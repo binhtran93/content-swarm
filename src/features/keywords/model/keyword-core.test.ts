@@ -68,6 +68,7 @@ describe("keyword grouping rules", () => {
     searchVolume: null,
     difficulty: null,
     sourceDiscoveryId: null,
+    relevanceOrder: null,
     groupId: null,
     articleId: null,
     createdAt: null as never,

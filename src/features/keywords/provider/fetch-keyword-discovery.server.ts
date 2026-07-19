@@ -169,7 +169,7 @@ export function parseDiscoveryPayload(
 ): DiscoveryResult[] {
   return taskResult(payload)
     .slice(0, limit)
-    .flatMap((value): DiscoveryResult[] => {
+    .flatMap((value, index): DiscoveryResult[] => {
       const item = object(value);
       const keywordData = object(item?.keyword_data) ?? item;
       const keyword =
@@ -189,6 +189,7 @@ export function parseDiscoveryPayload(
             method === "competitor_website"
               ? numberOrNull(serp?.rank_group)
               : null,
+          relevanceOrder: index + 1,
         },
       ];
     });

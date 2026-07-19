@@ -10,6 +10,7 @@ export const keywordDocumentSchema = z.object({
   searchVolume: z.number().int().nonnegative().nullable(),
   difficulty: z.number().min(0).max(100).nullable(),
   sourceDiscoveryId: z.string().min(1).nullable(),
+  relevanceOrder: z.number().int().positive().nullable().default(null),
   groupId: z.string().min(1).nullable(),
   articleId: z.string().min(1).nullable(),
   createdAt: z.instanceof(Timestamp),

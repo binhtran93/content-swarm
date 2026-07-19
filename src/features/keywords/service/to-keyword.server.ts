@@ -18,6 +18,7 @@ export function toKeyword(
     searchVolume: document.searchVolume,
     difficulty: document.difficulty,
     sourceDiscoveryId: document.sourceDiscoveryId,
+    relevanceOrder: document.relevanceOrder,
     groupId: document.groupId,
     articleId: document.articleId,
     createdAt: document.createdAt.toDate().toISOString(),

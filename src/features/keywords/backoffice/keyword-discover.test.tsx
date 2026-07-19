@@ -5,6 +5,7 @@ import { KeywordDiscover } from "@/features/keywords/backoffice/keyword-discover
 
 vi.mock("@/features/keywords/backoffice/discovery-actions.server", () => ({
   addDiscoveryResultsAction: vi.fn(),
+  removeDiscoveryAction: vi.fn(),
   runDiscoveryAction: vi.fn(),
 }));
 
@@ -25,6 +26,7 @@ const discovery = {
       searchVolume: 100,
       difficulty: 20,
       rank: 1,
+      relevanceOrder: 1,
     },
   ],
   createdAt: "2026-07-18T00:00:00.000Z",
@@ -39,11 +41,38 @@ const filterDiscovery = {
       searchVolume: 50,
       difficulty: 5,
       rank: 2,
+      relevanceOrder: 2,
     },
   ],
 };
 
 describe("Keyword discovery results actions", () => {
+  it("requires confirmation before removing a saved discovery", () => {
+    render(
+      <KeywordDiscover
+        discoveries={[discovery]}
+        existingNormalizedKeywords={[]}
+        projectId="subiq"
+        selected={discovery}
+      />,
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Remove example.com" }));
+
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText("Remove example.com?")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/keywords already added to the backlog/i),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("button", { name: "Remove discovery" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("uses the fixed market catalog and defaults to English (United States)", () => {
     render(
       <KeywordDiscover

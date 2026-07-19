@@ -8,9 +8,11 @@ import type { DiscoveryRequest } from "@/features/keywords/model/discovery-input
 import { addResultsToBacklog } from "@/features/keywords/service/add-results-to-backlog.server";
 import { getOrReuseDiscovery } from "@/features/keywords/service/get-or-reuse-discovery.server";
 import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
+import { removeDiscovery } from "@/features/keywords/service/remove-discovery.server";
 
 export type DiscoveryActionState = { error?: string } | null;
 export type AddDiscoveryResultsActionState = { error?: string } | null;
+export type RemoveDiscoveryActionState = { error?: string } | null;
 
 function nullableNumber(value: FormDataEntryValue | null) {
   const text = String(value ?? "").trim();
@@ -78,4 +80,25 @@ export async function addDiscoveryResultsAction(
   redirect(
     `/admin/projects/${projectId}/keywords?view=discover&discovery=${discoveryId}`,
   );
+}
+
+export async function removeDiscoveryAction(
+  _state: RemoveDiscoveryActionState,
+  formData: FormData,
+): Promise<RemoveDiscoveryActionState> {
+  const projectId = String(formData.get("projectId") ?? "");
+  const discoveryId = String(formData.get("discoveryId") ?? "");
+
+  try {
+    await removeDiscovery(projectId, discoveryId);
+  } catch (error) {
+    return {
+      error:
+        error instanceof KeywordServiceError
+          ? error.message
+          : "The saved discovery could not be removed. Please try again.",
+    };
+  }
+
+  redirect(`/admin/projects/${projectId}/keywords?view=discover`);
 }

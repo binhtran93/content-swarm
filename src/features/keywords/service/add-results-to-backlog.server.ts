@@ -25,6 +25,7 @@ export async function addResultsToBacklog(
         searchVolume: result.searchVolume,
         difficulty: result.difficulty,
         sourceDiscoveryId: discovery.discoveryId,
+        relevanceOrder: result.relevanceOrder,
       })),
   );
 }

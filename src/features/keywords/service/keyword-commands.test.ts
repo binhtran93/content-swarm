@@ -135,6 +135,22 @@ describe("keyword commands", () => {
     ).toHaveLength(1);
   });
 
+  it("persists relevance order for discovered keywords", async () => {
+    const result = await addKeyword("subiq", {
+      keyword: "subscription tracker",
+      countryCode: "US",
+      languageCode: "en",
+      sourceDiscoveryId: "discovery-1",
+      relevanceOrder: 3,
+    });
+
+    expect(result.relevanceOrder).toBe(3);
+    expect(
+      mock.documents.get(`projects/subiq/keywords/${result.keywordId}`)
+        ?.relevanceOrder,
+    ).toBe(3);
+  });
+
   it("groups compatible keywords and rejects cross-market partial writes", async () => {
     const added = await addKeywords("subiq", [
       {

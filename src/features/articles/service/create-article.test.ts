@@ -108,6 +108,7 @@ function seedKeyword(
     searchVolume: null,
     difficulty: null,
     sourceDiscoveryId: null,
+    relevanceOrder: null,
     groupId,
     articleId: null,
     createdAt: now,
