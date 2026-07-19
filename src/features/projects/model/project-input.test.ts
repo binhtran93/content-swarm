@@ -6,22 +6,15 @@ const validInput = {
   projectId: "subiq",
   name: " SubIQ ",
   description: " Product context ",
-  canonicalBaseUrl: "https://getsubiq.com",
   topics: ["SEO", "Content"],
 };
 
 describe("project input", () => {
-  it("normalizes editable text and an omitted publication URL", () => {
-    expect(
-      projectInputSchemas.create.parse({
-        ...validInput,
-        canonicalBaseUrl: "  ",
-      }),
-    ).toMatchObject({
+  it("normalizes editable text", () => {
+    expect(projectInputSchemas.create.parse(validInput)).toMatchObject({
       projectId: "subiq",
       name: "SubIQ",
       description: "Product context",
-      canonicalBaseUrl: null,
     });
   });
 
@@ -42,24 +35,6 @@ describe("project input", () => {
       ).toThrow();
     },
   );
-
-  it.each(["http://getsubiq.com", "https://getsubiq.com/", "getsubiq.com"])(
-    "rejects invalid canonical URL %s",
-    (canonicalBaseUrl) => {
-      expect(() =>
-        projectInputSchemas.create.parse({ ...validInput, canonicalBaseUrl }),
-      ).toThrow();
-    },
-  );
-
-  it("allows an HTTPS canonical URL with a project path", () => {
-    expect(
-      projectInputSchemas.create.parse({
-        ...validInput,
-        canonicalBaseUrl: "https://anmisoft.com/subiq",
-      }).canonicalBaseUrl,
-    ).toBe("https://anmisoft.com/subiq");
-  });
 
   it("rejects case-insensitive duplicate topics", () => {
     expect(() =>

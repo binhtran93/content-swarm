@@ -21,14 +21,6 @@ function ProjectCard({ project }: { project: Project }) {
         <p className="text-base-content/70 line-clamp-3 text-sm">
           {project.description}
         </p>
-        <div className="text-base-content/60 flex min-h-6 items-center gap-2 text-sm">
-          <span aria-hidden="true">↗</span>
-          {project.canonicalBaseUrl ? (
-            <span className="truncate">{project.canonicalBaseUrl}</span>
-          ) : (
-            <span className="text-warning">Publication URL not configured</span>
-          )}
-        </div>
         <div className="card-actions border-base-300 items-center justify-between border-t pt-4">
           <span className="text-base-content/50 text-xs">
             Updated{" "}
@@ -82,8 +74,7 @@ export default async function ProjectsPage() {
               Create your first project
             </h2>
             <p className="text-base-content/60 max-w-md">
-              Each product gets isolated editorial data and its own publication
-              URL.
+              Each product gets isolated editorial data for its public site.
             </p>
             <Link className="btn btn-primary mt-3" href="/admin/projects/new">
               New project

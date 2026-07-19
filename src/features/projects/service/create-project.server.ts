@@ -36,7 +36,6 @@ export async function createProject(
         name: validated.name,
         description: validated.description,
         topics: validated.topics,
-        canonicalBaseUrl: validated.canonicalBaseUrl,
         status: "active",
         createdAt: now,
         updatedAt: now,

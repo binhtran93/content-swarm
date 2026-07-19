@@ -1,12 +1,14 @@
 import Link from "next/link";
 
 import { PageTitle } from "@/backoffice/components/ui/page-title";
+import { findSupportedLocale } from "@/config/supported-locales";
 import { ArticleWorkspace } from "@/features/articles/backoffice/article-workspace";
 import { ArticlePublishPreview } from "@/features/articles/backoffice/publishing/article-publish-preview";
 import { getArticle } from "@/features/articles/service/get-article.server";
 import { getArticleReadiness } from "@/features/articles/service/get-article-readiness.server";
 import { listTranslations } from "@/features/articles/service/list-translations.server";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
+import { getCanonicalUrl } from "@/public-site/config/public-url";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
 
 import "@/public-site/sites/subiq/theme.css";
@@ -55,6 +57,7 @@ export default async function ArticlePage({
       </div>
     );
   const { project, article, translations, readiness } = data;
+  const articleLocale = findSupportedLocale(article.locale)?.locale;
   const requested = Array.isArray(query.step) ? query.step[0] : query.step;
   const valid = ["plan", "content", "seo", "translations", "publish"].includes(
     requested ?? "",
@@ -100,7 +103,11 @@ export default async function ArticlePage({
             ? subiqSiteConfig.scopeClassName
             : undefined
         }
-        canonicalBaseUrl={project.canonicalBaseUrl}
+        canonicalArticleUrlPrefix={
+          projectId === subiqSiteConfig.id && articleLocale
+            ? getCanonicalUrl(subiqSiteConfig, articleLocale, "/blog/")
+            : undefined
+        }
         projectTopics={project.topics}
         projectId={projectId}
         publishPreview={preview}

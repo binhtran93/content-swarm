@@ -90,7 +90,6 @@ function seedProject() {
     name: "SubIQ",
     description: "Subscription intelligence",
     topics: [],
-    canonicalBaseUrl: null,
     status: "active",
     createdAt: now,
     updatedAt: now,

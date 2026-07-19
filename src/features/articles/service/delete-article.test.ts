@@ -103,7 +103,6 @@ function seed() {
     name: "SubIQ",
     description: "",
     topics: [],
-    canonicalBaseUrl: null,
     status: "active",
     createdAt: now,
     updatedAt: now,

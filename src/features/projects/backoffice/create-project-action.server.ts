@@ -18,7 +18,6 @@ export async function createProjectAction(
       projectId: String(formData.get("projectId") ?? ""),
       name: String(formData.get("name") ?? ""),
       description: String(formData.get("description") ?? ""),
-      canonicalBaseUrl: String(formData.get("canonicalBaseUrl") ?? ""),
     });
     projectId = project.projectId;
   } catch (error) {

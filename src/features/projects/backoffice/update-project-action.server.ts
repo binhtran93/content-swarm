@@ -17,7 +17,6 @@ export async function updateProjectAction(
     await updateProject(projectId, {
       name: String(formData.get("name") ?? ""),
       description: String(formData.get("description") ?? ""),
-      canonicalBaseUrl: String(formData.get("canonicalBaseUrl") ?? ""),
       topics: String(formData.get("topics") ?? "")
         .split(/[\n,]/)
         .map((topic) => topic.trim())

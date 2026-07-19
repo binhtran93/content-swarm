@@ -82,7 +82,6 @@ const baseInput = {
   projectId: "subiq",
   name: "SubIQ",
   description: "Subscription intelligence for growing software teams.",
-  canonicalBaseUrl: "https://getsubiq.com",
 };
 
 describe("Project commands and queries", () => {
@@ -103,7 +102,6 @@ describe("Project commands and queries", () => {
       ownerId: "owner-a",
       schemaVersion: 1,
       status: "active",
-      canonicalBaseUrl: "https://getsubiq.com",
     });
     expect(mock.requireOwner).toHaveBeenCalledOnce();
   });
@@ -124,7 +122,6 @@ describe("Project commands and queries", () => {
       updateProject("subiq", {
         name: "Stolen",
         description: baseInput.description,
-        canonicalBaseUrl: null,
         topics: [],
       }),
     ).rejects.toThrow("unavailable");
@@ -136,7 +133,6 @@ describe("Project commands and queries", () => {
     const updated = await updateProject("subiq", {
       name: "SubIQ Pro",
       description: "Updated private product context.",
-      canonicalBaseUrl: "https://anmisoft.com/subiq",
       topics: ["SaaS", "Retention"],
     });
 
@@ -176,7 +172,6 @@ describe("Project commands and queries", () => {
       updateProject("subiq", {
         name: "No change",
         description: baseInput.description,
-        canonicalBaseUrl: null,
         topics: [],
       }),
     ).rejects.toThrow("cannot be changed");

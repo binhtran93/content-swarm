@@ -492,11 +492,11 @@ function ContentEditor({
 
 function SeoEditor({
   article,
-  canonicalBaseUrl,
+  canonicalArticleUrlPrefix,
   projectTopics,
 }: {
   article: Article;
-  canonicalBaseUrl: string | null;
+  canonicalArticleUrlPrefix?: string;
   projectTopics: string[];
 }) {
   const [slug, setSlug] = useState(
@@ -534,9 +534,9 @@ function SeoEditor({
             </label>
             <p className="text-base-content/60 text-sm break-all">
               URL:{" "}
-              {canonicalBaseUrl
-                ? `${canonicalBaseUrl}/${article.locale}/blog/${slug || "…"}`
-                : "Set the project's canonical base URL to preview the final URL."}
+              {canonicalArticleUrlPrefix
+                ? `${canonicalArticleUrlPrefix}${slug || "…"}`
+                : "This project does not have a public site configuration."}
             </p>
           </div>
           <ArticleTopicPicker
@@ -916,7 +916,7 @@ export function ArticleWorkspace({
   articleThemeClassName,
   projectId,
   step,
-  canonicalBaseUrl,
+  canonicalArticleUrlPrefix,
   projectTopics,
   translations,
   publishPreview,
@@ -925,7 +925,7 @@ export function ArticleWorkspace({
   articleThemeClassName?: string;
   projectId: string;
   step: Step;
-  canonicalBaseUrl: string | null;
+  canonicalArticleUrlPrefix?: string;
   projectTopics: string[];
   translations: Translation[];
   publishPreview?: React.ReactNode;
@@ -970,7 +970,7 @@ export function ArticleWorkspace({
           ) : step === "seo" ? (
             <SeoEditor
               article={article}
-              canonicalBaseUrl={canonicalBaseUrl}
+              canonicalArticleUrlPrefix={canonicalArticleUrlPrefix}
               projectTopics={projectTopics}
             />
           ) : step === "translations" ? (

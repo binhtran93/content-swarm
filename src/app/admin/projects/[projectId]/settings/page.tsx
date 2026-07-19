@@ -60,18 +60,12 @@ export default async function ProjectSettingsPage({
         <div className="card-body">
           <h2 className="card-title">Project settings</h2>
           {archived ? (
-            <dl className="mt-3 grid gap-5 sm:grid-cols-2">
+            <dl className="mt-3 grid gap-5">
               <div>
                 <dt className="text-base-content/55 text-sm">Project ID</dt>
                 <dd className="mt-1 font-mono">{project.projectId}</dd>
               </div>
               <div>
-                <dt className="text-base-content/55 text-sm">Canonical URL</dt>
-                <dd className="mt-1 break-all">
-                  {project.canonicalBaseUrl ?? "Not configured"}
-                </dd>
-              </div>
-              <div className="sm:col-span-2">
                 <dt className="text-base-content/55 text-sm">Description</dt>
                 <dd className="mt-1 whitespace-pre-wrap">
                   {project.description}

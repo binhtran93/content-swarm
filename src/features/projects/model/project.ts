@@ -3,7 +3,6 @@ export type Project = {
   name: string;
   description: string;
   topics: string[];
-  canonicalBaseUrl: string | null;
   status: "active" | "archived";
   createdAt: string;
   updatedAt: string;

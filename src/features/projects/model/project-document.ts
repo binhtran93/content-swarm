@@ -1,18 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { z } from "zod";
 
-const canonicalBaseUrl = z.string().refine((value) => {
-  try {
-    return (
-      new URL(value).protocol === "https:" &&
-      value.trim() === value &&
-      !value.endsWith("/")
-    );
-  } catch {
-    return false;
-  }
-});
-
 const topics = z
   .array(z.string().min(1).max(80))
   .max(100)
@@ -28,7 +16,6 @@ export const projectDocumentSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(5_000),
   topics,
-  canonicalBaseUrl: canonicalBaseUrl.nullable(),
   status: z.enum(["active", "archived"]),
   createdAt: z.instanceof(Timestamp),
   updatedAt: z.instanceof(Timestamp),

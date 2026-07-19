@@ -20,7 +20,6 @@ const project = {
   name: "SubIQ",
   description: "Private product context",
   topics: ["SaaS"],
-  canonicalBaseUrl: "https://getsubiq.com",
   status: "active" as const,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",

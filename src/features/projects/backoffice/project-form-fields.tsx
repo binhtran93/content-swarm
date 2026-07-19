@@ -74,26 +74,6 @@ export function ProjectFormFields({
         </p>
       </fieldset>
 
-      <fieldset className="fieldset">
-        <legend className="fieldset-legend">Canonical base URL</legend>
-        <input
-          aria-label="Canonical base URL"
-          aria-describedby="canonical-url-help"
-          autoCapitalize="none"
-          autoComplete="url"
-          className="input w-full"
-          defaultValue={project?.canonicalBaseUrl ?? ""}
-          inputMode="url"
-          name="canonicalBaseUrl"
-          placeholder="https://getsubiq.com"
-          type="url"
-        />
-        <p className="label" id="canonical-url-help">
-          Optional for authoring. Publishing requires HTTPS with no trailing
-          slash.
-        </p>
-      </fieldset>
-
       {project ? (
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Topics</legend>

@@ -42,7 +42,6 @@ export async function updateProject(
         name: validated.name,
         description: validated.description,
         topics: validated.topics,
-        canonicalBaseUrl: validated.canonicalBaseUrl,
         updatedAt: Timestamp.now(),
       });
       transaction.set(reference, nextDocument);
