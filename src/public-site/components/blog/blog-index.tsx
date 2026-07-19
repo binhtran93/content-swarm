@@ -10,6 +10,18 @@ type BlogPage = Awaited<
   >
 >;
 
+export type BlogIndexCopy = {
+  articlesLabel: string;
+  browseByTopic: string;
+  allTopics: string;
+  defaultTopic: string;
+  englishOnlyShort: string;
+  emptyTitle: string;
+  emptyDescription: string;
+  paginationLabel: string;
+  nextPage: string;
+};
+
 function formatDate(value: string, locale: SupportedLocaleCode) {
   return new Intl.DateTimeFormat(locale, {
     month: "short",
@@ -35,12 +47,14 @@ export function BlogIndex({
   locale,
   result,
   activeTopic,
+  copy,
 }: {
   config: PublicBlogConfig;
   routePrefix: string;
   locale: SupportedLocaleCode;
   result: BlogPage;
   activeTopic?: string;
+  copy: BlogIndexCopy;
 }) {
   const blogHref = routeHref(config, routePrefix, locale, "/blog");
   return (
@@ -54,17 +68,20 @@ export function BlogIndex({
         </div>
       </section>
 
-      <section className={styles.blogContent} aria-label="Articles">
+      <section className={styles.blogContent} aria-label={copy.articlesLabel}>
         <div className={styles.contentShell}>
           <div className={styles.articleBrowser}>
-            <aside className={styles.filterRail} aria-label="Browse by topic">
-              <p className={styles.browserLabel}>Browse by topic</p>
+            <aside
+              className={styles.filterRail}
+              aria-label={copy.browseByTopic}
+            >
+              <p className={styles.browserLabel}>{copy.browseByTopic}</p>
               <div className={styles.categoryList}>
                 <Link
                   className={!activeTopic ? styles.activeCategory : undefined}
                   href={blogHref}
                 >
-                  All
+                  {copy.allTopics}
                 </Link>
                 {result.topics.map((topic) => (
                   <Link
@@ -96,14 +113,14 @@ export function BlogIndex({
                     >
                       <div className={styles.articleContent}>
                         <div className={styles.articleMeta}>
-                          <span>{article.topics[0] ?? "Guide"}</span>
+                          <span>{article.topics[0] ?? copy.defaultTopic}</span>
                           <time dateTime={article.updatedAt}>
                             {formatDate(article.updatedAt, locale)}
                           </time>
                         </div>
                         <h3>{article.title}</h3>
                         {article.isSourceFallback ? (
-                          <small>English only</small>
+                          <small>{copy.englishOnlyShort}</small>
                         ) : null}
                         {article.excerpt ? <p>{article.excerpt}</p> : null}
                       </div>
@@ -112,20 +129,23 @@ export function BlogIndex({
                 </div>
               ) : (
                 <div className={styles.emptyState}>
-                  <h3>No published articles yet</h3>
-                  <p>Published SubIQ guides will appear here.</p>
+                  <h3>{copy.emptyTitle}</h3>
+                  <p>{copy.emptyDescription}</p>
                 </div>
               )}
 
               {result.hasNext && result.nextCursor ? (
-                <nav className={styles.pagination} aria-label="Blog pagination">
+                <nav
+                  className={styles.pagination}
+                  aria-label={copy.paginationLabel}
+                >
                   <Link
                     href={`${blogHref}?${new URLSearchParams({
                       ...(activeTopic ? { topic: activeTopic } : {}),
                       cursor: result.nextCursor,
                     })}`}
                   >
-                    Next
+                    {copy.nextPage}
                   </Link>
                 </nav>
               ) : null}

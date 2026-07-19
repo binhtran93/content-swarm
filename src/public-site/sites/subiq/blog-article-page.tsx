@@ -9,8 +9,11 @@ import {
   getCanonicalUrl,
   getProjectRoutePrefix,
 } from "@/public-site/config/public-url";
-import { subiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
-import { getLocalizedSubiqConfig } from "@/public-site/sites/subiq/site-config";
+import {
+  getLocalizedSubiqBlogConfig,
+  subiqBlogConfig,
+} from "@/public-site/sites/subiq/blog-config";
+import { getSubiqTranslator } from "@/public-site/sites/subiq/i18n/get-subiq-translator";
 
 import "./theme.css";
 
@@ -21,11 +24,8 @@ export async function SubiqBlogArticlePage({
   locale: SupportedLocaleCode;
   slug: string;
 }) {
-  const config = {
-    ...subiqBlogConfig,
-    ...getLocalizedSubiqConfig(locale),
-    blog: subiqBlogConfig.blog,
-  };
+  const config = getLocalizedSubiqBlogConfig(locale);
+  const t = getSubiqTranslator(locale);
   const result = await loadBlogArticle({
     config: subiqBlogConfig,
     locale,
@@ -73,6 +73,15 @@ export async function SubiqBlogArticlePage({
         translation={result.translation}
         isSourceFallback={result.isSourceFallback}
         canonical={canonical}
+        copy={{
+          untitledArticle: t("blog.untitledArticle"),
+          defaultTopic: t("blog.defaultTopic"),
+          readingTime: (minutes) => t("blog.readingTime", { minutes }),
+          englishOnlyNotice: t("blog.englishOnlyNotice"),
+          onThisPage: t("blog.onThisPage"),
+          articleEnd: t("blog.articleEnd"),
+          browseAll: t("blog.browseAll"),
+        }}
       />
     </BlogSiteLayout>
   );

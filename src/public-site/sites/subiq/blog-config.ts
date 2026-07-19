@@ -1,19 +1,48 @@
 import type { PublicBlogConfig } from "@/public-site/config/blog-config";
-import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
+import {
+  defaultLocale,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
+import { getSubiqMessages } from "@/public-site/sites/subiq/i18n/get-subiq-translator";
+import {
+  getLocalizedSubiqConfig,
+  subiqSiteConfig,
+} from "@/public-site/sites/subiq/site-config";
+
+const defaultMessages = getSubiqMessages(defaultLocale);
 
 export const subiqBlogConfig: PublicBlogConfig = {
   ...subiqSiteConfig,
   blog: {
-    titleLead: "Understand",
-    titleAccent: "what you pay for",
-    description:
-      "Straightforward guides to finding subscriptions, checking renewals, cutting recurring costs, and navigating cancellations or refunds",
+    titleLead: defaultMessages.blog.titleLead,
+    titleAccent: defaultMessages.blog.titleAccent,
+    description: defaultMessages.blog.description,
     postsPerPage: 10,
     installCta: {
-      eyebrow: "SubIQ",
-      title: "Track your subscriptions with SubIQ",
-      description:
-        "See upcoming renewals, recurring costs, and where each subscription is managed",
+      eyebrow: defaultMessages.blog.installEyebrow,
+      title: defaultMessages.blog.installTitle,
+      description: defaultMessages.blog.installDescription,
     },
   },
 };
+
+export function getLocalizedSubiqBlogConfig(
+  locale: SupportedLocaleCode,
+): PublicBlogConfig {
+  const messages = getSubiqMessages(locale);
+  return {
+    ...subiqBlogConfig,
+    ...getLocalizedSubiqConfig(locale),
+    blog: {
+      ...subiqBlogConfig.blog,
+      titleLead: messages.blog.titleLead,
+      titleAccent: messages.blog.titleAccent,
+      description: messages.blog.description,
+      installCta: {
+        eyebrow: messages.blog.installEyebrow,
+        title: messages.blog.installTitle,
+        description: messages.blog.installDescription,
+      },
+    },
+  };
+}

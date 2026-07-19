@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { requireSupportedLocale } from "@/config/supported-locales";
 import { createBlogIndexMetadata } from "@/public-site/seo/blog-index-seo";
-import { subiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
+import { getLocalizedSubiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
 import { SubiqBlogIndexPage } from "@/public-site/sites/subiq/blog-index-page";
 
 export const dynamic = "force-dynamic";
@@ -24,9 +24,10 @@ function localeOf(value: string) {
 }
 export async function generateMetadata({ params, searchParams }: RouteProps) {
   const [route, query] = await Promise.all([params, searchParams]);
+  const locale = localeOf(route.locale);
   return createBlogIndexMetadata(
-    subiqBlogConfig,
-    localeOf(route.locale),
+    getLocalizedSubiqBlogConfig(locale),
+    locale,
     Boolean(first(query.topic) || first(query.cursor)),
   );
 }

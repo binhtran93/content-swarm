@@ -1,5 +1,6 @@
+import { defaultLocale } from "@/config/supported-locales";
 import { SubiqBlogIndexPage } from "@/public-site/sites/subiq/blog-index-page";
-import { subiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
+import { getLocalizedSubiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
 import { createBlogIndexMetadata } from "@/public-site/seo/blog-index-seo";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +18,8 @@ export async function generateMetadata({
 }) {
   const values = await searchParams;
   return createBlogIndexMetadata(
-    subiqBlogConfig,
-    "en-US",
+    getLocalizedSubiqBlogConfig(defaultLocale),
+    defaultLocale,
     Boolean(first(values.topic) || first(values.cursor)),
   );
 }
@@ -31,7 +32,7 @@ export default async function SubiqBlogRoute({
   const values = await searchParams;
   return (
     <SubiqBlogIndexPage
-      locale="en-US"
+      locale={defaultLocale}
       topic={first(values.topic)}
       cursor={first(values.cursor)}
     />

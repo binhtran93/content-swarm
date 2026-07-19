@@ -8,8 +8,17 @@ import { AcquisitionActions } from "@/public-site/components/acquisition";
 import type { ArticleHeading } from "@/public-site/components/mdx/article-mdx-outline";
 import { renderArticleMdx } from "@/public-site/components/mdx/render-article-mdx.server";
 import type { PublicBlogConfig } from "@/public-site/config/blog-config";
-import { getPublicTranslator } from "@/public-site/i18n/get-public-translator";
 import styles from "./blog.module.css";
+
+export type BlogArticleCopy = {
+  untitledArticle: string;
+  defaultTopic: string;
+  readingTime: (minutes: number) => string;
+  englishOnlyNotice: string;
+  onThisPage: string;
+  articleEnd: string;
+  browseAll: string;
+};
 
 function routeHref(
   config: PublicBlogConfig,
@@ -45,6 +54,7 @@ export async function BlogArticle({
   translation,
   isSourceFallback,
   canonical,
+  copy,
 }: {
   config: PublicBlogConfig;
   routePrefix: string;
@@ -53,12 +63,12 @@ export async function BlogArticle({
   translation: Translation | null;
   isSourceFallback: boolean;
   canonical: string;
+  copy: BlogArticleCopy;
 }) {
-  const title = translation?.title ?? source.title ?? "Untitled article";
+  const title = translation?.title ?? source.title ?? copy.untitledArticle;
   const excerpt = translation?.excerpt ?? source.excerpt ?? "";
   const content = translation?.content ?? source.content ?? "";
   const renderedArticle = await renderArticleMdx(content);
-  const t = getPublicTranslator();
   const updatedAt = translation?.updatedAt ?? source.updatedAt;
   const readingMinutes = Math.max(
     1,
@@ -87,7 +97,7 @@ export async function BlogArticle({
           <div className={styles.contentShell}>
             <div className={styles.articleHeroInner}>
               <div className={styles.articleMeta}>
-                <span>{source.topics[0] ?? "Guide"}</span>
+                <span>{source.topics[0] ?? copy.defaultTopic}</span>
                 <time dateTime={updatedAt}>
                   {new Intl.DateTimeFormat(locale, {
                     month: "short",
@@ -96,13 +106,13 @@ export async function BlogArticle({
                     timeZone: "UTC",
                   }).format(new Date(updatedAt))}
                 </time>
-                <span>{readingMinutes} min read</span>
+                <span>{copy.readingTime(readingMinutes)}</span>
               </div>
               <h1>{title}</h1>
               {excerpt ? <p className={styles.articleDek}>{excerpt}</p> : null}
               {isSourceFallback ? (
                 <p role="note" className={styles.fallbackNotice}>
-                  This article is currently available in English only.
+                  {copy.englishOnlyNotice}
                 </p>
               ) : null}
             </div>
@@ -115,13 +125,13 @@ export async function BlogArticle({
               <>
                 <aside
                   className={styles.tableOfContents}
-                  aria-label={t("blog.onThisPage")}
+                  aria-label={copy.onThisPage}
                 >
-                  <p>{t("blog.onThisPage")}</p>
+                  <p>{copy.onThisPage}</p>
                   <ArticleSectionLinks headings={renderedArticle.headings} />
                 </aside>
                 <details className={styles.mobileTableOfContents}>
-                  <summary>{t("blog.onThisPage")}</summary>
+                  <summary>{copy.onThisPage}</summary>
                   <ArticleSectionLinks headings={renderedArticle.headings} />
                 </details>
               </>
@@ -157,12 +167,9 @@ export async function BlogArticle({
                 />
               </section>
               <div className={styles.articleEnd}>
-                <p>
-                  Use this guide whenever your recurring costs stop feeling
-                  clear.
-                </p>
+                <p>{copy.articleEnd}</p>
                 <Link href={routeHref(config, routePrefix, locale, "/blog")}>
-                  Browse all articles
+                  {copy.browseAll}
                 </Link>
               </div>
             </div>

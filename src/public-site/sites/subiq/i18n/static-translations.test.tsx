@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { createSubiqStaticPageMetadata } from "@/public-site/seo/static-page-seo";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
+import { getLocalizedSubiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
 import { getLocalizedSubiqConfig } from "@/public-site/sites/subiq/site-config";
 import { EnglishLegalNotice } from "@/public-site/sites/subiq/static-page-layout";
 import enUS from "./translations/en-US.json";
@@ -69,6 +70,15 @@ describe("SubIQ static translations", () => {
     });
     expect(createSubiqStaticPageMetadata("support", "vi-VN").title).toBe(
       "Hỗ trợ | SubIQ",
+    );
+  });
+
+  it("localizes static blog presentation without changing database content", () => {
+    const config = getLocalizedSubiqBlogConfig("vi-VN");
+    expect(config.blog.titleLead).toBe("Hiểu rõ");
+    expect(config.blog.titleAccent).toBe("những khoản bạn đang trả");
+    expect(config.blog.installCta.title).toBe(
+      "Theo dõi các gói đăng ký với SubIQ",
     );
   });
 
