@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
@@ -41,11 +47,45 @@ function Fields({ article }: { article: Article }) {
   );
 }
 
-function ReferenceMenu({ references }: { references: ArticleReference[] }) {
+export function ReferenceMenu({
+  references,
+}: {
+  references: ArticleReference[];
+}) {
+  const menuRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    function closeFromOutside(event: PointerEvent) {
+      const menu = menuRef.current;
+
+      if (
+        menu?.open &&
+        event.target instanceof Node &&
+        !menu.contains(event.target)
+      )
+        menu.open = false;
+    }
+
+    function closeFromEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && menuRef.current?.open) {
+        menuRef.current.open = false;
+        menuRef.current.querySelector("summary")?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", closeFromOutside);
+    document.addEventListener("keydown", closeFromEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeFromOutside);
+      document.removeEventListener("keydown", closeFromEscape);
+    };
+  }, []);
+
   if (!references.length) return null;
 
   return (
-    <details className="dropdown dropdown-end">
+    <details className="dropdown dropdown-end" ref={menuRef}>
       <summary className="btn btn-ghost btn-sm">
         Sources {references.length}
       </summary>
@@ -55,6 +95,9 @@ function ReferenceMenu({ references }: { references: ArticleReference[] }) {
             <a
               className="block"
               href={reference.url}
+              onClick={() => {
+                if (menuRef.current) menuRef.current.open = false;
+              }}
               rel="noreferrer"
               target="_blank"
             >
