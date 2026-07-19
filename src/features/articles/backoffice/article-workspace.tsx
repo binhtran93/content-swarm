@@ -201,6 +201,7 @@ function PlanEditor({ article }: { article: Article }) {
 }
 
 function ContentEditor({ article }: { article: Article }) {
+  const actionMenuRef = useRef<HTMLDetailsElement>(null);
   const [title, setTitle] = useState(article.title ?? "");
   const [excerpt, setExcerpt] = useState(article.excerpt ?? "");
   const [content, setContent] = useState(article.content ?? "");
@@ -213,6 +214,35 @@ function ContentEditor({ article }: { article: Article }) {
   const [generatingExcerpt, startGeneratingExcerpt] = useTransition();
   const [improving, startImproving] = useTransition();
   const [generateError, setGenerateError] = useState<string>();
+
+  useEffect(() => {
+    function closeActionMenu(event: PointerEvent) {
+      const menu = actionMenuRef.current;
+
+      if (
+        menu?.open &&
+        event.target instanceof Node &&
+        !menu.contains(event.target)
+      )
+        menu.open = false;
+    }
+
+    function closeActionMenuFromEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && actionMenuRef.current?.open) {
+        actionMenuRef.current.open = false;
+        actionMenuRef.current.querySelector("summary")?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", closeActionMenu);
+    document.addEventListener("keydown", closeActionMenuFromEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeActionMenu);
+      document.removeEventListener("keydown", closeActionMenuFromEscape);
+    };
+  }, []);
+
   function apply(result: Awaited<ReturnType<typeof generateContentAction>>) {
     setGenerateError(result?.error);
     const proposal = result?.proposal?.content;
@@ -226,11 +256,15 @@ function ContentEditor({ article }: { article: Article }) {
     }
   }
   function generate() {
+    if (actionMenuRef.current) actionMenuRef.current.open = false;
+
     startGenerating(async () =>
       apply(await generateContentAction(null, actionData(article))),
     );
   }
   function improve() {
+    if (actionMenuRef.current) actionMenuRef.current.open = false;
+
     startImproving(async () =>
       apply(await improveContentAction(null, actionData(article))),
     );
@@ -258,30 +292,68 @@ function ContentEditor({ article }: { article: Article }) {
       <Fields article={article} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-medium">Content</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <ReferenceMenu references={references} />
+          <div className="join">
+            <button
+              className="btn btn-outline btn-sm join-item"
+              disabled={generating || improving}
+              onClick={generate}
+              type="button"
+            >
+              {generating ? "Generating…" : "Generate content"}
+            </button>
+            <details
+              className="dropdown dropdown-end join-item"
+              ref={actionMenuRef}
+            >
+              <summary
+                aria-label="Choose content action"
+                className="btn btn-outline btn-sm join-item px-2"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="size-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m7 10 5 5 5-5"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                  />
+                </svg>
+              </summary>
+              <ul className="menu dropdown-content bg-base-100 border-base-300 z-30 mt-1 w-56 border p-2 shadow-lg">
+                <li>
+                  <button
+                    disabled={generating || improving}
+                    onClick={generate}
+                    type="button"
+                  >
+                    Generate content
+                  </button>
+                </li>
+                <li>
+                  <button
+                    disabled={generating || improving || !article.content}
+                    onClick={improve}
+                    type="button"
+                  >
+                    Improve saved content
+                  </button>
+                </li>
+              </ul>
+            </details>
+          </div>
           <button
             className="btn btn-primary btn-sm"
             disabled={saving}
             type="submit"
           >
             {saving ? "Saving…" : "Save content"}
-          </button>
-          <button
-            className="btn btn-outline btn-sm"
-            disabled={generating}
-            onClick={generate}
-            type="button"
-          >
-            {generating ? "Generating…" : "Generate content"}
-          </button>
-          <button
-            className="btn btn-outline btn-sm"
-            disabled={improving || !article.content}
-            onClick={improve}
-            type="button"
-          >
-            {improving ? "Improving…" : "Improve saved content"}
           </button>
         </div>
       </div>
