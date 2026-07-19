@@ -10,8 +10,15 @@ const providers = {
     modelEnvironment: "GEMINI_MODEL",
     defaultModel: "gemini-3.5-flash",
 
-    createModel(apiKey: string, model: string) {
-      return createGoogleGenerativeAI({ apiKey })(model);
+    createRuntime(apiKey: string, modelName: string) {
+      const client = createGoogleGenerativeAI({ apiKey });
+
+      return {
+        model: client(modelName),
+        searchTools: {
+          google_search: client.tools.googleSearch({}),
+        },
+      };
     },
   },
 } as const;
@@ -27,15 +34,26 @@ type GenerateAiInput<T> = {
 
   outputSchema?: ZodType<T>;
   outputName?: string;
+  searchGrounding?: boolean;
 
   temperature?: number;
   maxOutputTokens?: number;
   timeoutMs?: number;
 };
 
+export type AiReference = {
+  title: string;
+  url: string;
+};
+
+export type AiGeneration<T> = {
+  output: T;
+  references: AiReference[];
+};
+
 export async function generateAi<T = string>(
   input: GenerateAiInput<T>,
-): Promise<T> {
+): Promise<AiGeneration<T>> {
   const provider = configuredProvider(input.provider);
   const configuration = providers[provider];
 
@@ -45,19 +63,45 @@ export async function generateAi<T = string>(
     configuration.defaultModel;
 
   const apiKey = requiredEnvironment(configuration.apiKeyEnvironment);
-  const model = configuration.createModel(apiKey, modelName);
+  const runtime = configuration.createRuntime(apiKey, modelName);
 
   const result = await generateText({
-    model,
+    model: runtime.model,
     system: input.system,
     prompt: input.prompt,
     output: createOutput(input.outputSchema, input.outputName),
+    tools: input.searchGrounding ? runtime.searchTools : undefined,
     temperature: input.temperature,
     maxOutputTokens: input.maxOutputTokens,
     abortSignal: AbortSignal.timeout(input.timeoutMs ?? 120_000),
   });
 
-  return result.output as T;
+  return {
+    output: result.output as T,
+    references: normalizeReferences(result.sources),
+  };
+}
+
+function normalizeReferences(
+  sources: Awaited<ReturnType<typeof generateText>>["sources"],
+): AiReference[] {
+  const references = sources.flatMap((source) => {
+    if (source.sourceType !== "url") return [];
+
+    try {
+      const url = new URL(source.url);
+      const title = source.title?.trim() || url.hostname.replace(/^www\./, "");
+
+      return [{ title, url: url.toString() }];
+    } catch {
+      return [];
+    }
+  });
+
+  return references.filter(
+    (reference, index) =>
+      references.findIndex((item) => item.url === reference.url) === index,
+  );
 }
 
 function configuredProvider(explicit?: AiProvider): AiProvider {

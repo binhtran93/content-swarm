@@ -12,8 +12,7 @@ Every writing step works manually; AI is an explicit proposal tool.
 ```text
 Choose Backlog topic
 → Create Article with one primary keyword ID
-→ Save Brief
-→ Save Outline and title
+→ Save Article plan and title
 → Save Content MDX
 → Complete SEO
 → Optionally prepare and approve translations
@@ -33,7 +32,7 @@ Article Authoring owns:
 - `articleSlugs/{locale--slug}` working slug reservations.
 - One primary Keyword reference; Keyword Group remains the source of truth for
   supporting members.
-- Brief, Outline, Content, and simple SEO fields.
+- Article plan, Content, grounding references, and simple SEO fields.
 - Writing and translation prompts.
 
 Publishing does not create another Article. It validates this Article and
@@ -57,7 +56,7 @@ Outputs:
 ## Implementation sequence
 
 1. [Article Creation](./01-article-creation.md)
-2. [Brief and Outline AI](./02-brief-and-outline-ai.md)
+2. [Article Plan AI](./02-article-plan-ai.md)
 3. [Content and AI Assistance](./03-content-ai.md)
 4. [SEO](./04-seo.md)
 5. [Translations AI](./05-translations-ai.md)

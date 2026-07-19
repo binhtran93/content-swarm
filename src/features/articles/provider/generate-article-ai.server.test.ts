@@ -12,17 +12,21 @@ describe("generateArticleAi", () => {
   beforeEach(() => {
     vi.stubEnv("NODE_ENV", "production");
     mocks.generateAi.mockReset();
-    mocks.generateAi.mockResolvedValue("Proposal");
+    mocks.generateAi.mockResolvedValue({ output: "Proposal", references: [] });
   });
 
   it("delegates provider selection to the shared AI gateway", async () => {
-    await expect(generateArticleAi("System", "User")).resolves.toBe("Proposal");
+    await expect(generateArticleAi("System", "User")).resolves.toEqual({
+      output: "Proposal",
+      references: [],
+    });
 
     expect(mocks.generateAi).toHaveBeenCalledOnce();
     expect(mocks.generateAi).toHaveBeenCalledWith(
       expect.objectContaining({
         system: "System",
         prompt: "User",
+        searchGrounding: true,
         timeoutMs: 240_000,
       }),
     );

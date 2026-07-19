@@ -10,7 +10,7 @@ the current content.
 
 ## Depends on
 
-- [Brief and Outline AI](./02-brief-and-outline-ai.md)
+- [Article Plan AI](./02-article-plan-ai.md)
 
 ## Firestore ownership
 
@@ -18,6 +18,7 @@ No new collection. This feature updates only:
 
 ```text
 content
+contentReferences
 updatedAt
 ```
 
@@ -72,9 +73,8 @@ Improve return proposals without writing Firestore.
 
 ## Backoffice behavior
 
-- One MDX editor with safe, inert preview.
-- Desktop may show editor and preview side by side; mobile may switch between
-  them.
+- One single-pane WYSIWYG Markdown editor; formatted content remains directly
+  editable without a separate preview pane.
 - Explicit Save, Generate Content, and Improve Content actions.
 - AI proposals replace nothing until the owner reviews, optionally edits, and
   saves them.
@@ -94,7 +94,7 @@ Server inputs:
 
 - Project name and description.
 - Selected Keyword and optional Keyword Group resolved from `Article.keywordId`.
-- Saved title, Brief, and Outline.
+- Saved title and Article plan.
 - Source locale and writing rules.
 - Approved MDX component descriptions.
 
@@ -102,7 +102,7 @@ Required system prompt:
 
 ```text
 Write one complete, genuinely useful article body as valid MDX from the supplied
-title, brief, and outline.
+title and article plan.
 
 Write in natural, idiomatic language for the requested locale. The result must
 read as though it was written and edited by a fluent native professional. Avoid
@@ -113,7 +113,7 @@ Respect the reader's time. Begin with useful substance rather than a generic
 introduction. Every section and paragraph must add distinct information,
 explanation, guidance, or a concrete example. Remove filler, obvious
 statements, empty transitions, unnecessary summaries, and repeated ideas. Do
-not restate the title, brief, outline, or the same advice in different words.
+not restate the title, article plan, or the same advice in different words.
 
 Use keywords naturally only when they fit the meaning. Never repeat keywords
 for SEO purposes or distort a sentence to include one.
@@ -153,8 +153,8 @@ sections that provide no distinct value. Combine overlapping passages. Ensure
 every remaining paragraph contributes useful information, explanation,
 guidance, or a concrete supported example.
 
-Improve structure and flow while staying aligned with the saved brief and
-outline. Use keywords naturally and never repeat them merely for SEO. Do not add
+Improve structure and flow while staying aligned with the saved Article plan.
+Use keywords naturally and never repeat them merely for SEO. Do not add
 facts, statistics, quotes, product behavior, or other details unsupported by
 the saved context.
 
@@ -188,7 +188,7 @@ Each model, prompt, or service file has one public export.
 1. Adapt the explicit Nextra component map and allowed MDX contract from
    `tdbinh`.
 2. Implement the validator, manual Content save, and safe preview.
-3. Implement the Content generation prompt and command.
+3. Implement the grounded Content generation prompt, source capture, and command.
 4. Implement the improvement prompt and command.
 5. Add proposal review/replacement behavior.
 6. Test unsafe MDX, manual-only use, disabled AI, invalid output, and refresh.

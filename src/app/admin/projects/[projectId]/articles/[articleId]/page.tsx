@@ -8,13 +8,11 @@ import { getArticleReadiness } from "@/features/articles/service/get-article-rea
 import { listTranslations } from "@/features/articles/service/list-translations.server";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
 
-type Step =
-  "brief" | "outline" | "content" | "seo" | "translations" | "publish";
+type Step = "plan" | "content" | "seo" | "translations" | "publish";
 function firstIncomplete(
   article: Awaited<ReturnType<typeof getArticle>>,
 ): Step {
-  if (!article.brief) return "brief";
-  if (!article.outline || !article.title) return "outline";
+  if (!article.plan || !article.title) return "plan";
   if (!article.content) return "content";
   if (
     !article.slug ||
@@ -56,19 +54,13 @@ export default async function ArticlePage({
     );
   const { project, article, translations, readiness } = data;
   const requested = Array.isArray(query.step) ? query.step[0] : query.step;
-  const valid = [
-    "brief",
-    "outline",
-    "content",
-    "seo",
-    "translations",
-    "publish",
-  ].includes(requested ?? "")
+  const valid = ["plan", "content", "seo", "translations", "publish"].includes(
+    requested ?? "",
+  )
     ? (requested as Step)
     : firstIncomplete(article);
   const step =
-    (valid === "outline" && !article.brief) ||
-    (valid === "content" && (!article.outline || !article.title)) ||
+    (valid === "content" && (!article.plan || !article.title)) ||
     (valid === "seo" && !article.content)
       ? firstIncomplete(article)
       : valid;

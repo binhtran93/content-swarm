@@ -1,3 +1,5 @@
+import type { ArticleReference } from "@/features/articles/model/article-reference";
+
 export type ArticleStatus = "draft" | "published" | "archived";
 
 export type Article = {
@@ -8,9 +10,10 @@ export type Article = {
   slug: string | null;
   topic: string | null;
   excerpt: string | null;
-  brief: string | null;
-  outline: string | null;
+  plan: string | null;
+  planReferences: ArticleReference[];
   content: string | null;
+  contentReferences: ArticleReference[];
   seoTitle: string | null;
   seoDescription: string | null;
   status: ArticleStatus;

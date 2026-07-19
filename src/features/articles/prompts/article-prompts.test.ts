@@ -1,19 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { articleBriefPrompt } from "@/features/articles/prompts/article-brief-prompt";
 import { articleContentImprovePrompt } from "@/features/articles/prompts/article-content-improve-prompt";
 import { articleContentPrompt } from "@/features/articles/prompts/article-content-prompt";
-import { articleOutlinePrompt } from "@/features/articles/prompts/article-outline-prompt";
+import { articlePlanPrompt } from "@/features/articles/prompts/article-plan-prompt";
 import { articleTranslationPrompt } from "@/features/articles/prompts/article-translation-prompt";
 
 describe("article prompt contracts", () => {
   it("keeps versioned proposals editorial and body-only", () => {
-    expect(articleBriefPrompt.version).toBe("article-brief-v1");
-    expect(articleBriefPrompt.system).toContain("Do not write article prose");
-    expect(articleOutlinePrompt.version).toBe("article-outline-v1");
-    expect(articleOutlinePrompt.system).toContain(
-      "Do not write full article prose",
-    );
+    expect(articlePlanPrompt.version).toBe("article-plan-v1");
+    expect(articlePlanPrompt.system).toContain("Do not write article prose");
+    expect(articlePlanPrompt.system).toContain("Use Google Search");
     expect(articleContentPrompt.version).toBe("article-content-v1");
     expect(articleContentPrompt.system).toContain("Do not include an H1");
     expect(articleContentPrompt.system).toContain("do not invent facts");

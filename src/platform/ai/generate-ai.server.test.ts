@@ -4,6 +4,7 @@ import { z } from "zod";
 const mocks = vi.hoisted(() => ({
   generateText: vi.fn(),
   googleModel: vi.fn((id: string) => ({ provider: "google", id })),
+  googleSearch: vi.fn(() => ({ type: "google-search" })),
 }));
 
 vi.mock("ai", async () => {
@@ -11,7 +12,10 @@ vi.mock("ai", async () => {
   return { ...actual, generateText: mocks.generateText };
 });
 vi.mock("@ai-sdk/google", () => ({
-  createGoogleGenerativeAI: () => mocks.googleModel,
+  createGoogleGenerativeAI: () =>
+    Object.assign(mocks.googleModel, {
+      tools: { googleSearch: mocks.googleSearch },
+    }),
 }));
 
 import { generateAi } from "@/platform/ai/generate-ai.server";
@@ -34,9 +38,10 @@ describe("generateAi", () => {
   });
 
   it("uses Gemini by default", async () => {
-    await expect(generateAi({ prompt: "Write something" })).resolves.toBe(
-      "Generated text",
-    );
+    await expect(generateAi({ prompt: "Write something" })).resolves.toEqual({
+      output: "Generated text",
+      references: [],
+    });
     expect(mocks.googleModel).toHaveBeenCalledWith("gemini-3.5-flash");
     expect(mocks.generateText).toHaveBeenCalledOnce();
   });
@@ -62,7 +67,45 @@ describe("generateAi", () => {
         outputSchema: z.object({ title: z.string() }),
         outputName: "title_result",
       }),
-    ).resolves.toEqual({ title: "Structured" });
+    ).resolves.toEqual({ output: { title: "Structured" }, references: [] });
+  });
+
+  it("enables Google Search and returns unique URL references", async () => {
+    mocks.generateText.mockResolvedValue({
+      output: "Grounded text",
+      sources: [
+        {
+          sourceType: "url",
+          id: "one",
+          title: "Official source",
+          url: "https://example.com/facts",
+        },
+        {
+          sourceType: "url",
+          id: "duplicate",
+          title: "Duplicate",
+          url: "https://example.com/facts",
+        },
+      ],
+    });
+
+    await expect(
+      generateAi({ prompt: "Research this", searchGrounding: true }),
+    ).resolves.toEqual({
+      output: "Grounded text",
+      references: [
+        { title: "Official source", url: "https://example.com/facts" },
+      ],
+    });
+
+    expect(mocks.googleSearch).toHaveBeenCalledWith({});
+    expect(mocks.generateText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tools: {
+          google_search: { type: "google-search" },
+        },
+      }),
+    );
   });
 
   it("rejects unsupported global configuration", async () => {

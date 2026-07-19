@@ -3,13 +3,21 @@ import "server-only";
 import type { ZodType } from "zod";
 
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
-import { generateAi } from "@/platform/ai/generate-ai.server";
+import {
+  generateAi,
+  type AiGeneration,
+} from "@/platform/ai/generate-ai.server";
+
+type ArticleAiOptions<T> = {
+  format?: { name: string; schema: ZodType<T> };
+  searchGrounding?: boolean;
+};
 
 export async function generateArticleAi<T = string>(
   system: string,
   user: string,
-  format?: { name: string; schema: ZodType<T> },
-): Promise<T> {
+  options: ArticleAiOptions<T> = {},
+): Promise<AiGeneration<T>> {
   if (process.env.NODE_ENV === "test")
     throw new ArticleServiceError(
       "provider",
@@ -19,11 +27,16 @@ export async function generateArticleAi<T = string>(
     const result = await generateAi<T>({
       system,
       prompt: user,
-      outputSchema: format?.schema,
-      outputName: format?.name,
+      outputSchema: options.format?.schema,
+      outputName: options.format?.name,
+      searchGrounding: options.searchGrounding ?? true,
       timeoutMs: 240_000,
     });
-    if (!format && typeof result === "string" && !result.trim())
+    if (
+      !options.format &&
+      typeof result.output === "string" &&
+      !result.output.trim()
+    )
       throw new ArticleServiceError(
         "provider",
         "AI returned no usable proposal.",

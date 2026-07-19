@@ -7,19 +7,20 @@ import { generateArticleAi } from "@/features/articles/provider/generate-article
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { getArticleGenerationContext } from "@/features/articles/service/get-article-generation-context.server";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
+import type { AiGeneration } from "@/platform/ai/generate-ai.server";
 
 export async function generateArticleContent(
   projectId: string,
   articleId: string,
-): Promise<string> {
+): Promise<AiGeneration<string>> {
   const context = await getArticleGenerationContext(projectId, articleId);
   const { article } = context;
-  if (!article.title || !article.brief || !article.outline)
+  if (!article.title || !article.plan)
     throw new ArticleServiceError(
       "invalid",
-      "Save the brief, title, and outline before generating content.",
+      "Save the article title and plan before generating content.",
     );
-  const proposal = await generateArticleAi(
+  const result = await generateArticleAi(
     articleContentPrompt.system,
     JSON.stringify({
       project: {
@@ -30,17 +31,16 @@ export async function generateArticleContent(
       primaryKeyword: context.primaryKeyword,
       supportingKeywords: context.supportingKeywords,
       title: article.title,
-      brief: article.brief,
-      outline: article.outline,
+      plan: article.plan,
       writingRules: articleWritingRules,
       approvedComponents: articleMdxComponentDescriptions,
     }),
   );
-  const validation = validateArticleMdx(proposal);
+  const validation = validateArticleMdx(result.output);
   if (!validation.valid)
     throw new ArticleServiceError(
       "provider",
       `AI returned invalid MDX: ${validation.errors[0]}`,
     );
-  return proposal;
+  return result;
 }

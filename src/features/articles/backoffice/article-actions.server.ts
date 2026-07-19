@@ -6,24 +6,35 @@ import { ZodError } from "zod";
 
 import { archiveArticle } from "@/features/articles/publishing/archive-article.server";
 import { publishArticle } from "@/features/articles/publishing/publish-article.server";
+import {
+  articleReferencesSchema,
+  type ArticleReference,
+} from "@/features/articles/model/article-reference";
 import { approveTranslation } from "@/features/articles/service/approve-translation.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { createArticle } from "@/features/articles/service/create-article.server";
-import { generateArticleBrief } from "@/features/articles/service/generate-article-brief.server";
 import { generateArticleContent } from "@/features/articles/service/generate-article-content.server";
-import { generateArticleOutline } from "@/features/articles/service/generate-article-outline.server";
+import { generateArticlePlan } from "@/features/articles/service/generate-article-plan.server";
 import { generateTranslation } from "@/features/articles/service/generate-translation.server";
 import { improveArticleContent } from "@/features/articles/service/improve-article-content.server";
-import { saveArticleBrief } from "@/features/articles/service/save-article-brief.server";
 import { saveArticleContent } from "@/features/articles/service/save-article-content.server";
-import { saveArticleOutline } from "@/features/articles/service/save-article-outline.server";
+import { saveArticlePlan } from "@/features/articles/service/save-article-plan.server";
 import { saveArticleSeo } from "@/features/articles/service/save-article-seo.server";
 import { saveTranslation } from "@/features/articles/service/save-translation.server";
 
 export type ArticleActionState = {
   error?: string;
   saved?: boolean;
-  proposal?: Record<string, string>;
+  proposal?: {
+    content?: string;
+    excerpt?: string;
+    plan?: string;
+    references?: ArticleReference[];
+    seoDescription?: string;
+    seoTitle?: string;
+    slug?: string;
+    title?: string;
+  };
 } | null;
 
 function message(error: unknown) {
@@ -38,6 +49,12 @@ function ids(formData: FormData) {
     projectId: String(formData.get("projectId") ?? ""),
     articleId: String(formData.get("articleId") ?? ""),
   };
+}
+
+function references(formData: FormData): ArticleReference[] {
+  const value = String(formData.get("references") ?? "[]");
+
+  return articleReferencesSchema.parse(JSON.parse(value));
 }
 
 export async function createArticleAction(
@@ -56,52 +73,21 @@ export async function createArticleAction(
   } catch (error) {
     return { error: message(error) };
   }
-  redirect(`/admin/projects/${projectId}/articles/${articleId}?step=brief`);
+  redirect(`/admin/projects/${projectId}/articles/${articleId}?step=plan`);
 }
 
-export async function saveBriefAction(
+export async function savePlanAction(
   _state: ArticleActionState,
   formData: FormData,
 ): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
   try {
-    await saveArticleBrief(
+    await saveArticlePlan(
       projectId,
       articleId,
-      String(formData.get("brief") ?? ""),
-    );
-    revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
-    return { saved: true };
-  } catch (error) {
-    return { error: message(error) };
-  }
-}
-
-export async function generateBriefAction(
-  _state: ArticleActionState,
-  formData: FormData,
-): Promise<ArticleActionState> {
-  const { projectId, articleId } = ids(formData);
-  try {
-    return {
-      proposal: { brief: await generateArticleBrief(projectId, articleId) },
-    };
-  } catch (error) {
-    return { error: message(error) };
-  }
-}
-
-export async function saveOutlineAction(
-  _state: ArticleActionState,
-  formData: FormData,
-): Promise<ArticleActionState> {
-  const { projectId, articleId } = ids(formData);
-  try {
-    await saveArticleOutline(
-      projectId,
-      articleId,
-      String(formData.get("outline") ?? ""),
+      String(formData.get("plan") ?? ""),
       String(formData.get("title") ?? ""),
+      references(formData),
     );
     revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
     return { saved: true };
@@ -110,15 +96,20 @@ export async function saveOutlineAction(
   }
 }
 
-export async function generateOutlineAction(
+export async function generatePlanAction(
   _state: ArticleActionState,
   formData: FormData,
 ): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
   try {
-    const proposal = await generateArticleOutline(projectId, articleId);
+    const result = await generateArticlePlan(projectId, articleId);
+
     return {
-      proposal: { title: proposal.title, outline: proposal.outlineMarkdown },
+      proposal: {
+        title: result.output.title,
+        plan: result.output.planMarkdown,
+        references: result.references,
+      },
     };
   } catch (error) {
     return { error: message(error) };
@@ -135,6 +126,7 @@ export async function saveContentAction(
       projectId,
       articleId,
       String(formData.get("content") ?? ""),
+      references(formData),
     );
     revalidatePath(`/admin/projects/${projectId}/articles/${articleId}`);
     return { saved: true };
@@ -149,8 +141,13 @@ export async function generateContentAction(
 ): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
   try {
+    const result = await generateArticleContent(projectId, articleId);
+
     return {
-      proposal: { content: await generateArticleContent(projectId, articleId) },
+      proposal: {
+        content: result.output,
+        references: result.references,
+      },
     };
   } catch (error) {
     return { error: message(error) };
@@ -163,8 +160,13 @@ export async function improveContentAction(
 ): Promise<ArticleActionState> {
   const { projectId, articleId } = ids(formData);
   try {
+    const result = await improveArticleContent(projectId, articleId);
+
     return {
-      proposal: { content: await improveArticleContent(projectId, articleId) },
+      proposal: {
+        content: result.output,
+        references: result.references,
+      },
     };
   } catch (error) {
     return { error: message(error) };

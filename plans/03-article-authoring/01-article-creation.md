@@ -25,9 +25,10 @@ type ArticleDocument = {
   slug: string | null
   topic: string | null
   excerpt: string | null
-  brief: string | null
-  outline: string | null
+  plan: string | null
+  planReferences: { title: string; url: string }[]
   content: string | null
+  contentReferences: { title: string; url: string }[]
   seoTitle: string | null
   seoDescription: string | null
   status: "draft" | "published" | "archived"
@@ -68,7 +69,7 @@ Routes:
 ```text
 /admin/projects/{projectId}/articles
 /admin/projects/{projectId}/articles/new
-/admin/projects/{projectId}/articles/{articleId}?step=brief
+/admin/projects/{projectId}/articles/{articleId}?step=plan
 ```
 
 - Article list shows title or Untitled, topic, status, locale, and updated time.
@@ -130,4 +131,4 @@ Group members pointing back to that Article.
 
 - The owner can create and reopen a real Untitled Article.
 - Its Keyword topic resolves through `keywordId`.
-- Brief can consume that Keyword context.
+- Article plan generation can consume that Keyword context.

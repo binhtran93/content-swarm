@@ -5,26 +5,23 @@ import { useActionState, useState, useTransition } from "react";
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
-  generateBriefAction,
   generateContentAction,
-  generateOutlineAction,
+  generatePlanAction,
   generateTranslationAction,
   improveContentAction,
-  saveBriefAction,
   saveContentAction,
-  saveOutlineAction,
+  savePlanAction,
   saveSeoAction,
   saveTranslationAction,
 } from "@/features/articles/backoffice/article-actions.server";
+import { MarkdownEditor } from "@/features/articles/backoffice/markdown-editor";
+import type { ArticleReference } from "@/features/articles/model/article-reference";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
-import { MarkdownEditor } from "@/features/articles/backoffice/markdown-editor";
 
-type Step =
-  "brief" | "outline" | "content" | "seo" | "translations" | "publish";
+type Step = "plan" | "content" | "seo" | "translations" | "publish";
 const steps: { id: Step; label: string }[] = [
-  { id: "brief", label: "Brief" },
-  { id: "outline", label: "Outline" },
+  { id: "plan", label: "Article plan" },
   { id: "content", label: "Content" },
   { id: "seo", label: "SEO" },
   { id: "translations", label: "Translations" },
@@ -44,6 +41,35 @@ function Fields({ article }: { article: Article }) {
   );
 }
 
+function ReferenceMenu({ references }: { references: ArticleReference[] }) {
+  if (!references.length) return null;
+
+  return (
+    <details className="dropdown dropdown-end">
+      <summary className="btn btn-ghost btn-sm">
+        Sources {references.length}
+      </summary>
+      <ul className="menu dropdown-content bg-base-100 border-base-300 z-20 mt-1 max-h-80 w-80 flex-nowrap overflow-y-auto border p-2 shadow-lg">
+        {references.map((reference) => (
+          <li key={reference.url}>
+            <a
+              className="block"
+              href={reference.url}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <span className="line-clamp-2 text-sm">{reference.title}</span>
+              <span className="text-base-content/55 block truncate text-xs font-normal">
+                {new URL(reference.url).hostname.replace(/^www\./, "")}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
 function ActionNotice({ error }: { error?: string; saved?: boolean }) {
   return error ? <ErrorToast message={error} /> : null;
 }
@@ -59,26 +85,35 @@ function actionData(article: Article, values: Record<string, string> = {}) {
   return data;
 }
 
-function BriefEditor({ article }: { article: Article }) {
-  const [brief, setBrief] = useState(article.brief ?? "");
-  const [saveState, saveAction, saving] = useActionState(saveBriefAction, null);
+function PlanEditor({ article }: { article: Article }) {
+  const [title, setTitle] = useState(article.title ?? "");
+  const [plan, setPlan] = useState(article.plan ?? "");
+  const [references, setReferences] = useState(article.planReferences);
+  const [saveState, saveAction, saving] = useActionState(savePlanAction, null);
   const [generating, startGenerating] = useTransition();
   const [generateError, setGenerateError] = useState<string>();
+
   function generate() {
     startGenerating(async () => {
-      const result = await generateBriefAction(null, actionData(article));
+      const result = await generatePlanAction(null, actionData(article));
       setGenerateError(result?.error);
-      const proposal = result?.proposal?.brief;
+
+      const proposal = result?.proposal;
       if (
-        proposal &&
-        (brief === article.brief ||
+        proposal?.title &&
+        proposal.plan &&
+        ((title === article.title && plan === article.plan) ||
           window.confirm(
-            "Replace your unsaved brief text with the AI proposal?",
+            "Replace your unsaved article plan with the AI proposal?",
           ))
-      )
-        setBrief(proposal);
+      ) {
+        setTitle(proposal.title);
+        setPlan(proposal.plan);
+        setReferences(proposal.references ?? []);
+      }
     });
   }
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <ActionNotice
@@ -88,14 +123,15 @@ function BriefEditor({ article }: { article: Article }) {
       <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
         <Fields article={article} />
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-medium">Brief</h2>
-          <div className="flex gap-2">
+          <h2 className="text-base font-medium">Article plan</h2>
+          <div className="flex flex-wrap gap-2">
+            <ReferenceMenu references={references} />
             <button
               className="btn btn-primary btn-sm"
               disabled={saving}
               type="submit"
             >
-              {saving ? "Saving…" : "Save brief"}
+              {saving ? "Saving…" : "Save plan"}
             </button>
             <button
               className="btn btn-outline btn-sm"
@@ -103,97 +139,40 @@ function BriefEditor({ article }: { article: Article }) {
               onClick={generate}
               type="button"
             >
-              {generating ? "Generating…" : "Generate proposal"}
+              {generating ? "Researching…" : "Generate plan"}
             </button>
           </div>
         </div>
-        <input name="brief" type="hidden" value={brief} />
+        <label className="fieldset shrink-0">
+          <span className="fieldset-legend">Article title</span>
+          <input
+            className="input w-full"
+            maxLength={200}
+            name="title"
+            onChange={(event) => setTitle(event.target.value)}
+            required
+            value={title}
+          />
+        </label>
+        <input name="plan" type="hidden" value={plan} />
+        <input
+          name="references"
+          type="hidden"
+          value={JSON.stringify(references)}
+        />
         <MarkdownEditor
-          onChange={setBrief}
-          placeholder="Define reader, goal, intent, coverage, boundaries, tone, and outcome…"
-          value={brief}
+          onChange={setPlan}
+          placeholder="Define the editorial direction and article structure…"
+          value={plan}
         />
       </form>
     </div>
   );
 }
 
-function OutlineEditor({ article }: { article: Article }) {
-  const [title, setTitle] = useState(article.title ?? "");
-  const [outline, setOutline] = useState(article.outline ?? "");
-  const [saveState, saveAction, saving] = useActionState(
-    saveOutlineAction,
-    null,
-  );
-  const [generating, startGenerating] = useTransition();
-  const [generateError, setGenerateError] = useState<string>();
-  function generate() {
-    startGenerating(async () => {
-      const result = await generateOutlineAction(null, actionData(article));
-      setGenerateError(result?.error);
-      const proposal = result?.proposal;
-      if (
-        proposal &&
-        ((title === article.title && outline === article.outline) ||
-          window.confirm(
-            "Replace your unsaved title and outline with the AI proposal?",
-          ))
-      ) {
-        setTitle(proposal.title ?? "");
-        setOutline(proposal.outline ?? "");
-      }
-    });
-  }
-  return (
-    <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
-      <ActionNotice
-        error={saveState?.error ?? generateError}
-        saved={saveState?.saved}
-      />
-      <Fields article={article} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-medium">Outline</h2>
-        <div className="flex gap-2">
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={saving}
-            type="submit"
-          >
-            {saving ? "Saving…" : "Save outline"}
-          </button>
-          <button
-            className="btn btn-outline btn-sm"
-            disabled={generating}
-            onClick={generate}
-            type="button"
-          >
-            {generating ? "Generating…" : "Generate proposal"}
-          </button>
-        </div>
-      </div>
-      <label className="fieldset shrink-0">
-        <span className="fieldset-legend">Proposed article title</span>
-        <input
-          className="input w-full"
-          maxLength={200}
-          name="title"
-          onChange={(event) => setTitle(event.target.value)}
-          required
-          value={title}
-        />
-      </label>
-      <input name="outline" type="hidden" value={outline} />
-      <MarkdownEditor
-        onChange={setOutline}
-        placeholder="Build the article structure…"
-        value={outline}
-      />
-    </form>
-  );
-}
-
 function ContentEditor({ article }: { article: Article }) {
   const [content, setContent] = useState(article.content ?? "");
+  const [references, setReferences] = useState(article.contentReferences);
   const [saveState, saveAction, saving] = useActionState(
     saveContentAction,
     null,
@@ -208,8 +187,10 @@ function ContentEditor({ article }: { article: Article }) {
       proposal &&
       (content === article.content ||
         window.confirm("Replace your unsaved MDX with the AI proposal?"))
-    )
+    ) {
       setContent(proposal);
+      setReferences(result?.proposal?.references ?? []);
+    }
   }
   function generate() {
     startGenerating(async () =>
@@ -231,6 +212,7 @@ function ContentEditor({ article }: { article: Article }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-medium">Content</h2>
         <div className="flex flex-wrap gap-2">
+          <ReferenceMenu references={references} />
           <button
             className="btn btn-primary btn-sm"
             disabled={saving}
@@ -257,6 +239,11 @@ function ContentEditor({ article }: { article: Article }) {
         </div>
       </div>
       <input name="content" type="hidden" value={content} />
+      <input
+        name="references"
+        type="hidden"
+        value={JSON.stringify(references)}
+      />
       <MarkdownEditor
         onChange={setContent}
         placeholder="Write the article…"
@@ -556,9 +543,8 @@ export function ArticleWorkspace({
 }) {
   const article = { ...sourceArticle, projectId } as Article;
   const unlocked = {
-    brief: true,
-    outline: Boolean(article.brief),
-    content: Boolean(article.outline && article.title),
+    plan: true,
+    content: Boolean(article.plan && article.title),
     seo: Boolean(article.content),
     translations: true,
     publish: true,
@@ -593,10 +579,8 @@ export function ArticleWorkspace({
       </div>
       <section className="card card-border bg-base-100 min-h-0 flex-1 overflow-hidden">
         <div className="card-body min-h-0 gap-4 p-5 md:p-7">
-          {step === "brief" ? (
-            <BriefEditor article={article} />
-          ) : step === "outline" ? (
-            <OutlineEditor article={article} />
+          {step === "plan" ? (
+            <PlanEditor article={article} />
           ) : step === "content" ? (
             <ContentEditor article={article} />
           ) : step === "seo" ? (

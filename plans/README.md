@@ -186,7 +186,7 @@ exact production prompt moves into the linked feature prompt file, which then
 becomes the canonical source. The plan retains purpose, inputs, output schema,
 constraints, version, and verification examples.
 
-Prompt versions use stable IDs such as `article-brief-v1`. Changing behavior
+Prompt versions use stable IDs such as `article-plan-v1`. Changing behavior
 requires a new version and prompt tests.
 
 ## Implementation links

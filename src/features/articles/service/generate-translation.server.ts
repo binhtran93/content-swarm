@@ -45,7 +45,7 @@ export async function generateTranslation(
       "invalid",
       "Choose a different valid target locale.",
     );
-  const proposal = await generateArticleAi(
+  const result = await generateArticleAi(
     articleTranslationPrompt.system,
     JSON.stringify({
       project: {
@@ -64,10 +64,14 @@ export async function generateTranslation(
       approvedComponents: articleMdxComponentDescriptions,
     }),
     {
-      name: "article_translation",
-      schema: outputSchema,
+      format: {
+        name: "article_translation",
+        schema: outputSchema,
+      },
+      searchGrounding: false,
     },
   );
+  const proposal = result.output;
   const validation = validateArticleMdx(proposal.content);
   if (!validation.valid)
     throw new ArticleServiceError(

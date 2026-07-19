@@ -7,11 +7,12 @@ import { generateArticleAi } from "@/features/articles/provider/generate-article
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { getArticleGenerationContext } from "@/features/articles/service/get-article-generation-context.server";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
+import type { AiGeneration } from "@/platform/ai/generate-ai.server";
 
 export async function improveArticleContent(
   projectId: string,
   articleId: string,
-): Promise<string> {
+): Promise<AiGeneration<string>> {
   const context = await getArticleGenerationContext(projectId, articleId);
   if (!context.article.content)
     throw new ArticleServiceError(
@@ -29,14 +30,13 @@ export async function improveArticleContent(
       primaryKeyword: context.primaryKeyword,
       supportingKeywords: context.supportingKeywords,
       title: context.article.title,
-      brief: context.article.brief,
-      outline: context.article.outline,
+      plan: context.article.plan,
       content: context.article.content,
       writingRules: articleWritingRules,
       approvedComponents: articleMdxComponentDescriptions,
     }),
   );
-  const validation = validateArticleMdx(proposal);
+  const validation = validateArticleMdx(proposal.output);
   if (!validation.valid)
     throw new ArticleServiceError(
       "provider",
