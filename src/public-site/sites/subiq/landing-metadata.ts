@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import type { SupportedLocaleCode } from "@/config/supported-locales";
 import { getCanonicalUrl } from "@/public-site/config/public-url";
+import { getPublicSiteIcons } from "@/public-site/config/site-icons";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
 
 const title = "SubIQ — Take control of every subscription";
@@ -27,6 +28,7 @@ export function createSubiqLandingMetadata(
       "trial reminders",
       "cancellation guide",
     ],
+    icons: getPublicSiteIcons(subiqSiteConfig),
     alternates: { canonical },
     robots: isFallback ? { index: false, follow: true } : undefined,
     openGraph: {

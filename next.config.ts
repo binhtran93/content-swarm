@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
         { source: "/support", destination: "/subiq/support" },
         { source: "/privacy", destination: "/subiq/privacy" },
         { source: "/terms", destination: "/subiq/terms" },
+        { source: "/favicon.png", destination: "/subiq/favicon.png" },
         { source: "/sitemap.xml", destination: "/subiq/sitemap.xml" },
         { source: "/robots.txt", destination: "/subiq/robots.txt" },
         {
