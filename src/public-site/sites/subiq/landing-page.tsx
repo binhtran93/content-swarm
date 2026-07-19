@@ -27,85 +27,94 @@ import styles from "./landing-page.module.css";
 const subscriptionDetailRows = [
   {
     number: "01",
-    title: "Full cost picture",
-    description: "Lifetime spend, monthly price, and current status",
+    title: "Subscription cost overview",
+    description: "See the monthly price, lifetime spend, and current status",
   },
   {
     number: "02",
-    title: "Payment timeline",
-    description: "Every recorded charge and renewal date in order",
+    title: "Payment history",
+    description: "Review every recorded charge and renewal date in order",
   },
   {
     number: "03",
-    title: "What’s next",
-    description: "Upcoming renewals and the current billing cycle",
+    title: "Next renewal",
+    description: "Check the upcoming renewal and current billing cycle",
   },
 ];
 
 const renewalCalendarRows = [
   {
     number: "01",
-    title: "A month at a glance",
-    description: "Provider logos mark each renewal on its due date",
+    title: "Monthly renewal calendar",
+    description: "See each subscription on the date it is due",
   },
   {
     number: "02",
-    title: "Expected monthly cost",
-    description: "See the estimated total before charges arrive",
+    title: "Estimated monthly spending",
+    description: "Plan for the estimated total before charges arrive",
   },
   {
     number: "03",
-    title: "Every renewal itemized",
-    description: "Review the subscription, price, billing period, and date",
+    title: "Renewal details",
+    description: "Review the price, billing period, and renewal date",
   },
 ];
 
 const analyticsRows = [
   {
     number: "01",
-    title: "Monthly trends",
-    description: "Compare recurring spend from one month to the next",
+    title: "Monthly spending trends",
+    description: "Compare recurring subscription costs month by month",
   },
   {
     number: "02",
-    title: "Category breakdown",
+    title: "Spending by category",
     description:
       "See how much goes to productivity, entertainment, education, and more",
   },
   {
     number: "03",
-    title: "Top spending",
-    description: "Spot the subscriptions with the biggest impact on your total",
+    title: "Highest-cost subscriptions",
+    description: "Find the subscriptions with the biggest impact on your total",
   },
 ];
 
 const faqs = [
   {
-    question: "What can I track in SubIQ?",
+    question: "What subscriptions can I track with SubIQ?",
     answer:
-      "You can save a subscription's provider, price, currency, billing period, start date, category, trial details, billing changes, renewal information, and reminder preferences",
+      "You can track subscriptions and other recurring expenses by saving the provider, price, currency, billing period, start date, category, trial details, price changes, renewal information, and reminder preferences.",
   },
   {
-    question: "How do renewal and trial reminders work?",
+    question: "How do subscription renewal and free-trial reminders work?",
     answer:
-      "You choose which reminders to enable for each subscription, then SubIQ schedules the selected alerts on your device subject to your notification settings",
+      "Choose which reminders to enable for each subscription, and SubIQ schedules the selected alerts on your device. Delivery depends on your device notification settings.",
   },
   {
-    question: "Can SubIQ cancel a subscription for me?",
+    question: "Can SubIQ cancel subscriptions for me?",
     answer:
-      "No — SubIQ provides informational steps and links for the provider you select, but you complete and confirm the cancellation directly with that provider",
+      "No. SubIQ provides informational steps and links for the provider you select, but you complete and confirm each cancellation directly with that provider.",
   },
   {
-    question: "Are the displayed costs and renewal dates exact?",
+    question: "How accurate are subscription costs and renewal dates?",
     answer:
-      "They are estimates based on the details you enter and general exchange rates; taxes, fees, provider rules, and currency changes can affect the final charge",
+      "Displayed amounts and dates are estimates based on the details you enter and general exchange rates. Taxes, fees, provider rules, and currency changes can affect the final charge.",
   },
   {
-    question: "Where is my subscription data stored?",
+    question: "How does SubIQ store my subscription data?",
     answer:
-      "SubIQ uses Firebase to keep subscription records and preferences associated with an anonymous account or, if you choose, a Google-linked account for supported-device syncing",
+      "SubIQ uses Firebase to store subscription records and preferences associated with an anonymous account or, if you choose, a Google-linked account for syncing across supported devices.",
   },
 ];
+
+const websiteStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "SubIQ",
+  url: "https://getsubiq.com/",
+  description:
+    "A subscription tracker for recurring expenses, renewal dates, free trials, and subscription spending.",
+};
 
 const logoDevPublishableKey = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 
@@ -451,15 +460,23 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
       languageMenuLabel={t("site.changeLanguage")}
     >
       <main>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteStructuredData).replaceAll(
+              "<",
+              "\\u003c",
+            ),
+          }}
+        />
         <LandingHero
           title={
             <>
-              <span>Take control</span>
-              <span>of every</span>
-              <span className={styles.accentText}>subscription</span>
+              <span>Track every</span> <span>subscription</span>{" "}
+              <span className={styles.accentText}>in one place</span>
             </>
           }
-          description="Track recurring costs, stay ahead of renewals and trials, and find clear guidance when you are ready to cancel"
+          description="SubIQ is a subscription tracker that keeps recurring costs, renewal dates, and free trials in one place, with spending insights and clear cancellation guidance"
           actions={
             <AcquisitionActions
               badges={subiqSiteConfig.storeBadges}
@@ -497,14 +514,14 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
         <FeatureShowcaseSection
           id="features"
           tone="muted"
-          eyebrow="Subscription details"
+          eyebrow="Subscription cost tracker"
           title={
             <>
-              Know every charge{" "}
-              <span className={styles.accentText}>before it happens</span>
+              See the full cost of{" "}
+              <span className={styles.accentText}>every subscription</span>
             </>
           }
-          description="See lifetime spending, monthly cost, status, billing history, and the next renewal without digging through receipts"
+          description="Keep each subscription’s monthly price, lifetime spend, status, payment history, and next renewal date together in one clear view"
           rows={subscriptionDetailRows}
           screenshot="/subiq/ss_sub_details.png"
           screenshotAlt="SubIQ subscription details screen showing Netflix costs, status, and payment timeline"
@@ -512,14 +529,14 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
 
         <FeatureShowcaseSection
           visualSide="end"
-          eyebrow="Renewal calendar"
+          eyebrow="Subscription renewal calendar"
           title={
             <>
-              Know what’s due{" "}
-              <span className={styles.accentText}>before the month begins</span>
+              Plan for renewals{" "}
+              <span className={styles.accentText}>before they are due</span>
             </>
           }
-          description="See renewal dates, estimated monthly spending, and each recurring charge without checking every subscription separately"
+          description="View upcoming subscription renewal dates and estimated monthly spending in one calendar, so recurring charges never catch you off guard"
           rows={renewalCalendarRows}
           screenshot="/subiq/ss_calendar.png"
           screenshotAlt="SubIQ renewal calendar showing July subscription dates and estimated monthly cost"
@@ -529,16 +546,16 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
           id="analytics"
           tone="muted"
           className={styles.analyticsSection}
-          eyebrow="Spending analytics"
+          eyebrow="Subscription spending insights"
           title={
             <>
-              See where your{" "}
+              Understand where your{" "}
               <span className={styles.accentText}>
                 subscription budget goes
               </span>
             </>
           }
-          description="Compare monthly totals, understand spending by category, and identify the subscriptions that cost you the most"
+          description="Compare monthly subscription costs, explore spending by category, and identify the services that have the biggest effect on your budget"
           rows={analyticsRows}
           screenshot="/subiq/ss_data.png"
           screenshotAlt="SubIQ analytics screen showing monthly spending trends, category breakdown, and top subscriptions"
@@ -548,14 +565,14 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
           <ContentShell className={styles.guidesInner}>
             <SectionHeading
               className={styles.guidesHeading}
-              eyebrow="Cancellation & refund guides"
+              eyebrow="Subscription cancellation & refund guides"
               title={
                 <>
-                  Cancel or request a refund,{" "}
+                  Cancel subscriptions or request refunds,{" "}
                   <span className={styles.accentText}>step by step</span>
                 </>
               }
-              description="Choose a provider and SubIQ shows you what to do next"
+              description="Choose a provider to find clear instructions and helpful links, then complete the cancellation or refund request directly with that provider"
             />
 
             <div className={styles.guideVisuals}>
@@ -563,7 +580,7 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
                 <div className={styles.guideCaption}>
                   <span>01</span>
                   <div>
-                    <h3>Cancel a subscription</h3>
+                    <h3>How to cancel a subscription</h3>
                   </div>
                 </div>
                 <PhoneScreenshot
@@ -577,7 +594,7 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
                 <div className={styles.guideCaption}>
                   <span>02</span>
                   <div>
-                    <h3>Request a refund</h3>
+                    <h3>How to request a refund</h3>
                   </div>
                 </div>
                 <PhoneScreenshot
@@ -598,14 +615,14 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
             <div className={styles.storeManagementCopy}>
               <SectionHeading
                 className={styles.storeManagementHeading}
-                eyebrow="Native subscription management"
+                eyebrow="App Store & Google Play subscriptions"
                 title={
                   <>
-                    Manage app store subscriptions in{" "}
+                    Open your subscription settings in{" "}
                     <span className={styles.accentText}>one tap</span>
                   </>
                 }
-                description="Manage your App Store and Google Play subscriptions from SubIQ"
+                description="Jump from SubIQ to Apple or Google’s subscription settings to review, change, or cancel eligible app subscriptions"
               />
             </div>
 
@@ -637,17 +654,18 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
         <DownloadCta
           title={
             <>
-              Download <span className={styles.downloadAccent}>SubIQ</span>
+              Download the{" "}
+              <span className={styles.downloadAccent}>SubIQ tracker</span>
             </>
           }
-          description="Available now on iOS and Android"
+          description="Track subscriptions on iOS and Android"
           waitlistTitle={
             <>
               Be first to try{" "}
               <span className={styles.downloadAccent}>SubIQ</span>
             </>
           }
-          waitlistDescription="Join the waitlist and we’ll email you when SubIQ is available"
+          waitlistDescription="Join the waitlist and we’ll email you when the SubIQ subscription tracker is available"
           badges={subiqSiteConfig.storeBadges}
           locale={locale}
           privacyHref={privacyHref}

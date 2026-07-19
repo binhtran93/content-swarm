@@ -5,9 +5,9 @@ import { getCanonicalUrl } from "@/public-site/config/public-url";
 import { getPublicSiteIcons } from "@/public-site/config/site-icons";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
 
-const title = "SubIQ — Take control of every subscription";
+const title = "SubIQ: Subscription Tracker & Renewal Reminders";
 const description =
-  "Track recurring expenses, stay ahead of renewals and trials, and find clear cancellation and refund guidance with SubIQ";
+  "Track subscriptions, recurring expenses, renewal dates, and free trials in one place. Get reminders, spending insights, and step-by-step cancellation guides.";
 
 export function createSubiqLandingMetadata(
   locale: SupportedLocaleCode,
@@ -21,13 +21,6 @@ export function createSubiqLandingMetadata(
   return {
     title,
     description,
-    keywords: [
-      "subscription tracker",
-      "recurring expenses",
-      "renewal reminders",
-      "trial reminders",
-      "cancellation guide",
-    ],
     icons: getPublicSiteIcons(subiqSiteConfig),
     alternates: { canonical },
     robots: isFallback ? { index: false, follow: true } : undefined,

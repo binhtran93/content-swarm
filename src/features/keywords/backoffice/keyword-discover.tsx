@@ -497,6 +497,7 @@ export function KeywordDiscover({
                                 </button>
                               </th>
                               <th
+                                className="text-center"
                                 aria-sort={
                                   resultSortField === "relevanceOrder"
                                     ? resultSortDirection === "asc"
@@ -507,7 +508,7 @@ export function KeywordDiscover({
                               >
                                 <button
                                   aria-label="Sort by relevance order"
-                                  className="inline-flex items-center gap-1.5"
+                                  className="inline-flex items-center justify-center gap-1.5"
                                   onClick={() => sortResults("relevanceOrder")}
                                   type="button"
                                 >
@@ -552,7 +553,7 @@ export function KeywordDiscover({
                                       score={result.difficulty ?? null}
                                     />
                                   </td>
-                                  <td className="tabular-nums">
+                                  <td className="text-center tabular-nums">
                                     {result.relevanceOrder ?? "—"}
                                   </td>
                                 </tr>
