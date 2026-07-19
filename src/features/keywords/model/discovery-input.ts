@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { findSupportedMarket } from "@/config/supported-locales";
 import { discoveryMethodSchema } from "@/features/keywords/model/keyword-discovery-document";
 import {
   countryCodeSchema,
@@ -42,6 +43,13 @@ export const discoveryRequestSchema = z
     maximumDifficulty: z.number().min(0).max(100).nullable().default(null),
   })
   .superRefine((request, context) => {
+    if (!findSupportedMarket(request.countryCode, request.languageCode)) {
+      context.addIssue({
+        code: "custom",
+        path: ["countryCode"],
+        message: "Choose a supported market.",
+      });
+    }
     if (
       request.method === "keyword_ideas" &&
       keywordIdeaSeeds(request.input).length > 200

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { findSupportedMarket } from "@/config/supported-locales";
 import type { ArticleTopic } from "@/features/keywords/model/keyword";
 import { listKeywordGroups } from "@/features/keywords/service/list-keyword-groups.server";
 import { listKeywords } from "@/features/keywords/service/list-keywords.server";
@@ -11,7 +12,12 @@ export async function listAvailableArticleTopics(
     listKeywords(projectId, { assignment: "available" }),
     listKeywordGroups(projectId),
   ]);
-  const byId = new Map(keywords.map((keyword) => [keyword.keywordId, keyword]));
+  const supportedKeywords = keywords.filter((keyword) =>
+    findSupportedMarket(keyword.countryCode, keyword.languageCode),
+  );
+  const byId = new Map(
+    supportedKeywords.map((keyword) => [keyword.keywordId, keyword]),
+  );
   const groupTopics = groups.flatMap((group): ArticleTopic[] => {
     const primary = byId.get(group.primaryKeywordId);
     const members = group.memberKeywordIds.map((id) => byId.get(id));
@@ -24,7 +30,7 @@ export async function listAvailableArticleTopics(
       { id: `group:${group.groupId}`, kind: "group", primary, supporting },
     ];
   });
-  const individualTopics = keywords
+  const individualTopics = supportedKeywords
     .filter((keyword) => !keyword.groupId)
     .map((primary): ArticleTopic => ({
       id: `keyword:${primary.keywordId}`,

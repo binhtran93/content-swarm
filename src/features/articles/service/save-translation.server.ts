@@ -8,6 +8,7 @@ import { articleDocumentSchema } from "@/features/articles/model/article-documen
 import { translationDocumentSchema } from "@/features/articles/model/translation-document";
 import type { TranslationInput } from "@/features/articles/model/translation";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
+import { assertSupportedTranslationLocales } from "@/features/articles/service/assert-supported-translation-locales";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
 import { assertActiveProject } from "@/features/keywords/service/assert-active-project.server";
 import { getServerFirestore } from "@/platform/firebase/firestore.server";
@@ -34,8 +35,6 @@ export async function saveTranslation(
   input: TranslationInput,
 ): Promise<void> {
   const owner = await requireOwner();
-  if (!/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(locale))
-    throw new ArticleServiceError("invalid", "Choose a valid target locale.");
   const value = inputSchema.parse(input);
   const validation = validateArticleMdx(value.content);
   if (!validation.valid)
@@ -56,11 +55,7 @@ export async function saveTranslation(
     );
     if (!article || article.status === "archived")
       throw new ArticleServiceError("unavailable", "Article is unavailable.");
-    if (locale === article.locale)
-      throw new ArticleServiceError(
-        "invalid",
-        "Choose a different target locale.",
-      );
+    assertSupportedTranslationLocales(article.locale, locale);
     const current = readFirestoreDocument(
       translationDocumentSchema,
       currentSnapshot,

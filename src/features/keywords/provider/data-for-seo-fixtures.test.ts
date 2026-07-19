@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  fetchKeywordDiscovery,
   parseDiscoveryPayload,
-  parseLocationCatalogue,
 } from "@/features/keywords/provider/fetch-keyword-discovery.server";
 
 function response(items: unknown[]) {
@@ -13,37 +13,9 @@ function response(items: unknown[]) {
 }
 
 describe("DataForSEO projected response contracts", () => {
-  it("projects Google-supported country and language catalogue entries", () => {
-    expect(
-      parseLocationCatalogue(
-        response([
-          {
-            location_code: 2840,
-            location_name: "United States",
-            country_iso_code: "US",
-            available_languages: [
-              {
-                available_sources: ["google", "bing"],
-                language_name: "English",
-                language_code: "en",
-              },
-              {
-                available_sources: ["bing"],
-                language_name: "Unsupported",
-                language_code: "xx",
-              },
-            ],
-          },
-        ]),
-      ),
-    ).toEqual([
-      {
-        locationCode: 2840,
-        locationName: "United States",
-        countryCode: "US",
-        languages: [{ languageCode: "en", languageName: "English" }],
-      },
-    ]);
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
   });
 
   it("projects keyword ideas without retaining raw provider fields", () => {
@@ -99,5 +71,36 @@ describe("DataForSEO projected response contracts", () => {
     expect(parseDiscoveryPayload("keyword_ideas", response([]), 50)).toEqual(
       [],
     );
+  });
+
+  it("sends the fixed Traditional Chinese provider mapping", async () => {
+    vi.stubEnv("DATAFORSEO_ALLOW_TEST_NETWORK", "1");
+    vi.stubEnv("DATAFORSEO_LOGIN", "login");
+    vi.stubEnv("DATAFORSEO_PASSWORD", "password");
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify(response([])), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchKeywordDiscovery({
+      method: "keyword_ideas",
+      input: "訂閱管理",
+      countryCode: "TW",
+      languageCode: "zh",
+      limit: 50,
+      minimumVolume: null,
+      maximumDifficulty: null,
+    });
+
+    const [, request] = fetchMock.mock.calls[0]!;
+    const payload = JSON.parse(String(request.body));
+
+    expect(payload[0]).toMatchObject({
+      location_code: 2158,
+      language_code: "zh-TW",
+    });
   });
 });

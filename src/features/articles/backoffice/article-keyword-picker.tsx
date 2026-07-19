@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
+import {
+  findSupportedMarket,
+  localeLabel,
+  marketLabel,
+} from "@/config/supported-locales";
 import { createArticleAction } from "@/features/articles/backoffice/article-actions.server";
 import type { ArticleTopic } from "@/features/keywords/model/keyword";
 
@@ -18,13 +23,13 @@ export function ArticleKeywordPicker({
   const [state, action, pending] = useActionState(createArticleAction, null);
   const topic = topics.find((item) => item.id === selected);
   const locale = topic
-    ? `${topic.primary.languageCode}-${topic.primary.countryCode}`
-    : "";
+    ? findSupportedMarket(topic.primary.countryCode, topic.primary.languageCode)
+        ?.locale
+    : undefined;
   return (
     <form action={action}>
       <ErrorToast message={state?.error} />
       <input name="projectId" type="hidden" value={projectId} />
-      <input name="locale" type="hidden" value={locale} />
       <div className="rounded-box border-base-300 bg-base-100 overflow-hidden border">
         <div className="border-base-300 flex items-start justify-between gap-4 border-b px-5 py-4">
           <div>
@@ -58,7 +63,10 @@ export function ArticleKeywordPicker({
                 </span>
               </span>
               <span className="badge badge-ghost badge-sm shrink-0">
-                {item.primary.countryCode} · {item.primary.languageCode}
+                {marketLabel(
+                  item.primary.countryCode,
+                  item.primary.languageCode,
+                )}
               </span>
             </label>
           ))}
@@ -67,7 +75,9 @@ export function ArticleKeywordPicker({
         <div className="border-base-300 bg-base-200/30 flex flex-col gap-4 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm">
             <span className="text-base-content/60">Source locale</span>
-            <span className="ml-2 font-medium">{locale || "—"}</span>
+            <span className="ml-2 font-medium">
+              {locale ? localeLabel(locale) : "—"}
+            </span>
           </div>
           <div className="flex justify-end gap-2">
             <Link

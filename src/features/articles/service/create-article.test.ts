@@ -126,14 +126,15 @@ describe("createArticle", () => {
   it("creates one draft and prevents a second assignment", async () => {
     const now = seedProject();
     seedKeyword("primary", now);
-    const article = await createArticle("subiq", "primary", "en-US");
+    const article = await createArticle("subiq", "primary");
     expect(article.keywordId).toBe("primary");
     expect(article.title).toBe("Primary");
+    expect(article.locale).toBe("en-US");
     expect(article.status).toBe("draft");
     expect(
       mock.documents.get("projects/subiq/keywords/primary")?.articleId,
     ).toBe(article.articleId);
-    await expect(createArticle("subiq", "primary", "en-US")).rejects.toThrow(
+    await expect(createArticle("subiq", "primary")).rejects.toThrow(
       "already assigned",
     );
     expect(
@@ -153,7 +154,7 @@ describe("createArticle", () => {
       createdAt: now,
       updatedAt: now,
     });
-    const article = await createArticle("subiq", "primary", "en-US");
+    const article = await createArticle("subiq", "primary");
     expect(
       mock.documents.get("projects/subiq/keywords/supporting")?.articleId,
     ).toBe(article.articleId);
@@ -166,11 +167,25 @@ describe("createArticle", () => {
     const now = seedProject();
     seedKeyword("primary", now);
     mock.ownerUid = "owner-b";
-    await expect(createArticle("subiq", "primary", "en-US")).rejects.toThrow(
+    await expect(createArticle("subiq", "primary")).rejects.toThrow(
       "unavailable",
     );
     expect(
       [...mock.documents.keys()].some((path) => path.includes("/articles/")),
     ).toBe(false);
+  });
+
+  it("rejects a legacy keyword market outside the supported catalog", async () => {
+    const now = seedProject();
+    seedKeyword("primary", now);
+    mock.documents.set("projects/subiq/keywords/primary", {
+      ...mock.documents.get("projects/subiq/keywords/primary"),
+      countryCode: "CA",
+      languageCode: "en",
+    });
+
+    await expect(createArticle("subiq", "primary")).rejects.toThrow(
+      "not supported for articles",
+    );
   });
 });

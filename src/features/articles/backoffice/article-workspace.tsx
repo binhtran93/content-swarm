@@ -11,6 +11,12 @@ import {
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
 import {
+  defaultLocale,
+  findSupportedLocale,
+  localeLabel,
+  supportedLocales,
+} from "@/config/supported-locales";
+import {
   applyContentChangesAction,
   generateContentAction,
   generateExcerptAction,
@@ -572,8 +578,20 @@ function TranslationEditor({
   translations: Translation[];
 }) {
   const initial = translations[0];
-  const [locale, setLocale] = useState(initial?.locale ?? "vi-VN");
+  const sourceSupported = Boolean(findSupportedLocale(article.locale));
+  const defaultTarget =
+    article.locale === defaultLocale
+      ? (supportedLocales.find((item) => item.locale === "vi-VN")?.locale ??
+        supportedLocales.find((item) => item.locale !== article.locale)!.locale)
+      : defaultLocale;
+  const [locale, setLocale] = useState(
+    initial?.locale ?? (sourceSupported ? defaultTarget : ""),
+  );
   const selected = translations.find((item) => item.locale === locale);
+  const targetSupported = Boolean(findSupportedLocale(locale));
+  const legacyLocales = translations.filter(
+    (translation) => !findSupportedLocale(translation.locale),
+  );
   const [values, setValues] = useState({
     title: initial?.title ?? "",
     slug: initial?.slug ?? "",
@@ -636,14 +654,14 @@ function TranslationEditor({
         <div className="flex gap-2">
           <button
             className="btn btn-primary btn-sm"
-            disabled={saving}
+            disabled={saving || !sourceSupported || !targetSupported}
             type="submit"
           >
             {saving ? "Saving…" : "Save translation"}
           </button>
           <button
             className="btn btn-outline btn-sm"
-            disabled={generating}
+            disabled={generating || !sourceSupported || !targetSupported}
             onClick={generate}
             type="button"
           >
@@ -656,14 +674,29 @@ function TranslationEditor({
           <div className="flex flex-wrap items-end gap-3">
             <label className="fieldset">
               <span className="fieldset-legend">Target locale</span>
-              <input
-                className="input"
+              <select
+                className="select"
                 name="locale"
                 onChange={(event) => choose(event.target.value)}
-                pattern="[a-z]{2,3}(-[A-Z]{2})?"
                 required
                 value={locale}
-              />
+              >
+                {!sourceSupported ? (
+                  <option value="">Unsupported source locale</option>
+                ) : null}
+                {supportedLocales
+                  .filter((item) => item.locale !== article.locale)
+                  .map((item) => (
+                    <option key={item.locale} value={item.locale}>
+                      {item.label}
+                    </option>
+                  ))}
+                {legacyLocales.map((translation) => (
+                  <option key={translation.locale} value={translation.locale}>
+                    {localeLabel(translation.locale)} (legacy, read-only)
+                  </option>
+                ))}
+              </select>
             </label>
             {selected ? (
               <span

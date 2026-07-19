@@ -6,6 +6,7 @@ import { requireOwner } from "@/features/auth/server/require-owner.server";
 import { articleDocumentSchema } from "@/features/articles/model/article-document";
 import { translationDocumentSchema } from "@/features/articles/model/translation-document";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
+import { assertSupportedTranslationLocales } from "@/features/articles/service/assert-supported-translation-locales";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
 import { assertActiveProject } from "@/features/keywords/service/assert-active-project.server";
 import { getServerFirestore } from "@/platform/firebase/firestore.server";
@@ -47,11 +48,7 @@ export async function approveTranslation(
         "archived",
         "Translations under archived articles cannot be approved.",
       );
-    if (locale === article.locale || !/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(locale))
-      throw new ArticleServiceError(
-        "invalid",
-        "Translation locale is invalid.",
-      );
+    assertSupportedTranslationLocales(article.locale, locale);
     const validation = validateArticleMdx(translation.content);
     if (!validation.valid)
       throw new ArticleServiceError("invalid", validation.errors[0]!);

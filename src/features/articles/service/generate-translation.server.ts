@@ -5,6 +5,7 @@ import { articleMdxComponentDescriptions } from "@/features/articles/config/arti
 import { articleTranslationPrompt } from "@/features/articles/prompts/article-translation-prompt";
 import { generateArticleAi } from "@/features/articles/provider/generate-article-ai.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
+import { assertSupportedTranslationLocales } from "@/features/articles/service/assert-supported-translation-locales";
 import { getArticleGenerationContext } from "@/features/articles/service/get-article-generation-context.server";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
 
@@ -40,11 +41,7 @@ export async function generateTranslation(
       "invalid",
       "Complete and save the source article before translation.",
     );
-  if (!/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(locale) || locale === source.locale)
-    throw new ArticleServiceError(
-      "invalid",
-      "Choose a different valid target locale.",
-    );
+  assertSupportedTranslationLocales(source.locale, locale);
   const result = await generateArticleAi(
     articleTranslationPrompt.system,
     JSON.stringify({

@@ -74,7 +74,6 @@ export async function createArticleAction(
     const article = await createArticle(
       projectId,
       String(formData.get("keywordId") ?? ""),
-      String(formData.get("locale") ?? ""),
     );
     articleId = article.articleId;
   } catch (error) {

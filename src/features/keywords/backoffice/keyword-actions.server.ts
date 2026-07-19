@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 
+import { requireSupportedLocale } from "@/config/supported-locales";
 import { addKeyword } from "@/features/keywords/service/add-keyword.server";
 import { addKeywords } from "@/features/keywords/service/add-keywords.server";
 import { createKeywordGroup } from "@/features/keywords/service/create-keyword-group.server";
@@ -24,10 +25,10 @@ export async function addKeywordAction(
   formData: FormData,
 ): Promise<KeywordActionState> {
   const projectId = String(formData.get("projectId") ?? "");
-  const countryCode = String(formData.get("countryCode") ?? "");
-  const languageCode = String(formData.get("languageCode") ?? "");
   const pasted = String(formData.get("keywords") ?? "");
   try {
+    const market = requireSupportedLocale(String(formData.get("locale") ?? ""));
+    const { countryCode, languageCode } = market;
     const lines = pasted.split(/\r?\n/);
     if (lines.length > 1) {
       await addKeywords(

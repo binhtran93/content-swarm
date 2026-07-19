@@ -5,9 +5,7 @@ import { AddKeywordForm } from "@/features/keywords/backoffice/add-keyword-form"
 import { KeywordBacklog } from "@/features/keywords/backoffice/keyword-backlog";
 import { KeywordDiscover } from "@/features/keywords/backoffice/keyword-discover";
 import type { KeywordDiscovery } from "@/features/keywords/model/keyword-discovery";
-import type { DiscoveryLocation } from "@/features/keywords/model/discovery-location";
 import { getDiscovery } from "@/features/keywords/service/get-discovery.server";
-import { listDiscoveryLocations } from "@/features/keywords/provider/fetch-keyword-discovery.server";
 import { listDiscoveries } from "@/features/keywords/service/list-discoveries.server";
 import { listKeywordGroups } from "@/features/keywords/service/list-keyword-groups.server";
 import { listKeywords } from "@/features/keywords/service/list-keywords.server";
@@ -92,12 +90,6 @@ export default async function KeywordsPage({
       ) : (
         await (async () => {
           const discoveries = await listDiscoveries(projectId);
-          let locations: DiscoveryLocation[] = [];
-          try {
-            locations = await listDiscoveryLocations();
-          } catch {
-            // Manual backlog remains usable when provider configuration is absent.
-          }
           const discoveryId = value(query, "discovery");
           let selected: KeywordDiscovery | null = discoveries[0] ?? null;
           if (discoveryId) {
@@ -120,7 +112,6 @@ export default async function KeywordsPage({
                 .map((keyword) => keyword.normalizedKeyword)}
               projectId={projectId}
               selected={selected}
-              locations={locations}
             />
           );
         })()

@@ -1,14 +1,13 @@
 import "server-only";
 
-import { unstable_cache } from "next/cache";
 import { z } from "zod";
 
+import { findSupportedMarket } from "@/config/supported-locales";
 import {
   keywordIdeaSeeds,
   type DiscoveryRequest,
 } from "@/features/keywords/model/discovery-input";
 import type { DiscoveryResult } from "@/features/keywords/model/keyword-discovery";
-import type { DiscoveryLocation } from "@/features/keywords/model/discovery-location";
 import { normalizeDiscoveryRequest } from "@/features/keywords/service/discovery-request-key";
 import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
 
@@ -93,75 +92,17 @@ async function dataForSeoRequest(
   return response.json();
 }
 
-export function parseLocationCatalogue(payload: unknown): DiscoveryLocation[] {
-  return taskResult(payload).flatMap((item): DiscoveryLocation[] => {
-    const entry = object(item);
-    if (
-      typeof entry?.location_code !== "number" ||
-      typeof entry.location_name !== "string" ||
-      typeof entry.country_iso_code !== "string" ||
-      !Array.isArray(entry.available_languages)
-    ) {
-      return [];
-    }
-    const languages = entry.available_languages.flatMap(
-      (value): DiscoveryLocation["languages"] => {
-        const language = object(value);
-        const sources = Array.isArray(language?.available_sources)
-          ? language.available_sources
-          : [];
-        return typeof language?.language_code === "string" &&
-          typeof language.language_name === "string" &&
-          sources.includes("google")
-          ? [
-              {
-                languageCode: language.language_code,
-                languageName: language.language_name,
-              },
-            ]
-          : [];
-      },
-    );
-    return languages.length
-      ? [
-          {
-            locationCode: entry.location_code,
-            locationName: entry.location_name,
-            countryCode: entry.country_iso_code,
-            languages,
-          },
-        ]
-      : [];
-  });
-}
+function resolveProviderMarket(countryCode: string, languageCode: string) {
+  const market = findSupportedMarket(countryCode, languageCode);
 
-const getCachedLocationCatalogue = unstable_cache(
-  async () =>
-    parseLocationCatalogue(
-      await dataForSeoRequest("/v3/dataforseo_labs/locations_and_languages"),
-    ),
-  ["dataforseo-labs-locations-and-languages-v1"],
-  { revalidate: 86_400 },
-);
-
-export async function listDiscoveryLocations(): Promise<DiscoveryLocation[]> {
-  return getCachedLocationCatalogue();
-}
-
-async function resolveLocationCode(countryCode: string, languageCode: string) {
-  const locations = await listDiscoveryLocations();
-  const location = locations.find(
-    (item) =>
-      item.countryCode === countryCode &&
-      item.languages.some((language) => language.languageCode === languageCode),
-  );
-  if (!location) {
+  if (!market) {
     throw new KeywordServiceError(
       "provider",
       `DataForSEO does not support ${countryCode}/${languageCode}.`,
     );
   }
-  return location.locationCode;
+
+  return market;
 }
 
 function filtersFor(request: ReturnType<typeof normalizeDiscoveryRequest>) {
@@ -197,7 +138,7 @@ export async function fetchKeywordDiscovery(
   requestInput: DiscoveryRequest,
 ): Promise<DiscoveryResult[]> {
   const request = normalizeDiscoveryRequest(requestInput);
-  const locationCode = await resolveLocationCode(
+  const market = resolveProviderMarket(
     request.countryCode,
     request.languageCode,
   );
@@ -210,8 +151,8 @@ export async function fetchKeywordDiscovery(
   const payload = await dataForSeoRequest(endpoint(request.method), [
     {
       ...methodInput,
-      location_code: locationCode,
-      language_code: request.languageCode,
+      location_code: market.dataForSeoLocationCode,
+      language_code: market.dataForSeoLanguageCode,
       limit: request.limit,
       order_by: request.orderBy,
       filters: filtersFor(request),

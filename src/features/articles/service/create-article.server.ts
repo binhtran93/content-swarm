@@ -2,6 +2,7 @@ import "server-only";
 
 import { Timestamp } from "firebase-admin/firestore";
 
+import { findSupportedMarket } from "@/config/supported-locales";
 import { requireOwner } from "@/features/auth/server/require-owner.server";
 import { articleDocumentSchema } from "@/features/articles/model/article-document";
 import type { Article } from "@/features/articles/model/article";
@@ -23,12 +24,8 @@ function titleFromKeyword(keyword: string): string {
 export async function createArticle(
   projectId: string,
   keywordId: string,
-  sourceLocale: string,
 ): Promise<Article> {
   const owner = await requireOwner();
-  const locale = sourceLocale.trim();
-  if (!/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(locale))
-    throw new Error("Choose a valid source locale.");
   const firestore = getServerFirestore();
   const articleReference = firestore
     .collection("projects")
@@ -50,6 +47,15 @@ export async function createArticle(
       throw new ArticleServiceError(
         "unavailable",
         "Article topic is unavailable.",
+      );
+    const market = findSupportedMarket(
+      keyword.countryCode,
+      keyword.languageCode,
+    );
+    if (!market)
+      throw new ArticleServiceError(
+        "invalid",
+        "This keyword market is not supported for articles.",
       );
     let topicId = `keyword:${keywordId}`;
     if (keyword.groupId) {
@@ -85,7 +91,7 @@ export async function createArticle(
     const now = Timestamp.now();
     const next = articleDocumentSchema.parse({
       schemaVersion: 1,
-      locale,
+      locale: market.locale,
       keywordId,
       title: titleFromKeyword(keyword.keyword),
       slug: null,

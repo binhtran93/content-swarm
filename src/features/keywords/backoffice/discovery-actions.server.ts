@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 
+import { requireSupportedLocale } from "@/config/supported-locales";
 import type { DiscoveryRequest } from "@/features/keywords/model/discovery-input";
 import { addResultsToBacklog } from "@/features/keywords/service/add-results-to-backlog.server";
 import { getOrReuseDiscovery } from "@/features/keywords/service/get-or-reuse-discovery.server";
@@ -17,11 +18,13 @@ function nullableNumber(value: FormDataEntryValue | null) {
 }
 
 function requestFrom(formData: FormData): DiscoveryRequest {
+  const market = requireSupportedLocale(String(formData.get("locale") ?? ""));
+
   return {
     method: String(formData.get("method")) as DiscoveryRequest["method"],
     input: String(formData.get("input") ?? ""),
-    countryCode: String(formData.get("countryCode") ?? ""),
-    languageCode: String(formData.get("languageCode") ?? ""),
+    countryCode: market.countryCode,
+    languageCode: market.languageCode,
     limit: Number(formData.get("limit")) as DiscoveryRequest["limit"],
     minimumVolume: nullableNumber(formData.get("minimumVolume")),
     maximumDifficulty: nullableNumber(formData.get("maximumDifficulty")),

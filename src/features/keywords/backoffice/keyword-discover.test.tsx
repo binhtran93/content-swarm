@@ -30,15 +30,6 @@ const discovery = {
   createdAt: "2026-07-18T00:00:00.000Z",
 };
 
-const locations = [
-  {
-    locationCode: 2840,
-    locationName: "United States",
-    countryCode: "US",
-    languages: [{ languageCode: "en", languageName: "English" }],
-  },
-];
-
 const filterDiscovery = {
   ...discovery,
   results: [
@@ -53,12 +44,30 @@ const filterDiscovery = {
 };
 
 describe("Keyword discovery results actions", () => {
+  it("uses the fixed market catalog and defaults to English (United States)", () => {
+    render(
+      <KeywordDiscover
+        discoveries={[]}
+        existingNormalizedKeywords={[]}
+        projectId="subiq"
+        selected={null}
+      />,
+    );
+
+    const market = screen.getByRole("combobox", { name: "Market" });
+
+    expect(market).toHaveValue("en-US");
+    expect(within(market).getAllByRole("option")).toHaveLength(21);
+    expect(
+      within(market).getByRole("option", { name: "繁體中文 (台灣)" }),
+    ).toHaveValue("zh-Hant-TW");
+  });
+
   it("submits selected rows from the header action", () => {
     render(
       <KeywordDiscover
         discoveries={[discovery]}
         existingNormalizedKeywords={[]}
-        locations={locations}
         projectId="subiq"
         selected={discovery}
       />,
@@ -89,7 +98,6 @@ describe("Keyword discovery results actions", () => {
       <KeywordDiscover
         discoveries={[discovery]}
         existingNormalizedKeywords={["subscription tracker"]}
-        locations={locations}
         projectId="subiq"
         selected={discovery}
       />,
@@ -111,7 +119,6 @@ describe("Keyword discovery results actions", () => {
       <KeywordDiscover
         discoveries={[filterDiscovery]}
         existingNormalizedKeywords={[]}
-        locations={locations}
         projectId="subiq"
         selected={filterDiscovery}
       />,
@@ -155,7 +162,6 @@ describe("Keyword discovery results actions", () => {
       <KeywordDiscover
         discoveries={[filterDiscovery]}
         existingNormalizedKeywords={[]}
-        locations={locations}
         projectId="subiq"
         selected={filterDiscovery}
       />,
@@ -199,7 +205,6 @@ describe("Keyword discovery results actions", () => {
       <KeywordDiscover
         discoveries={[filterDiscovery]}
         existingNormalizedKeywords={[]}
-        locations={locations}
         projectId="subiq"
         selected={filterDiscovery}
       />,

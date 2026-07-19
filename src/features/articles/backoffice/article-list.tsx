@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { localeLabel } from "@/config/supported-locales";
 import { DeleteArticleControl } from "@/features/articles/backoffice/delete-article-control";
 import type { Article } from "@/features/articles/model/article";
 
@@ -76,7 +77,7 @@ export function ArticleList({
                 </Link>
               </td>
               <td>{article.topics.join(", ") || "—"}</td>
-              <td>{article.locale}</td>
+              <td>{localeLabel(article.locale)}</td>
               <td>
                 <span
                   className={`badge badge-sm ${article.status === "published" ? "badge-success" : article.status === "archived" ? "badge-neutral" : "badge-ghost"}`}

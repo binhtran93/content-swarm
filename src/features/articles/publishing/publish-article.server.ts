@@ -2,6 +2,7 @@ import "server-only";
 
 import { Timestamp } from "firebase-admin/firestore";
 
+import { findSupportedLocale } from "@/config/supported-locales";
 import { requireOwner } from "@/features/auth/server/require-owner.server";
 import { articleDocumentSchema } from "@/features/articles/model/article-document";
 import { translationDocumentSchema } from "@/features/articles/model/translation-document";
@@ -38,6 +39,11 @@ export async function publishArticle(
       throw new ArticleServiceError(
         "invalid",
         "Only a draft article can be published.",
+      );
+    if (!findSupportedLocale(articleDocument.locale))
+      throw new ArticleServiceError(
+        "invalid",
+        "This article's source locale is no longer supported.",
       );
     const [projectSnapshot, keywordSnapshot, translationsSnapshot] =
       await Promise.all([
@@ -89,6 +95,11 @@ export async function publishArticle(
           "A translation document is invalid.",
         );
       if (translation.status === "approved") {
+        if (!findSupportedLocale(snapshot.id))
+          throw new ArticleServiceError(
+            "invalid",
+            `${snapshot.id}: locale is no longer supported.`,
+          );
         const validation = validateArticleMdx(translation.content);
         if (!validation.valid)
           throw new ArticleServiceError(

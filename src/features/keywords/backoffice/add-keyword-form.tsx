@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
+import { defaultLocale, supportedLocales } from "@/config/supported-locales";
 import { addKeywordAction } from "@/features/keywords/backoffice/keyword-actions.server";
 
 export function AddKeywordForm({ projectId }: { projectId: string }) {
@@ -32,26 +33,22 @@ export function AddKeywordForm({ projectId }: { projectId: string }) {
               />
               <p className="fieldset-label">Up to 250 lines per paste.</p>
             </fieldset>
-            <div className="grid content-start gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <div className="grid content-start gap-4">
               <fieldset className="fieldset">
-                <legend className="fieldset-legend">Country</legend>
-                <input
-                  className="input w-full uppercase"
-                  defaultValue="US"
-                  maxLength={2}
-                  name="countryCode"
+                <legend className="fieldset-legend">Market</legend>
+                <select
+                  aria-label="Market"
+                  className="select w-full"
+                  defaultValue={defaultLocale}
+                  name="locale"
                   required
-                />
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Language</legend>
-                <input
-                  className="input w-full lowercase"
-                  defaultValue="en"
-                  maxLength={3}
-                  name="languageCode"
-                  required
-                />
+                >
+                  {supportedLocales.map((locale) => (
+                    <option key={locale.locale} value={locale.locale}>
+                      {locale.label}
+                    </option>
+                  ))}
+                </select>
               </fieldset>
             </div>
           </div>

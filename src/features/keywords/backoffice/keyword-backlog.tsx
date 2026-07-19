@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
+import { marketLabel } from "@/config/supported-locales";
 import {
   createKeywordGroupAction,
   dissolveKeywordGroupAction,
@@ -106,12 +107,20 @@ export function KeywordBacklog({
       })
     : filteredKeywords;
   const markets = [
-    ...new Set(
-      backlogRows.map(
-        (keyword) => `${keyword.countryCode}:${keyword.languageCode}`,
-      ),
-    ),
-  ].sort();
+    ...new Map(
+      backlogRows.map((keyword) => {
+        const value = `${keyword.countryCode}:${keyword.languageCode}`;
+
+        return [
+          value,
+          {
+            value,
+            label: marketLabel(keyword.countryCode, keyword.languageCode),
+          },
+        ];
+      }),
+    ).values(),
+  ].sort((left, right) => left.label.localeCompare(right.label));
   const visibleSelectableIds = visibleKeywords.map(
     (keyword) => keyword.keywordId,
   );
@@ -231,8 +240,8 @@ export function KeywordBacklog({
             >
               <option value="">All markets</option>
               {markets.map((item) => (
-                <option key={item} value={item}>
-                  {item.replace(":", " · ")}
+                <option key={item.value} value={item.value}>
+                  {item.label}
                 </option>
               ))}
             </select>
@@ -368,7 +377,10 @@ export function KeywordBacklog({
                         </td>
                         <td>
                           <span className="badge badge-ghost">
-                            {keyword.countryCode} · {keyword.languageCode}
+                            {marketLabel(
+                              keyword.countryCode,
+                              keyword.languageCode,
+                            )}
                           </span>
                         </td>
                         <td>

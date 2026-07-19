@@ -3,6 +3,7 @@ import {
   archiveArticleAction,
   publishArticleAction,
 } from "@/features/articles/backoffice/article-actions.server";
+import { localeLabel } from "@/config/supported-locales";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
 import type { ArticleReadiness } from "@/features/articles/service/evaluate-article-readiness";
@@ -103,7 +104,8 @@ export async function ArticlePublishPreview({
                   key={translation.locale}
                 >
                   <span>
-                    <strong>{translation.locale}</strong> · {translation.title}{" "}
+                    <strong>{localeLabel(translation.locale)}</strong> ·{" "}
+                    {translation.title}{" "}
                     <span
                       className={`badge badge-sm ${translation.status === "approved" ? "badge-success" : "badge-ghost"}`}
                     >
