@@ -19,6 +19,7 @@ describe("SubIQ public configuration", () => {
       internalBasePath: "/subiq",
       canonicalOrigin: "https://getsubiq.com",
       scopeClassName: "subiq-site",
+      theme: { routeProgressColor: "#2e7d32" },
     });
   });
 });

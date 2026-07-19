@@ -10,6 +10,9 @@ export const subiqSiteConfig: PublicSiteConfig = {
   defaultLocale,
   locales: supportedLocales.map((item) => item.locale),
   scopeClassName: "subiq-site",
+  theme: {
+    routeProgressColor: "#2e7d32",
+  },
   brand: {
     name: "SubIQ",
     wordmarkLead: "Sub",

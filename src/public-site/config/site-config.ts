@@ -20,6 +20,9 @@ export type PublicSiteConfig = {
   defaultLocale: SupportedLocaleCode;
   locales: readonly SupportedLocaleCode[];
   scopeClassName: string;
+  theme: {
+    routeProgressColor: string;
+  };
   brand: {
     name: string;
     wordmarkLead: string;

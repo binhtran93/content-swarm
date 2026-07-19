@@ -8,6 +8,7 @@ import {
 } from "@/config/supported-locales";
 import type { PublicSiteConfig } from "@/public-site/config/site-config";
 import { LanguageSelector } from "./language-selector";
+import { SiteRouteTheme } from "./site-route-theme";
 
 import styles from "./site-shell.module.css";
 
@@ -206,6 +207,7 @@ export function SiteShell({
       lang={locale}
       dir={localeConfig?.direction ?? "ltr"}
     >
+      <SiteRouteTheme progressColor={config.theme.routeProgressColor} />
       <SiteHeader
         config={config}
         routePrefix={routePrefix}
