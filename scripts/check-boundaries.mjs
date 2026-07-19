@@ -6,6 +6,12 @@ const forbidden = [
   /@\/platform\/firebase\/.*\.server/,
   /@\/features\/[^/]+\/server\//,
 ];
+const forbiddenPublicImports = [
+  /@\/backoffice\//,
+  /@\/features\/[^/]+\/backoffice\//,
+  /@\/features\/[^/]+\/prompts\//,
+  /@\/features\/[^/]+\/publishing\//,
+];
 
 async function sourceFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -27,10 +33,22 @@ for (const file of await sourceFiles(sourceRoot)) {
   const source = await readFile(file, "utf8");
   const isClient = /^\s*["']use client["'];/m.test(source);
   const isPublicSurface = file.includes(`${path.sep}public-site${path.sep}`);
+  const isSharedPublicComponent = file.includes(
+    `${path.sep}public-site${path.sep}components${path.sep}`,
+  );
   if (
     (isClient || isPublicSurface) &&
     forbidden.some((rule) => rule.test(source))
   ) {
+    violations.push(path.relative(process.cwd(), file));
+  }
+  if (
+    isPublicSurface &&
+    forbiddenPublicImports.some((rule) => rule.test(source))
+  ) {
+    violations.push(path.relative(process.cwd(), file));
+  }
+  if (isSharedPublicComponent && /@\/public-site\/sites\//.test(source)) {
     violations.push(path.relative(process.cwd(), file));
   }
 }

@@ -1,0 +1,18 @@
+.subiq-site {
+  --site-accent: #2e7d32;
+  --site-accent-bright: #3da63d;
+  --site-accent-soft: #eef7ee;
+  --site-background: #ffffff;
+  --site-surface-muted: #f6f7f4;
+  --site-text: #1c1c1e;
+  --site-text-secondary: #6c6c70;
+  --site-text-muted: #8e8e93;
+  --site-border: #dedfdb;
+  --site-focus-ring: rgba(46, 125, 50, 0.35);
+  --blog-accent: #2e7d32;
+  --blog-accent-soft: #eef7ee;
+  --blog-text: #1c1c1e;
+  --blog-text-secondary: #6c6c70;
+  --blog-surface: #f6f7f4;
+  --blog-border: #dedfdb;
+}

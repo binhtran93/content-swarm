@@ -1,6 +1,6 @@
 # 04.01 — Public Blog
 
-Status: Not started
+Status: Implemented; production index deployment pending cutover
 
 ## Outcome
 
@@ -29,7 +29,7 @@ order by document ID desc
 limit pageSize + 1
 ```
 
-Topic browsing adds `topic == selectedTopic`. Add only the Firestore indexes
+Topic browsing adds `topics array-contains selectedTopic`. Add only the Firestore indexes
 required by these implemented queries. Use an opaque cursor containing
 `updatedAt` and document ID; do not use offsets.
 
@@ -83,15 +83,15 @@ None. Public requests never invoke AI.
 
 ## Planned implementation links
 
-- [List published Articles](../../src/public-site/services/list-published-articles.server.ts)
-- [Get published Article](../../src/public-site/services/get-published-article-by-slug.server.ts)
-- [List published topics](../../src/public-site/services/list-published-topics.server.ts)
+- [List published Articles](../../src/features/articles/public/list-public-article-page.server.ts)
+- [Get published Article](../../src/features/articles/public/get-public-article-by-slug.server.ts)
+- [List published topics](../../src/features/articles/public/list-public-topics.server.ts)
 - [Blog index](../../src/public-site/components/blog/blog-index.tsx)
 - [Article view](../../src/public-site/components/blog/blog-article.tsx)
 - [MDX component map](../../src/public-site/components/mdx/article-mdx-components.tsx)
 - [MDX renderer](../../src/public-site/components/mdx/render-article-mdx.server.tsx)
-- [Blog routes](../../src/app/(public)/[projectId]/blog/page.tsx)
-- [Service tests](../../src/public-site/services/published-article-service.test.ts)
+- [SubIQ Blog routes](../../src/app/(public)/subiq/blog/page.tsx)
+- [Composition tests](../../src/public-site/blog/load-blog-page.test.ts)
 
 Each service or main component file has one public export.
 
@@ -123,6 +123,6 @@ index and Article route directly from its Article document.
 
 ## Done when
 
-- Source Blog works with real published Articles for two Projects.
+- Source Blog works with real published SubIQ Articles.
 - Shared Blog code does not impose one landing-page layout.
 - No production public route uses fake fixture data.

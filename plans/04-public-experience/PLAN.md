@@ -1,12 +1,12 @@
 # Public Experience — Overall Plan
 
-Status: Not started
+Status: In progress
 
 ## Goal
 
-Adapt the best public presentation from `tdbinh` into one multi-project public
-platform that reads real published Articles directly, preserves each product's
-URLs/SEO, and cuts over without exposing drafts or the backoffice.
+Port the current SubIQ public presentation from `tdbinh` without redesign,
+render real published Articles directly, preserve SubIQ URLs/SEO, and cut over
+without exposing drafts or the backoffice. Other products are deferred.
 
 ## Reader journey
 
@@ -27,8 +27,8 @@ Public Experience owns:
 - Server-only read adapters for published Articles and approved Translations.
 - Blog archive, locale fallback, SEO, sitemap, and robots behavior.
 - Landing/support/legal page adaptation and production routing.
-- Explicit per-project routes, landing pages, layouts, themes, headers, footers,
-  and assets for SubIQ, Jewelry Identifier, SkyLens, and Urge Zero.
+- The explicit SubIQ routes, landing page, layout, theme, header, footer, and
+  assets. Jewelry Identifier, SkyLens, and Urge Zero are outside this phase.
 
 It owns no editorial Firestore document and performs no product-data write.
 
@@ -47,9 +47,12 @@ Outputs:
 
 ## Implementation sequence
 
-1. [Public Blog](./01-public-blog.md)
-2. [Localization and SEO](./02-search-localization-seo.md)
-3. [Landing Pages and Cutover](./03-landing-pages-and-cutover.md)
+1. Port the SubIQ landing foundation and static routes from
+   [Landing Pages and Cutover](./03-landing-pages-and-cutover.md).
+2. [Public Blog](./01-public-blog.md)
+3. [Localization and SEO](./02-search-localization-seo.md)
+4. Complete the SubIQ migration and production steps in
+   [Landing Pages and Cutover](./03-landing-pages-and-cutover.md).
 
 ## Shared rules
 
@@ -73,7 +76,6 @@ Outputs:
 
 ## Final demonstration
 
-Open the new SubIQ staging domain and at least one additional implemented product
-domain. Confirm each has independent presentation/data, browse the real
-published articles, verify metadata/sitemaps, and run the cutover checklist
-against every existing production route.
+Open the new SubIQ staging domain in shared-path and dedicated-root modes,
+browse real published and translated Articles, verify metadata/sitemap/robots,
+and run the cutover checklist against every existing SubIQ production route.

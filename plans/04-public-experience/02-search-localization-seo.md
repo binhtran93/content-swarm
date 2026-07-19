@@ -1,6 +1,6 @@
 # 04.02 — Localization and SEO
 
-Status: Not started
+Status: Implemented; production verification pending cutover
 
 ## Outcome
 
@@ -80,13 +80,13 @@ to Article Authoring and only proposes private editable content.
 
 ## Planned implementation links
 
-- [Get localized Article](../../src/public-site/services/get-localized-article.server.ts)
-- [List localized Articles](../../src/public-site/services/list-localized-articles.server.ts)
-- [Resolve public locale](../../src/public-site/services/resolve-public-locale.ts)
-- [Article SEO](../../src/public-site/seo/article-seo.ts)
-- [Sitemap](../../src/app/(public)/[projectId]/sitemap.ts)
-- [Localized routes](../../src/app/(public)/[projectId]/[locale]/blog/page.tsx)
-- [SEO and locale tests](../../src/public-site/seo/article-seo.test.ts)
+- [Get localized Article](../../src/public-site/blog/load-blog-article.server.ts)
+- [List localized Articles](../../src/public-site/blog/load-blog-page.server.ts)
+- [Resolve public locale](../../src/config/supported-locales.ts)
+- [Article SEO](../../src/public-site/seo/blog-seo.server.ts)
+- [Sitemap](../../src/app/(public)/subiq/sitemap.ts)
+- [Localized routes](../../src/app/(public)/subiq/[locale]/blog/page.tsx)
+- [SEO and locale tests](../../src/public-site/config/public-url.test.ts)
 
 Each service or main model file has one public export.
 
@@ -118,5 +118,5 @@ URLs with correct metadata, without any copied public content document.
 ## Done when
 
 - Source and one real translated journey pass end to end.
-- SEO isolation tests cover two Projects.
+- SEO and route tests prove only the explicit SubIQ Project is accepted.
 - No search-token or public-copy schema has been introduced.

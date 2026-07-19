@@ -1,6 +1,19 @@
 import Link from "next/link";
 
+import { getPublicRouteMode } from "@/public-site/config/public-url";
+import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
+import { SubiqLandingPage } from "@/public-site/sites/subiq/landing-page";
+
+export const metadata =
+  getPublicRouteMode() === "root"
+    ? createSubiqLandingMetadata("en-US")
+    : undefined;
+
 export default function HomePage() {
+  if (getPublicRouteMode() === "root") {
+    return <SubiqLandingPage locale="en-US" />;
+  }
+
   return (
     <main className="grid min-h-screen place-items-center px-6">
       <section className="max-w-xl text-center">

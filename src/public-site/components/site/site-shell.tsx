@@ -1,0 +1,222 @@
+import { Suspense, type ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+import {
+  findSupportedLocale,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
+import type { PublicSiteConfig } from "@/public-site/config/site-config";
+import { LanguageSelector } from "./language-selector";
+
+import styles from "./site-shell.module.css";
+
+function withLocaleRoutePrefix(
+  config: PublicSiteConfig,
+  routePrefix: string,
+  locale: SupportedLocaleCode,
+  href: string,
+) {
+  if (/^(?:https?:|mailto:|tel:|#)/.test(href)) return href;
+  const localePrefix = locale === config.defaultLocale ? "" : `/${locale}`;
+  return `${routePrefix}${localePrefix}${href === "/" ? "/" : href}`;
+}
+
+export function SiteHeader({
+  config,
+  routePrefix,
+  activeNavigationHref,
+  accessory,
+  locale = config.defaultLocale,
+  languageMenuLabel = "Change language",
+  articleAlternates,
+}: {
+  config: PublicSiteConfig;
+  routePrefix: string;
+  activeNavigationHref?: string;
+  accessory?: ReactNode;
+  locale?: SupportedLocaleCode;
+  languageMenuLabel?: string;
+  articleAlternates?: Partial<Record<SupportedLocaleCode, string>>;
+}) {
+  return (
+    <header className={styles.siteHeader}>
+      <div className={styles.headerInner}>
+        <Link
+          href={withLocaleRoutePrefix(config, routePrefix, locale, "/")}
+          className={styles.brand}
+          aria-label={`${config.brand.name} home`}
+        >
+          <span className={styles.brandMark}>
+            <Image
+              src={config.brand.logoSrc}
+              alt={config.brand.logoAlt}
+              width={44}
+              height={44}
+              priority
+            />
+          </span>
+          <span>
+            {config.brand.wordmarkLead}
+            {config.brand.wordmarkAccent ? (
+              <span className={styles.brandAccent}>
+                {config.brand.wordmarkAccent}
+              </span>
+            ) : null}
+          </span>
+        </Link>
+
+        <nav className={styles.primaryNav} aria-label="Primary navigation">
+          {config.navigation.map((item) => {
+            const isActive = item.href === activeNavigationHref;
+            return (
+              <Link
+                href={withLocaleRoutePrefix(
+                  config,
+                  routePrefix,
+                  locale,
+                  item.href,
+                )}
+                className={isActive ? styles.activeNav : undefined}
+                aria-current={isActive ? "page" : undefined}
+                key={item.label}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <Suspense
+          fallback={
+            <span className={styles.languageButton} aria-hidden="true">
+              {locale.split("-")[0]?.toUpperCase()}
+            </span>
+          }
+        >
+          <LanguageSelector
+            locale={locale}
+            defaultLocale={config.defaultLocale}
+            enabledLocales={config.locales}
+            routePrefix={routePrefix}
+            label={languageMenuLabel}
+            articleAlternates={articleAlternates}
+          />
+        </Suspense>
+
+        <Link
+          href={withLocaleRoutePrefix(
+            config,
+            routePrefix,
+            locale,
+            config.headerCta.href,
+          )}
+          className={styles.headerCta}
+        >
+          {config.headerCta.label}
+        </Link>
+      </div>
+      {accessory}
+    </header>
+  );
+}
+
+export function SiteFooter({
+  config,
+  routePrefix,
+  locale = config.defaultLocale,
+}: {
+  config: PublicSiteConfig;
+  routePrefix: string;
+  locale?: SupportedLocaleCode;
+}) {
+  return (
+    <footer className={styles.siteFooter}>
+      <div className={styles.footerInner}>
+        <Link
+          href={withLocaleRoutePrefix(config, routePrefix, locale, "/")}
+          className={styles.footerBrand}
+          aria-label="Back to the top"
+        >
+          <span className={styles.brandMark}>
+            <Image src={config.brand.logoSrc} alt="" width={38} height={38} />
+          </span>
+          <strong>
+            {config.brand.wordmarkLead}
+            {config.brand.wordmarkAccent ? (
+              <span className={styles.brandAccent}>
+                {config.brand.wordmarkAccent}
+              </span>
+            ) : null}
+          </strong>
+        </Link>
+
+        <nav aria-label="Legal and support">
+          {config.footer.links.map((link) => (
+            <Link
+              href={withLocaleRoutePrefix(
+                config,
+                routePrefix,
+                locale,
+                link.href,
+              )}
+              key={link.href}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className={styles.footerMeta}>
+          <small>{config.footer.copyright}</small>
+          {config.footer.disclaimer ? (
+            <small>{config.footer.disclaimer}</small>
+          ) : null}
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export function SiteShell({
+  config,
+  routePrefix,
+  activeNavigationHref,
+  headerAccessory,
+  locale = config.defaultLocale,
+  languageMenuLabel,
+  articleAlternates,
+  children,
+}: {
+  config: PublicSiteConfig;
+  routePrefix: string;
+  activeNavigationHref?: string;
+  headerAccessory?: ReactNode;
+  locale?: SupportedLocaleCode;
+  languageMenuLabel?: string;
+  articleAlternates?: Partial<Record<SupportedLocaleCode, string>>;
+  children: ReactNode;
+}) {
+  const localeConfig = findSupportedLocale(locale);
+
+  return (
+    <div
+      className={`${styles.page} ${config.scopeClassName}`}
+      id="top"
+      lang={locale}
+      dir={localeConfig?.direction ?? "ltr"}
+    >
+      <SiteHeader
+        config={config}
+        routePrefix={routePrefix}
+        activeNavigationHref={activeNavigationHref}
+        accessory={headerAccessory}
+        locale={locale}
+        languageMenuLabel={languageMenuLabel}
+        articleAlternates={articleAlternates}
+      />
+      {children}
+      <SiteFooter config={config} routePrefix={routePrefix} locale={locale} />
+    </div>
+  );
+}

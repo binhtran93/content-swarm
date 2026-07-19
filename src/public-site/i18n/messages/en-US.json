@@ -1,0 +1,19 @@
+{
+  "site": {
+    "changeLanguage": "Change language",
+    "primaryNavigation": "Primary navigation",
+    "legalNavigation": "Legal and support"
+  },
+  "blog": {
+    "titleLead": "Understand",
+    "titleAccent": "what you pay for",
+    "description": "Straightforward guides to finding subscriptions, checking renewals, cutting recurring costs, and navigating cancellations or refunds",
+    "all": "All",
+    "previous": "Previous",
+    "next": "Next",
+    "noArticles": "No published articles yet",
+    "fallbackNotice": "This article is currently available in English only.",
+    "onThisPage": "On this page",
+    "browseAll": "Browse all articles"
+  }
+}

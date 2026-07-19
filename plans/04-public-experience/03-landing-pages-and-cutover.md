@@ -1,12 +1,12 @@
 # 04.03 — Landing Pages and Cutover
 
-Status: Not started
+Status: In progress
 
 ## Outcome
 
-The new application preserves the useful landing/support/legal experience from
-`tdbinh`, migrates required legacy data, and safely replaces both legacy
-applications in production.
+The new application preserves the SubIQ landing/support/legal experience from
+`tdbinh`, migrates only required SubIQ legacy data, and safely replaces the
+SubIQ public application in production. All other products remain untouched.
 
 ## Depends on
 
@@ -38,24 +38,19 @@ duplicates or extra publication events.
 
 Adapt from `tdbinh`:
 
-- Useful shared components such as article cards or a header, only where actual
-  reuse exists.
-- Independent landing pages, site layouts, theme files, headers, navigation,
-  footers, and assets for each product.
+- Shared presentation primitives where actual reuse exists: site shell, header,
+  footer, content shell, hero, section, heading, feature showcase, phone frame,
+  store badges, FAQ, download CTA, and Blog presentation.
+- One code-owned SubIQ presentation configuration and SubIQ-scoped theme. There
+  is no registry or placeholder configuration for deferred products.
 - Support, Privacy, and Terms routes.
 - Canonical domain behavior for dedicated deployments.
 - Existing assets under stable paths.
 
-Initial Project scope:
-
-- `subiq`: preserve/adapt its complete landing, Blog, localization, and legal
-  experience.
-- `jewelry-identifier`: preserve legal/support routes, then implement its own
-  landing, theme, assets, and shared Blog capability when supplied.
-- `skylens`: preserve legal/support routes, then implement its own landing,
-  theme, assets, and shared Blog capability when supplied.
-- `urge-zero`: preserve legal/support routes, then implement its own landing,
-  theme, assets, and shared Blog capability when supplied.
+Initial Project scope is only `subiq`: port its current landing exactly, then
+deliver its Blog, localization, support, privacy, terms, sitemap, and robots.
+Jewelry Identifier, SkyLens, and Urge Zero are explicitly deferred and are not
+cutover acceptance criteria.
 
 Each product may deploy from the same repository to its dedicated service/domain
 using an explicit `PUBLIC_PROJECT_ID` and route-prefix configuration. The main
@@ -70,8 +65,8 @@ its own component when its design differs.
 
 ## Minimal theme contract
 
-Shared public components may use semantic CSS variables defined with safe
-defaults in `src/public-site/styles/theme-contract.css`:
+Shared public components use semantic CSS variables with safe fallbacks in
+their CSS modules:
 
 ```css
 :root {
@@ -96,9 +91,9 @@ Each site scopes overrides from its own theme file:
 }
 ```
 
-Its `site-layout.tsx` applies the scope class. A shared component consumes only
-the variables it needs. Add a token only when a real shared component requires
-it, and keep text/background pairs accessible.
+`SiteShell` applies the configured scope class. A shared component consumes
+only the variables it needs. Add a token only when a real shared component
+requires it, and keep text/background pairs accessible.
 
 This contract contains no TypeScript theme object, registry, runtime resolver,
 Firestore data, logo, navigation, content, section ordering, or layout rules.
@@ -119,16 +114,12 @@ command.
 
 ## Planned implementation links
 
-- [Shared public components](../../src/public-site/components/index.ts)
-- [Theme contract](../../src/public-site/styles/theme-contract.css)
+- [Shared site components](../../src/public-site/components/site/index.ts)
+- [Shared landing components](../../src/public-site/components/landing/index.ts)
 - [SubIQ theme](../../src/public-site/sites/subiq/theme.css)
-- [SubIQ site layout](../../src/public-site/sites/subiq/site-layout.tsx)
+- [SubIQ presentation configuration](../../src/public-site/sites/subiq/site-config.ts)
 - [SubIQ landing page](../../src/public-site/sites/subiq/landing-page.tsx)
 - [SubIQ route](../../src/app/(public)/subiq/page.tsx)
-- [Urge Zero route](../../src/app/(public)/urge-zero/page.tsx)
-- [Migration scanner](../../scripts/migration/scan-legacy-data.ts)
-- [Migration runner](../../scripts/migration/migrate-legacy-data.ts)
-- [Reconciliation](../../scripts/migration/reconcile-migration.ts)
 - [Cutover runbook](../../docs/operations/cutover-runbook.md)
 
 ## Implementation order
@@ -137,14 +128,14 @@ command.
    Firestore indexes, and deployment route prefixes.
 2. Adapt SubIQ's route, site layout, theme, landing, support, and legal pages;
    define only the theme tokens required by the first real shared components.
-3. Extract a shared component only when another real site needs the same
-   behavior; implement each remaining approved project route directly.
+3. Preserve the already-proven shared `tdbinh` site shell, header, footer,
+   landing primitives, and Blog presentation. Keep SubIQ artwork local.
 4. Implement read-only legacy migration scanner/classification report.
 5. Resolve slug, locale, invalid content, and publication ambiguities.
 6. Implement idempotent migration by calling owning feature contracts.
 7. Rehearse against isolated/staging data and reconcile counts and URLs.
-8. Compare representative old/new screenshots, HTML semantics, metadata,
-   sitemap, robots, search, and status codes for every Project.
+8. Compare old/new SubIQ screenshots, HTML semantics, metadata, sitemap,
+   robots, locale behavior, and status codes.
 9. Deploy/verify production indexes, least-privilege credentials, monitoring,
    and alerts.
 10. Write and rehearse freeze, final delta, routing switch, smoke, and rollback.
@@ -153,7 +144,7 @@ command.
 
 ## Tangible output
 
-- New public product domains serve landing, legal/support, and real Blog data.
+- The SubIQ domain serves landing, legal/support, and real Blog data.
 - New admin is the sole editorial writer.
 - Reconciliation report explains every migrated/quarantined record.
 - A tested rollback remains available during stabilization.
@@ -161,9 +152,8 @@ command.
 ## Verification
 
 - Existing canonical URLs work or have approved redirects.
-- All four initial Project IDs resolve their truthful enabled surfaces; missing
-  landing/blog inputs remain explicit readiness gaps rather than 404 surprises
-  caused by hard-coded SubIQ architecture.
+- Only SubIQ resolves in this phase. Unknown Project IDs fail explicitly and no
+  other product silently inherits SubIQ presentation or data.
 - Dedicated-domain deployments resolve only their selected Project while the
   multi-project deployment keeps `/{projectId}` isolation.
 - No legacy published article disappears without an explicit quarantine reason.
@@ -178,8 +168,8 @@ command.
 ## Done when
 
 - Production traffic uses the new public application.
-- SubIQ, Jewelry Identifier, SkyLens, and Urge Zero have an approved per-surface
-  cutover status and no Project silently inherits another brand/config/data.
+- SubIQ has an approved per-surface cutover status; other products remain
+  recorded as deferred and untouched.
 - New admin publishes a verified production change successfully.
 - Monitoring remains healthy through the agreed observation window.
 - Legacy applications are read-only or decommissioned with recovery recorded.
