@@ -19,7 +19,7 @@ describe("ContentImprovementDialog", () => {
     { before: "Repeated phrase.", after: "Concise phrase." },
   ];
 
-  it("starts unchecked and applies only selected changes", () => {
+  it("starts unchecked and applies only selected changes", async () => {
     const apply = vi.fn();
 
     render(
@@ -31,7 +31,7 @@ describe("ContentImprovementDialog", () => {
       />,
     );
 
-    const applyButton = screen.getByRole("button", {
+    const applyButton = await screen.findByRole("button", {
       name: "Apply selected changes",
     });
     const checkboxes = screen.getAllByRole("checkbox");
@@ -46,7 +46,7 @@ describe("ContentImprovementDialog", () => {
     expect(apply).toHaveBeenCalledWith([changes[1]]);
   });
 
-  it("supports selecting and clearing every proposal", () => {
+  it("supports selecting and clearing every proposal", async () => {
     render(
       <ContentImprovementDialog
         applying={false}
@@ -56,7 +56,7 @@ describe("ContentImprovementDialog", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Select all" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select all" }));
     screen
       .getAllByRole("checkbox")
       .forEach((checkbox) => expect(checkbox).toBeChecked());
@@ -67,7 +67,7 @@ describe("ContentImprovementDialog", () => {
       .forEach((checkbox) => expect(checkbox).not.toBeChecked());
   });
 
-  it("discards the review when cancelled", () => {
+  it("discards the review when cancelled", async () => {
     const dismiss = vi.fn();
 
     render(
@@ -79,12 +79,12 @@ describe("ContentImprovementDialog", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
 
     expect(dismiss).toHaveBeenCalledOnce();
   });
 
-  it("shows an empty review state", () => {
+  it("shows an empty review state", async () => {
     render(
       <ContentImprovementDialog
         applying={false}
@@ -94,7 +94,9 @@ describe("ContentImprovementDialog", () => {
       />,
     );
 
-    expect(screen.getByText("No meaningful changes found")).toBeVisible();
+    expect(
+      await screen.findByText("No meaningful changes found"),
+    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Apply selected changes" }),
     ).toBeDisabled();

@@ -19,7 +19,17 @@ export function ContentImprovementDialog({
   const [selected, setSelected] = useState<Set<number>>(() => new Set());
 
   useEffect(() => {
-    dialogRef.current?.showModal();
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      const dialog = dialogRef.current;
+
+      if (!cancelled && dialog && !dialog.open) dialog.showModal();
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function toggle(index: number) {
