@@ -68,7 +68,6 @@ export default async function ArticlePage({
     step === "publish" ? (
       <ArticlePublishPreview
         article={article}
-        canonicalBaseUrl={project.canonicalBaseUrl}
         projectId={projectId}
         readiness={readiness}
         translations={translations}

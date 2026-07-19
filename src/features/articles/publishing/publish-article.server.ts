@@ -12,7 +12,6 @@ import { toArticle } from "@/features/articles/service/to-article.server";
 import { validateArticleMdx } from "@/features/articles/service/validate-article-mdx";
 import { assertActiveProject } from "@/features/keywords/service/assert-active-project.server";
 import { keywordDocumentSchema } from "@/features/keywords/model/keyword-document";
-import { projectDocumentSchema } from "@/features/projects/model/project-document";
 import { getServerFirestore } from "@/platform/firebase/firestore.server";
 import { readFirestoreDocument } from "@/platform/firebase/read-firestore-document.server";
 
@@ -45,30 +44,19 @@ export async function publishArticle(
         "invalid",
         "This article's source locale is no longer supported.",
       );
-    const [projectSnapshot, keywordSnapshot, translationsSnapshot] =
-      await Promise.all([
-        transaction.get(projectReference),
-        transaction.get(
-          projectReference
-            .collection("keywords")
-            .doc(articleDocument.keywordId),
-        ),
-        transaction.get(articleReference.collection("translations")),
-      ]);
-    const project = readFirestoreDocument(
-      projectDocumentSchema,
-      projectSnapshot,
-    );
+    const [keywordSnapshot, translationsSnapshot] = await Promise.all([
+      transaction.get(
+        projectReference.collection("keywords").doc(articleDocument.keywordId),
+      ),
+      transaction.get(articleReference.collection("translations")),
+    ]);
     const keyword = readFirestoreDocument(
       keywordDocumentSchema,
       keywordSnapshot,
     );
-    if (!project)
-      throw new ArticleServiceError("unavailable", "Project is unavailable.");
     const readiness = evaluateArticleReadiness(
       toArticle(articleId, articleDocument),
       {
-        canonicalBaseUrl: project.canonicalBaseUrl,
         keywordAssigned: keyword?.articleId === articleId,
       },
     );

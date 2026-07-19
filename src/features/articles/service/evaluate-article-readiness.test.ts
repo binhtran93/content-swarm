@@ -26,7 +26,6 @@ describe("evaluateArticleReadiness", () => {
   it("derives ready without storing another workflow status", () => {
     expect(
       evaluateArticleReadiness(article, {
-        canonicalBaseUrl: "https://example.com",
         keywordAssigned: true,
       }),
     ).toEqual({ ready: true, blockers: [] });
@@ -35,10 +34,9 @@ describe("evaluateArticleReadiness", () => {
   it("reports deterministic saved-data blockers", () => {
     const result = evaluateArticleReadiness(
       { ...article, content: "# Unsafe H1", slug: "Bad Slug" },
-      { canonicalBaseUrl: null, keywordAssigned: false },
+      { keywordAssigned: false },
     );
     expect(result.ready).toBe(false);
-    expect(result.blockers).toContain("Project needs a canonical base URL.");
     expect(result.blockers).toContain(
       "The primary keyword is no longer assigned to this article.",
     );
