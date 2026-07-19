@@ -74,16 +74,18 @@ function useAcquisition() {
 }
 
 function WaitlistForm({
+  action,
   context,
+  pending,
   request,
+  state,
 }: {
+  action: (formData: FormData) => void;
   context: AcquisitionContextValue;
+  pending: boolean;
   request: WaitlistRequest;
+  state: JoinWaitlistResult | null;
 }) {
-  const [state, action, pending] = useActionState<
-    JoinWaitlistResult | null,
-    FormData
-  >(joinWaitlistAction, null);
   const [scriptReady, setScriptReady] = useState(false);
   const turnstileContainer = useRef<HTMLDivElement>(null);
 
@@ -102,16 +104,6 @@ function WaitlistForm({
     });
     return () => turnstile.remove(widgetId);
   }, [context.siteKey, scriptReady]);
-
-  if (state?.ok) {
-    return (
-      <div className={styles.success} role="status">
-        <span aria-hidden="true">✓</span>
-        <h3>{context.waitlist.successTitle}</h3>
-        <p>{context.waitlist.successDescription}</p>
-      </div>
-    );
-  }
 
   return (
     <form action={action} className={styles.form}>
@@ -180,6 +172,11 @@ function WaitlistDialog({
   onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const [state, action, pending] = useActionState<
+    JoinWaitlistResult | null,
+    FormData
+  >(joinWaitlistAction, null);
+  const succeeded = state?.ok === true;
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -187,7 +184,9 @@ function WaitlistDialog({
 
   return (
     <dialog
-      aria-labelledby="waitlist-dialog-title"
+      aria-labelledby={
+        succeeded ? "waitlist-success-title" : "waitlist-dialog-title"
+      }
       className={`${styles.dialog} ${context.scopeClassName}`}
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close();
@@ -196,17 +195,43 @@ function WaitlistDialog({
       ref={dialog}
     >
       <div className={styles.dialogPanel}>
-        <button
-          aria-label="Close waitlist"
-          className={styles.close}
-          onClick={() => dialog.current?.close()}
-          type="button"
-        >
-          ×
-        </button>
-        <h2 id="waitlist-dialog-title">{context.waitlist.title}</h2>
-        <p className={styles.description}>{context.waitlist.description}</p>
-        <WaitlistForm context={context} request={request} />
+        {!succeeded ? (
+          <button
+            aria-label="Close waitlist"
+            className={styles.close}
+            onClick={() => dialog.current?.close()}
+            type="button"
+          >
+            ×
+          </button>
+        ) : null}
+        {succeeded ? (
+          <div className={styles.success} role="status">
+            <span aria-hidden="true">✓</span>
+            <h2 id="waitlist-success-title">{context.waitlist.successTitle}</h2>
+            <p>{context.waitlist.successDescription}</p>
+            <button
+              autoFocus
+              className={styles.submit}
+              onClick={() => dialog.current?.close()}
+              type="button"
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
+            <h2 id="waitlist-dialog-title">{context.waitlist.title}</h2>
+            <p className={styles.description}>{context.waitlist.description}</p>
+            <WaitlistForm
+              action={action}
+              context={context}
+              pending={pending}
+              request={request}
+              state={state}
+            />
+          </>
+        )}
       </div>
     </dialog>
   );

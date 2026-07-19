@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { joinWaitlistAction } from "@/features/waitlist/public/join-waitlist-action.server";
 import {
   AcquisitionActions,
   AcquisitionProvider,
@@ -95,6 +96,29 @@ describe("AcquisitionProvider", () => {
     ).toHaveAttribute("href", "https://apps.apple.com/us/app/subiq/id123");
     expect(
       screen.queryByRole("link", { name: "Get it on Google Play" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("replaces the signup content with one compact success state", async () => {
+    vi.mocked(joinWaitlistAction).mockResolvedValueOnce({ ok: true });
+    render(<Subject mode="waitlist" />);
+    fireEvent.click(screen.getByRole("button", { name: "Join waitlist" }));
+
+    const form = screen.getByLabelText("Email address").closest("form");
+    expect(form).not.toBeNull();
+    fireEvent.submit(form!);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("heading", { name: "You’re on the list." }),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByRole("heading", { name: "Join the Example waitlist" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Close waitlist" }),
     ).not.toBeInTheDocument();
   });
 });

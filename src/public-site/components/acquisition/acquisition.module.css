@@ -93,8 +93,7 @@
   width: 38px;
 }
 
-.dialog h2,
-.success h3 {
+.dialog h2 {
   color: var(--site-text, #1c1c1e);
   font-size: clamp(27px, 4vw, 32px);
   letter-spacing: -0.04em;
@@ -168,7 +167,7 @@
 }
 
 .success {
-  padding-block: 22px 8px;
+  padding-block: 8px 0;
   text-align: center;
 }
 
@@ -178,16 +177,16 @@
   color: var(--site-accent);
   display: grid;
   font-size: 24px;
-  height: 54px;
-  margin: 0 auto 20px;
+  height: 48px;
+  margin: 0 auto 16px;
   place-items: center;
-  width: 54px;
+  width: 48px;
 }
 
 .success p {
   color: var(--site-text-secondary, #6c6c70);
-  line-height: 1.6;
-  margin: 14px 0 0;
+  line-height: 1.5;
+  margin: 10px 0 22px;
 }
 
 @media (prefers-reduced-motion: reduce) {
