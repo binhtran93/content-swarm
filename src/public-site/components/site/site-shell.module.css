@@ -156,18 +156,19 @@
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  font-weight: 550;
-  gap: 7px;
-  min-height: 40px;
-  padding: 8px 4px;
+  font-size: 14px;
+  font-weight: 560;
+  gap: 5px;
+  min-height: 36px;
+  padding: 6px 2px;
 }
 
 .languageButton svg {
   fill: none;
-  height: 22px;
+  height: 18px;
   stroke: currentColor;
-  stroke-width: 1.7;
-  width: 22px;
+  stroke-width: 1.65;
+  width: 18px;
 }
 
 .languageMenu {
@@ -176,10 +177,9 @@
   border-radius: 14px;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.14);
   inset-inline-end: 0;
-  max-height: min(70vh, 640px);
-  min-width: 280px;
-  overflow-y: auto;
-  padding-block: 8px;
+  min-width: 230px;
+  overflow: hidden;
+  padding-block: 6px;
   position: absolute;
   top: calc(100% + 8px);
   z-index: 80;
@@ -188,9 +188,11 @@
 .languageMenu a {
   color: var(--site-text-secondary);
   display: block;
-  font-size: 18px;
-  padding: 12px 24px;
+  font-size: 15px;
+  line-height: 18px;
+  padding: 6px 18px;
   text-align: start;
+  white-space: nowrap;
 }
 
 .languageMenu a:hover,
@@ -311,7 +313,7 @@
   }
 
   .languageMenu {
-    min-width: min(280px, calc(100vw - 40px));
+    min-width: min(230px, calc(100vw - 40px));
   }
 
   .footerInner {

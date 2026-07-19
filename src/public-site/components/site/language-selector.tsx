@@ -16,6 +16,11 @@ import {
 
 import styles from "./site-shell.module.css";
 
+function compactLanguageLabel(locale: SupportedLocaleCode, label: string) {
+  if (locale === "pt-BR" || locale === "pt-PT") return label;
+  return label.replace(/\s*\([^()]*\)\s*$/u, "");
+}
+
 export function LanguageSelector({
   locale,
   defaultLocale,
@@ -178,7 +183,7 @@ export function LanguageSelector({
                 key={item.locale}
                 onClick={(event) => selectLanguage(event, item.locale)}
               >
-                {item.label}
+                {compactLanguageLabel(item.locale, item.label)}
               </a>
             ))}
         </div>
