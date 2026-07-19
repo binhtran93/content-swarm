@@ -4,8 +4,10 @@ import Link from "next/link";
 import type { SupportedLocaleCode } from "@/config/supported-locales";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
-import { RenderArticleMdx } from "@/public-site/components/mdx/render-article-mdx.server";
+import type { ArticleHeading } from "@/public-site/components/mdx/article-mdx-outline";
+import { renderArticleMdx } from "@/public-site/components/mdx/render-article-mdx.server";
 import type { PublicBlogConfig } from "@/public-site/config/blog-config";
+import { getPublicTranslator } from "@/public-site/i18n/get-public-translator";
 import styles from "./blog.module.css";
 
 function routeHref(
@@ -22,7 +24,19 @@ function jsonLd(value: object) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
-export function BlogArticle({
+function ArticleSectionLinks({ headings }: { headings: ArticleHeading[] }) {
+  return (
+    <ol>
+      {headings.map((heading) => (
+        <li key={heading.id}>
+          <a href={`#${heading.id}`}>{heading.label}</a>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+export async function BlogArticle({
   config,
   routePrefix,
   locale,
@@ -42,6 +56,8 @@ export function BlogArticle({
   const title = translation?.title ?? source.title ?? "Untitled article";
   const excerpt = translation?.excerpt ?? source.excerpt ?? "";
   const content = translation?.content ?? source.content ?? "";
+  const renderedArticle = await renderArticleMdx(content);
+  const t = getPublicTranslator();
   const updatedAt = translation?.updatedAt ?? source.updatedAt;
   const readingMinutes = Math.max(
     1,
@@ -94,8 +110,23 @@ export function BlogArticle({
 
         <div className={styles.articleBody}>
           <div className={`${styles.contentShell} ${styles.articleLayout}`}>
+            {renderedArticle.headings.length ? (
+              <>
+                <aside
+                  className={styles.tableOfContents}
+                  aria-label={t("blog.onThisPage")}
+                >
+                  <p>{t("blog.onThisPage")}</p>
+                  <ArticleSectionLinks headings={renderedArticle.headings} />
+                </aside>
+                <details className={styles.mobileTableOfContents}>
+                  <summary>{t("blog.onThisPage")}</summary>
+                  <ArticleSectionLinks headings={renderedArticle.headings} />
+                </details>
+              </>
+            ) : null}
             <div className={styles.prose}>
-              <RenderArticleMdx content={content} />
+              {renderedArticle.content}
               <section
                 className={styles.installCta}
                 aria-labelledby="article-install-title"
