@@ -11,6 +11,8 @@ import {
 import { generateText, Output } from "ai";
 import type { ZodType } from "zod";
 
+export type AiProvider = "gemini" | "openai";
+
 type GeminiOptions = {
   googleSearch?: boolean;
   thinking?: {
@@ -31,7 +33,12 @@ type OpenAIOptions = {
 
 type ProviderInput =
   | {
-      provider?: "gemini";
+      provider?: undefined;
+      model?: string;
+      providerOptions?: never;
+    }
+  | {
+      provider: "gemini";
       model?: string;
       providerOptions?: GeminiOptions;
     }
@@ -55,14 +62,14 @@ type AiResult<T> = {
   output: T;
   text: string;
   sources: { id: string; url: string; title?: string }[];
-  provider: "gemini" | "openai";
+  provider: AiProvider;
   model: string;
 };
 
 export async function generateAi<T = string>(
   input: SharedInput<T> & ProviderInput,
 ): Promise<AiResult<T>> {
-  const provider = input.provider ?? "gemini";
+  const provider = configuredProvider(input.provider);
   const model =
     input.model?.trim() ||
     (provider === "gemini"
@@ -75,10 +82,12 @@ export async function generateAi<T = string>(
       })
     : Output.text();
 
-  if (input.provider !== "openai") {
+  if (provider === "gemini") {
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) throw new Error("AI_NOT_CONFIGURED");
-    const thinking = input.providerOptions?.thinking;
+    const providerOptions =
+      input.provider === "gemini" ? input.providerOptions : undefined;
+    const thinking = providerOptions?.thinking;
     if (thinking?.budget !== undefined && thinking.level !== undefined)
       throw new Error("AI_INVALID_PROVIDER_OPTIONS");
     const google = createGoogleGenerativeAI({ apiKey });
@@ -100,7 +109,7 @@ export async function generateAi<T = string>(
       maxOutputTokens: input.maxOutputTokens,
       abortSignal: AbortSignal.timeout(input.timeoutMs ?? 120_000),
       providerOptions: { google: googleOptions },
-      tools: input.providerOptions?.googleSearch
+      tools: providerOptions?.googleSearch
         ? { google_search: google.tools.googleSearch({}) }
         : undefined,
     });
@@ -110,7 +119,9 @@ export async function generateAi<T = string>(
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) throw new Error("AI_NOT_CONFIGURED");
   const openai = createOpenAI({ apiKey });
-  const webSearch = input.providerOptions?.webSearch;
+  const providerOptions =
+    input.provider === "openai" ? input.providerOptions : undefined;
+  const webSearch = providerOptions?.webSearch;
   const result = await generateText({
     model: openai.responses(model),
     system: input.system,
@@ -119,7 +130,7 @@ export async function generateAi<T = string>(
     temperature: input.temperature,
     maxOutputTokens: input.maxOutputTokens,
     abortSignal: AbortSignal.timeout(input.timeoutMs ?? 120_000),
-    providerOptions: { openai: input.providerOptions?.responses ?? {} },
+    providerOptions: { openai: providerOptions?.responses ?? {} },
     tools: webSearch
       ? {
           web_search: openai.tools.webSearch(
@@ -129,6 +140,13 @@ export async function generateAi<T = string>(
       : undefined,
   });
   return resultValue(result, provider, model);
+}
+
+function configuredProvider(provider?: AiProvider): AiProvider {
+  if (provider) return provider;
+  const configured = process.env.AI_PROVIDER?.trim() || "gemini";
+  if (configured === "gemini" || configured === "openai") return configured;
+  throw new Error("AI_UNSUPPORTED_PROVIDER");
 }
 
 function resultValue<T>(
@@ -142,7 +160,7 @@ function resultValue<T>(
       title?: string;
     }>;
   },
-  provider: "gemini" | "openai",
+  provider: AiProvider,
   model: string,
 ): AiResult<T> {
   return {

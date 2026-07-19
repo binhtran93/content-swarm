@@ -16,27 +16,13 @@ export async function generateArticleAi<T = string>(
       "AI network calls are disabled during tests.",
     );
   try {
-    const provider = process.env.AI_ARTICLE_PROVIDER?.trim() || "gemini";
-    const model = process.env.AI_ARTICLE_MODEL?.trim() || undefined;
-    const shared = {
+    const result = await generateAi<T>({
       system,
       prompt: user,
-      model,
       outputSchema: format?.schema,
       outputName: format?.name,
       timeoutMs: 240_000,
-    };
-    const result =
-      provider === "openai"
-        ? await generateAi<T>({ ...shared, provider: "openai" })
-        : provider === "gemini"
-          ? await generateAi<T>({ ...shared, provider: "gemini" })
-          : null;
-    if (!result)
-      throw new ArticleServiceError(
-        "provider",
-        "The configured AI provider is unsupported.",
-      );
+    });
     if (!format && !result.text.trim())
       throw new ArticleServiceError(
         "provider",

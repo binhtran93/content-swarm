@@ -45,10 +45,12 @@ describe("generateAi", () => {
     delete process.env.OPENAI_API_KEY;
     delete process.env.GEMINI_MODEL;
     delete process.env.OPENAI_MODEL;
+    delete process.env.AI_PROVIDER;
   });
 
   it("defaults to Gemini and accepts Google-specific grounding options", async () => {
     const result = await generateAi({
+      provider: "gemini",
       prompt: "What changed?",
       providerOptions: {
         googleSearch: true,
@@ -103,6 +105,24 @@ describe("generateAi", () => {
     );
   });
 
+  it("routes the globally configured provider when none is explicit", async () => {
+    process.env.AI_PROVIDER = "openai";
+
+    const result = await generateAi({ prompt: "Write something" });
+
+    expect(mocks.openaiModel).toHaveBeenCalledWith("gpt-5-mini");
+    expect(result.provider).toBe("openai");
+  });
+
+  it("rejects an unsupported globally configured provider", async () => {
+    process.env.AI_PROVIDER = "unsupported";
+
+    await expect(generateAi({ prompt: "Write something" })).rejects.toThrow(
+      "AI_UNSUPPORTED_PROVIDER",
+    );
+    expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
   it("returns schema-validated structured output", async () => {
     mocks.generateText.mockResolvedValue({
       output: { title: "Structured" },
@@ -120,6 +140,7 @@ describe("generateAi", () => {
   it("rejects incompatible Gemini thinking settings before calling AI", async () => {
     await expect(
       generateAi({
+        provider: "gemini",
         prompt: "Think",
         providerOptions: {
           thinking: { budget: 100, level: "low" },
