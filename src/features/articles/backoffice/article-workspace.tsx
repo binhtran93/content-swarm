@@ -27,6 +27,7 @@ import { MarkdownEditor } from "@/features/articles/backoffice/markdown-editor";
 import type { ArticleContentChange } from "@/features/articles/model/article-content-change";
 import type { ArticleReference } from "@/features/articles/model/article-reference";
 import type { Article } from "@/features/articles/model/article";
+import { slugifyArticleTitle } from "@/features/articles/model/article-slug";
 import type { Translation } from "@/features/articles/model/translation";
 
 type Step = "plan" | "content" | "seo" | "translations" | "publish";
@@ -423,7 +424,7 @@ function ContentEditor({ article }: { article: Article }) {
           <label className="fieldset min-w-0">
             <span className="fieldset-legend">Title</span>
             <textarea
-              className="textarea min-h-20 w-full resize-y"
+              className="textarea [field-sizing:content] min-h-28 w-full resize-none overflow-hidden"
               maxLength={200}
               name="title"
               onChange={(event) =>
@@ -449,7 +450,7 @@ function ContentEditor({ article }: { article: Article }) {
               </button>
             </div>
             <textarea
-              className="textarea min-h-28 w-full resize-none"
+              className="textarea [field-sizing:content] min-h-64 w-full resize-none overflow-hidden"
               id="article-excerpt"
               maxLength={500}
               name="excerpt"
@@ -480,7 +481,9 @@ function SeoEditor({
   article: Article;
   canonicalBaseUrl: string | null;
 }) {
-  const [slug, setSlug] = useState(article.slug ?? "");
+  const [slug, setSlug] = useState(
+    article.slug ?? slugifyArticleTitle(article.title ?? ""),
+  );
   const [state, action, pending] = useActionState(saveSeoAction, null);
   return (
     <form action={action} className="flex min-h-0 flex-1 flex-col gap-3">
@@ -496,7 +499,7 @@ function SeoEditor({
           {pending ? "Saving…" : "Save SEO"}
         </button>
       </div>
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1">
         <label className="fieldset">
           <span className="fieldset-legend">Slug</span>
           <input
