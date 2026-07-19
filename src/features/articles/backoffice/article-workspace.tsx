@@ -43,17 +43,8 @@ function Fields({ article }: { article: Article }) {
   );
 }
 
-function ActionNotice({ error, saved }: { error?: string; saved?: boolean }) {
-  return (
-    <>
-      {error ? <ErrorToast message={error} /> : null}
-      {saved ? (
-        <div className="alert alert-success py-2">
-          <span>Saved.</span>
-        </div>
-      ) : null}
-    </>
-  );
+function ActionNotice({ error }: { error?: string; saved?: boolean }) {
+  return error ? <ErrorToast message={error} /> : null;
 }
 
 function actionData(article: Article, values: Record<string, string> = {}) {
@@ -88,38 +79,41 @@ function BriefEditor({ article }: { article: Article }) {
     });
   }
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col">
       <ActionNotice
         error={saveState?.error ?? generateError}
         saved={saveState?.saved}
       />
-      <form action={saveAction} className="space-y-4">
+      <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
         <Fields article={article} />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-base font-medium">Brief</h2>
+          <div className="flex gap-2">
+            <button
+              className="btn btn-primary btn-sm"
+              disabled={saving}
+              type="submit"
+            >
+              {saving ? "Saving…" : "Save brief"}
+            </button>
+            <button
+              className="btn btn-outline btn-sm"
+              disabled={generating}
+              onClick={generate}
+              type="button"
+            >
+              {generating ? "Generating…" : "Generate proposal"}
+            </button>
+          </div>
+        </div>
         <textarea
-          className="textarea min-h-96 w-full font-mono text-sm"
+          className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
           name="brief"
           onChange={(event) => setBrief(event.target.value)}
           placeholder="Define reader, goal, intent, coverage, boundaries, tone, and outcome…"
           value={brief}
         />
-        <div className="flex gap-2">
-          <button className="btn btn-primary" disabled={saving} type="submit">
-            {saving ? "Saving…" : "Save brief"}
-          </button>
-          <button
-            className="btn btn-outline"
-            disabled={generating}
-            onClick={generate}
-            type="button"
-          >
-            {generating ? "Generating…" : "Generate proposal"}
-          </button>
-        </div>
       </form>
-      <p className="text-base-content/60 text-sm">
-        Generate uses only saved project and keyword context. Its result stays
-        in this editor until you save.
-      </p>
     </div>
   );
 }
@@ -151,13 +145,33 @@ function OutlineEditor({ article }: { article: Article }) {
     });
   }
   return (
-    <form action={saveAction} className="space-y-4">
+    <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
       <ActionNotice
         error={saveState?.error ?? generateError}
         saved={saveState?.saved}
       />
       <Fields article={article} />
-      <label className="fieldset">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-medium">Outline</h2>
+        <div className="flex gap-2">
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={saving}
+            type="submit"
+          >
+            {saving ? "Saving…" : "Save outline"}
+          </button>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={generating}
+            onClick={generate}
+            type="button"
+          >
+            {generating ? "Generating…" : "Generate proposal"}
+          </button>
+        </div>
+      </div>
+      <label className="fieldset shrink-0">
         <span className="fieldset-legend">Proposed article title</span>
         <input
           className="input w-full"
@@ -168,29 +182,16 @@ function OutlineEditor({ article }: { article: Article }) {
           value={title}
         />
       </label>
-      <label className="fieldset">
+      <label className="fieldset flex min-h-0 flex-1 flex-col">
         <span className="fieldset-legend">Outline (Markdown)</span>
         <textarea
-          className="textarea min-h-80 w-full font-mono text-sm"
+          className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
           name="outline"
           onChange={(event) => setOutline(event.target.value)}
           required
           value={outline}
         />
       </label>
-      <div className="flex gap-2">
-        <button className="btn btn-primary" disabled={saving} type="submit">
-          {saving ? "Saving…" : "Save outline"}
-        </button>
-        <button
-          className="btn btn-outline"
-          disabled={generating}
-          onClick={generate}
-          type="button"
-        >
-          {generating ? "Generating…" : "Generate proposal"}
-        </button>
-      </div>
     </form>
   );
 }
@@ -225,54 +226,61 @@ function ContentEditor({ article }: { article: Article }) {
     );
   }
   return (
-    <form action={saveAction} className="space-y-4">
+    <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
       <ActionNotice
         error={saveState?.error ?? generateError}
         saved={saveState?.saved}
       />
       <Fields article={article} />
-      <div className="grid gap-4 xl:grid-cols-2">
-        <label className="fieldset">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-medium">Content</h2>
+        <div className="flex flex-wrap gap-2">
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={saving}
+            type="submit"
+          >
+            {saving ? "Saving…" : "Save content"}
+          </button>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={generating}
+            onClick={generate}
+            type="button"
+          >
+            {generating ? "Generating…" : "Generate content"}
+          </button>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={improving || !article.content}
+            onClick={improve}
+            type="button"
+          >
+            {improving ? "Improving…" : "Improve saved content"}
+          </button>
+        </div>
+      </div>
+      <div className="grid min-h-0 flex-1 gap-4 overflow-auto xl:grid-cols-2 xl:overflow-hidden">
+        <label className="fieldset flex min-h-[24rem] flex-col xl:min-h-0">
           <span className="fieldset-legend">
             Article body (MDX, starting at H2)
           </span>
           <textarea
-            className="textarea min-h-[32rem] w-full font-mono text-sm"
+            className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
             name="content"
             onChange={(event) => setContent(event.target.value)}
             value={content}
           />
         </label>
-        <div className="fieldset">
+        <div className="fieldset flex min-h-[24rem] flex-col xl:min-h-0">
           <span className="fieldset-legend">Safe inert preview</span>
-          <article className="prose bg-base-200 rounded-field border-base-300 min-h-[32rem] overflow-auto border p-5">
+          <article className="prose bg-base-200 rounded-field border-base-300 min-h-0 flex-1 overflow-auto border p-5">
             <pre className="font-sans text-sm whitespace-pre-wrap">
               {content ||
                 "Preview appears here. Exact component rendering is shown in Publish Preview after Save."}
             </pre>
           </article>
         </div>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <button className="btn btn-primary" disabled={saving}>
-          Save content
-        </button>
-        <button
-          className="btn btn-outline"
-          disabled={generating}
-          onClick={generate}
-          type="button"
-        >
-          {generating ? "Generating…" : "Generate content"}
-        </button>
-        <button
-          className="btn btn-outline"
-          disabled={improving || !article.content}
-          onClick={improve}
-          type="button"
-        >
-          {improving ? "Improving…" : "Improve saved content"}
-        </button>
       </div>
     </form>
   );
@@ -288,94 +296,103 @@ function SeoEditor({
   const [slug, setSlug] = useState(article.slug ?? "");
   const [state, action, pending] = useActionState(saveSeoAction, null);
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="flex min-h-0 flex-1 flex-col gap-3">
       <ActionNotice error={state?.error} saved={state?.saved} />
       <Fields article={article} />
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-medium">SEO</h2>
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={pending}
+          type="submit"
+        >
+          {pending ? "Saving…" : "Save SEO"}
+        </button>
+      </div>
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="fieldset">
+            <span className="fieldset-legend">Title</span>
+            <input
+              className="input w-full"
+              defaultValue={article.title ?? ""}
+              maxLength={200}
+              name="title"
+              required
+            />
+          </label>
+          <label className="fieldset">
+            <span className="fieldset-legend">Slug</span>
+            <input
+              className="input w-full"
+              maxLength={160}
+              name="slug"
+              onChange={(event) => setSlug(event.target.value)}
+              pattern="[a-z0-9]+(-[a-z0-9]+)*"
+              required
+              value={slug}
+            />
+          </label>
+        </div>
+        <p className="text-base-content/60 text-sm break-all">
+          URL:{" "}
+          {canonicalBaseUrl
+            ? `${canonicalBaseUrl}/${article.locale}/blog/${slug || "…"}`
+            : "Set the project's canonical base URL to preview the final URL."}
+        </p>
         <label className="fieldset">
-          <span className="fieldset-legend">Title</span>
+          <span className="fieldset-legend">Topic</span>
           <input
             className="input w-full"
-            defaultValue={article.title ?? ""}
-            maxLength={200}
-            name="title"
+            defaultValue={article.topic ?? ""}
+            maxLength={300}
+            name="topic"
             required
           />
         </label>
         <label className="fieldset">
-          <span className="fieldset-legend">Slug</span>
+          <span className="fieldset-legend">
+            Excerpt <span className="font-normal opacity-60">(up to 500)</span>
+          </span>
+          <textarea
+            className="textarea w-full"
+            defaultValue={article.excerpt ?? ""}
+            maxLength={500}
+            name="excerpt"
+            required
+          />
+        </label>
+        <label className="fieldset">
+          <span className="fieldset-legend">
+            SEO title{" "}
+            <span className="font-normal opacity-60">
+              (typically around 50–60 characters)
+            </span>
+          </span>
           <input
             className="input w-full"
-            maxLength={160}
-            name="slug"
-            onChange={(event) => setSlug(event.target.value)}
-            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+            defaultValue={article.seoTitle ?? ""}
+            maxLength={200}
+            name="seoTitle"
             required
-            value={slug}
+          />
+        </label>
+        <label className="fieldset">
+          <span className="fieldset-legend">
+            SEO description{" "}
+            <span className="font-normal opacity-60">
+              (typically around 150–160 characters)
+            </span>
+          </span>
+          <textarea
+            className="textarea w-full"
+            defaultValue={article.seoDescription ?? ""}
+            maxLength={500}
+            name="seoDescription"
+            required
           />
         </label>
       </div>
-      <p className="text-base-content/60 text-sm break-all">
-        URL:{" "}
-        {canonicalBaseUrl
-          ? `${canonicalBaseUrl}/${article.locale}/blog/${slug || "…"}`
-          : "Set the project's canonical base URL to preview the final URL."}
-      </p>
-      <label className="fieldset">
-        <span className="fieldset-legend">Topic</span>
-        <input
-          className="input w-full"
-          defaultValue={article.topic ?? ""}
-          maxLength={300}
-          name="topic"
-          required
-        />
-      </label>
-      <label className="fieldset">
-        <span className="fieldset-legend">
-          Excerpt <span className="font-normal opacity-60">(up to 500)</span>
-        </span>
-        <textarea
-          className="textarea w-full"
-          defaultValue={article.excerpt ?? ""}
-          maxLength={500}
-          name="excerpt"
-          required
-        />
-      </label>
-      <label className="fieldset">
-        <span className="fieldset-legend">
-          SEO title{" "}
-          <span className="font-normal opacity-60">
-            (typically around 50–60 characters)
-          </span>
-        </span>
-        <input
-          className="input w-full"
-          defaultValue={article.seoTitle ?? ""}
-          maxLength={200}
-          name="seoTitle"
-          required
-        />
-      </label>
-      <label className="fieldset">
-        <span className="fieldset-legend">
-          SEO description{" "}
-          <span className="font-normal opacity-60">
-            (typically around 150–160 characters)
-          </span>
-        </span>
-        <textarea
-          className="textarea w-full"
-          defaultValue={article.seoDescription ?? ""}
-          maxLength={500}
-          name="seoDescription"
-          required
-        />
-      </label>
-      <button className="btn btn-primary" disabled={pending}>
-        {pending ? "Saving…" : "Save SEO"}
-      </button>
     </form>
   );
 }
@@ -441,101 +458,108 @@ function TranslationEditor({
     });
   }
   return (
-    <form action={saveAction} className="space-y-4">
+    <form action={saveAction} className="flex min-h-0 flex-1 flex-col gap-3">
       <ActionNotice
         error={saveState?.error ?? generateError}
         saved={saveState?.saved}
       />
       <Fields article={article} />
-      <div className="flex flex-wrap items-end gap-3">
-        <label className="fieldset">
-          <span className="fieldset-legend">Target locale</span>
-          <input
-            className="input"
-            name="locale"
-            onChange={(event) => choose(event.target.value)}
-            pattern="[a-z]{2,3}(-[A-Z]{2})?"
-            required
-            value={locale}
-          />
-        </label>
-        {selected ? (
-          <span
-            className={`badge mb-3 ${selected.status === "approved" ? "badge-success" : "badge-ghost"}`}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-medium">Translations</h2>
+        <div className="flex gap-2">
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={saving}
+            type="submit"
           >
-            {selected.status}
-          </span>
-        ) : (
-          <span className="text-base-content/60 mb-3 text-sm">
-            New draft translation
-          </span>
-        )}
+            {saving ? "Saving…" : "Save translation"}
+          </button>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={generating}
+            onClick={generate}
+            type="button"
+          >
+            {generating ? "Generating…" : "Generate proposal"}
+          </button>
+        </div>
       </div>
-      {(
-        ["title", "slug", "excerpt", "seoTitle", "seoDescription"] as const
-      ).map((name) => (
-        <label className="fieldset" key={name}>
-          <span className="fieldset-legend">
-            {name === "seoTitle"
-              ? "SEO title"
-              : name === "seoDescription"
-                ? "SEO description"
-                : name[0]!.toUpperCase() + name.slice(1)}
-          </span>
-          <input
-            className="input w-full"
-            maxLength={
-              name === "slug"
-                ? 160
-                : name === "excerpt" || name === "seoDescription"
-                  ? 500
-                  : 200
-            }
-            name={name}
+      <div className="grid min-h-0 flex-1 gap-4 overflow-auto xl:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] xl:overflow-hidden">
+        <div className="min-h-0 space-y-4 xl:overflow-y-auto xl:pr-1">
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="fieldset">
+              <span className="fieldset-legend">Target locale</span>
+              <input
+                className="input"
+                name="locale"
+                onChange={(event) => choose(event.target.value)}
+                pattern="[a-z]{2,3}(-[A-Z]{2})?"
+                required
+                value={locale}
+              />
+            </label>
+            {selected ? (
+              <span
+                className={`badge mb-3 ${selected.status === "approved" ? "badge-success" : "badge-ghost"}`}
+              >
+                {selected.status}
+              </span>
+            ) : (
+              <span className="text-base-content/60 mb-3 text-sm">
+                New draft translation
+              </span>
+            )}
+          </div>
+          {(
+            ["title", "slug", "excerpt", "seoTitle", "seoDescription"] as const
+          ).map((name) => (
+            <label className="fieldset" key={name}>
+              <span className="fieldset-legend">
+                {name === "seoTitle"
+                  ? "SEO title"
+                  : name === "seoDescription"
+                    ? "SEO description"
+                    : name[0]!.toUpperCase() + name.slice(1)}
+              </span>
+              <input
+                className="input w-full"
+                maxLength={
+                  name === "slug"
+                    ? 160
+                    : name === "excerpt" || name === "seoDescription"
+                      ? 500
+                      : 200
+                }
+                name={name}
+                onChange={(event) =>
+                  setValues((current) => ({
+                    ...current,
+                    [name]: event.target.value,
+                  }))
+                }
+                pattern={name === "slug" ? "[a-z0-9]+(-[a-z0-9]+)*" : undefined}
+                required
+                value={values[name]}
+              />
+            </label>
+          ))}
+        </div>
+        <label className="fieldset flex min-h-[24rem] flex-col xl:min-h-0">
+          <span className="fieldset-legend">Translated MDX</span>
+          <textarea
+            className="textarea min-h-0 w-full flex-1 resize-none font-mono text-sm"
+            name="content"
             onChange={(event) =>
               setValues((current) => ({
                 ...current,
-                [name]: event.target.value,
+                content: event.target.value,
               }))
             }
-            pattern={name === "slug" ? "[a-z0-9]+(-[a-z0-9]+)*" : undefined}
             required
-            value={values[name]}
+            value={values.content}
           />
         </label>
-      ))}
-      <label className="fieldset">
-        <span className="fieldset-legend">Translated MDX</span>
-        <textarea
-          className="textarea min-h-96 w-full font-mono text-sm"
-          name="content"
-          onChange={(event) =>
-            setValues((current) => ({
-              ...current,
-              content: event.target.value,
-            }))
-          }
-          required
-          value={values.content}
-        />
-      </label>
-      <div className="flex gap-2">
-        <button className="btn btn-primary" disabled={saving}>
-          {saving ? "Saving…" : "Save translation"}
-        </button>
-        <button
-          className="btn btn-outline"
-          disabled={generating}
-          onClick={generate}
-          type="button"
-        >
-          {generating ? "Generating…" : "Generate proposal"}
-        </button>
       </div>
-      <p className="text-base-content/60 text-sm">
-        Save first, then use the approval control in Publish Preview. Source
-        publication never requires a translation.
-      </p>
     </form>
   );
 }
@@ -566,7 +590,7 @@ export function ArticleWorkspace({
   };
   const base = `/admin/projects/${projectId}/articles/${article.articleId}`;
   return (
-    <div className="space-y-5">
+    <div className="flex h-full min-h-0 flex-col gap-5">
       {article.status === "published" ? (
         <div className="alert alert-warning">
           <span>
@@ -575,7 +599,7 @@ export function ArticleWorkspace({
           </span>
         </div>
       ) : null}
-      <div className="tabs tabs-border overflow-x-auto">
+      <div className="tabs tabs-border shrink-0 overflow-x-auto">
         {steps.map((item) =>
           unlocked[item.id] ? (
             <Link
@@ -592,13 +616,8 @@ export function ArticleWorkspace({
           ),
         )}
       </div>
-      <section className="card card-border bg-base-100">
-        <div className="card-body gap-4 p-5 md:p-7">
-          <div>
-            <h2 className="text-lg font-medium">
-              {steps.find((item) => item.id === step)?.label}
-            </h2>
-          </div>
+      <section className="card card-border bg-base-100 min-h-0 flex-1 overflow-hidden">
+        <div className="card-body min-h-0 gap-4 p-5 md:p-7">
           {step === "brief" ? (
             <BriefEditor article={article} />
           ) : step === "outline" ? (

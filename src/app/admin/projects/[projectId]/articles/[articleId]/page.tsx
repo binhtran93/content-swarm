@@ -83,7 +83,7 @@ export default async function ArticlePage({
       />
     ) : undefined;
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto h-[calc(100dvh-6rem)] max-w-7xl sm:h-[calc(100dvh-7rem)] lg:h-[calc(100dvh-8rem)]">
       <PageTitle
         title={article.title ?? "Untitled article"}
         action={
