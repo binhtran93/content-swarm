@@ -1,6 +1,11 @@
 import { render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { describe, expect, it } from "vitest";
 
+import {
+  supportedLocales,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
 import { createSubiqStaticPageMetadata } from "@/public-site/seo/static-page-seo";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
 import { getLocalizedSubiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
@@ -31,6 +36,24 @@ function placeholders(value: string) {
     .sort();
 }
 
+function expectValidRichTags(value: string) {
+  const stack: string[] = [];
+  for (const match of value.matchAll(/<(\/)?([a-zA-Z][\w]*)>/g)) {
+    const [, closing, tag] = match;
+    if (closing) expect(stack.pop()).toBe(tag);
+    else stack.push(tag);
+  }
+  expect(stack).toEqual([]);
+}
+
+type RuntimeTranslator = {
+  (key: string, values?: Record<string, number>): string;
+  rich: (
+    key: string,
+    values: Record<string, number | ((chunks: ReactNode) => ReactNode)>,
+  ) => ReactNode;
+};
+
 describe("SubIQ static translations", () => {
   it("keeps every registered translation aligned with the English schema", () => {
     const source = flatten(enUS);
@@ -39,21 +62,59 @@ describe("SubIQ static translations", () => {
       expect(Object.keys(translated).sort()).toEqual(
         Object.keys(source).sort(),
       );
-      for (const [key, value] of Object.entries(source))
+      for (const [key, value] of Object.entries(source)) {
         expect(placeholders(translated[key]!)).toEqual(placeholders(value));
+        expectValidRichTags(translated[key]!);
+      }
     }
   });
 
-  it("uses the registered locales with explicit English fallback", () => {
+  it("registers every supported locale with explicit English fallback", () => {
     expect(getLocalizedSubiqConfig("vi-VN").locales).toEqual(
       subiqStaticLocales,
     );
-    expect(resolveSubiqStaticLocale("de-DE")).toBe("en-US");
+    expect([...subiqStaticLocales].sort()).toEqual(
+      supportedLocales.map((item) => item.locale).sort(),
+    );
+    expect(resolveSubiqStaticLocale("de-DE")).toBe("de-DE");
     expect(getSubiqTranslator("vi-VN")("site.home")).toBe("Trang chủ");
-    expect(getSubiqTranslator("de-DE")("site.home")).toBe("Home");
+    expect(getSubiqTranslator("de-DE")("site.home")).not.toBe("Home");
+    expect(resolveSubiqStaticLocale("xx-XX" as SupportedLocaleCode)).toBe(
+      "en-US",
+    );
   });
 
-  it("publishes Vietnamese static SEO and noindexes unenabled fallbacks", () => {
+  it("formats every registered message without ICU or rich-text errors", () => {
+    const source = flatten(enUS);
+    for (const locale of subiqStaticLocales) {
+      const translator = getSubiqTranslator(
+        locale,
+      ) as unknown as RuntimeTranslator;
+      for (const [key, value] of Object.entries(source)) {
+        const variables = Object.fromEntries(
+          [...value.matchAll(/\{([a-zA-Z][\w]*)\}/g)].map((match) => [
+            match[1],
+            2,
+          ]),
+        );
+        const tags = [
+          ...new Set(
+            [...value.matchAll(/<([a-zA-Z][\w]*)>/g)].map((match) => match[1]),
+          ),
+        ];
+        if (tags.length) {
+          translator.rich(key, {
+            ...variables,
+            ...Object.fromEntries(
+              tags.map((tag) => [tag, (chunks: ReactNode) => chunks]),
+            ),
+          });
+        } else translator(key, variables);
+      }
+    }
+  });
+
+  it("publishes localized static SEO and noindexes unknown fallbacks", () => {
     const landing = createSubiqLandingMetadata("vi-VN");
     expect(landing.title).toContain("Theo dõi đăng ký");
     expect(landing.alternates?.canonical).toBe("https://getsubiq.com/vi-VN/");
@@ -65,9 +126,10 @@ describe("SubIQ static translations", () => {
     expect(Object.keys(landing.alternates?.languages ?? {}).sort()).toEqual(
       [...subiqStaticLocales, "x-default"].sort(),
     );
-    expect(createSubiqLandingMetadata("de-DE").robots).toMatchObject({
-      index: false,
-    });
+    expect(createSubiqLandingMetadata("de-DE").robots).toBeUndefined();
+    expect(
+      createSubiqLandingMetadata("xx-XX" as SupportedLocaleCode).robots,
+    ).toMatchObject({ index: false });
     expect(createSubiqStaticPageMetadata("support", "vi-VN").title).toBe(
       "Hỗ trợ | SubIQ",
     );
