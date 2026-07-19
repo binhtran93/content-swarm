@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import { ErrorToast } from "@/backoffice/components/ui/error-toast";
@@ -16,74 +17,67 @@ export function ArticleKeywordPicker({
   const [selected, setSelected] = useState("");
   const [state, action, pending] = useActionState(createArticleAction, null);
   const topic = topics.find((item) => item.id === selected);
+  const locale = topic
+    ? `${topic.primary.languageCode}-${topic.primary.countryCode}`
+    : "";
   return (
-    <form action={action} className="space-y-5">
+    <form action={action}>
       <ErrorToast message={state?.error} />
       <input name="projectId" type="hidden" value={projectId} />
-      <div className="card card-border bg-base-100">
-        <div className="card-body gap-4 p-6">
+      <input name="locale" type="hidden" value={locale} />
+      <div className="rounded-box border-base-300 bg-base-100 overflow-hidden border">
+        <div className="border-base-300 flex items-start justify-between gap-4 border-b px-5 py-4">
           <div>
-            <h2 className="text-lg font-medium">Choose one topic</h2>
-            <p className="text-base-content/60 mt-1 text-sm">
-              The selected keyword or complete group will be assigned only after
-              you confirm.
+            <h2 className="font-semibold">Select a topic</h2>
+            <p className="text-base-content/60 mt-0.5 text-sm">
+              Only unassigned Backlog topics are shown.
             </p>
           </div>
-          <div className="space-y-2">
-            {topics.map((item) => (
-              <label
-                className={`rounded-box flex cursor-pointer gap-3 border p-4 ${selected === item.id ? "border-primary bg-primary/5" : "border-base-300"}`}
-                key={item.id}
-              >
-                <input
-                  checked={selected === item.id}
-                  className="radio radio-primary radio-sm mt-1"
-                  name="keywordId"
-                  onChange={() => setSelected(item.id)}
-                  type="radio"
-                  value={item.primary.keywordId}
-                />
-                <span>
-                  <span className="block font-medium">
-                    {item.primary.keyword}
-                  </span>
-                  <span className="text-base-content/60 text-sm">
-                    {item.primary.countryCode} · {item.primary.languageCode}
-                    {item.supporting.length
-                      ? ` · ${item.supporting.length} supporting keyword${item.supporting.length === 1 ? "" : "s"}`
-                      : " · Individual keyword"}
-                  </span>
+          <span className="badge badge-ghost badge-sm mt-0.5">
+            {topics.length} available
+          </span>
+        </div>
+
+        <div className="max-h-[min(52vh,30rem)] space-y-2 overflow-y-auto p-3">
+          {topics.map((item) => (
+            <label
+              className={`rounded-box hover:bg-base-200/60 flex cursor-pointer items-center gap-3 border px-4 py-3 transition-colors ${selected === item.id ? "border-primary bg-primary/5" : "border-transparent"}`}
+              key={item.id}
+            >
+              <input
+                checked={selected === item.id}
+                className="radio radio-primary radio-sm shrink-0"
+                name="keywordId"
+                onChange={() => setSelected(item.id)}
+                type="radio"
+                value={item.primary.keywordId}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-medium">
+                  {item.primary.keyword}
                 </span>
-              </label>
-            ))}
-          </div>
-          <label className="fieldset max-w-xs">
-            <span className="fieldset-legend">Source locale</span>
-            <input
-              className="input w-full"
-              defaultValue={
-                topic
-                  ? `${topic.primary.languageCode}-${topic.primary.countryCode}`
-                  : "en-US"
-              }
-              key={topic?.id}
-              name="locale"
-              pattern="[a-z]{2,3}(-[A-Z]{2})?"
-              required
-            />
-          </label>
-          {topic ? (
-            <div className="alert alert-info">
-              <span>
-                Confirm creating an article for{" "}
-                <strong>{topic.primary.keyword}</strong>. This assignment cannot
-                be moved to another topic.
               </span>
-            </div>
-          ) : null}
-          <div>
+              <span className="badge badge-ghost badge-sm shrink-0">
+                {item.primary.countryCode} · {item.primary.languageCode}
+              </span>
+            </label>
+          ))}
+        </div>
+
+        <div className="border-base-300 bg-base-200/30 flex flex-col gap-4 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm">
+            <span className="text-base-content/60">Source locale</span>
+            <span className="ml-2 font-medium">{locale || "—"}</span>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Link
+              className="btn btn-ghost btn-sm"
+              href={`/admin/projects/${projectId}/articles`}
+            >
+              Cancel
+            </Link>
             <button
-              className="btn btn-primary"
+              className="btn btn-primary btn-sm min-w-32"
               disabled={!selected || pending}
               type="submit"
             >

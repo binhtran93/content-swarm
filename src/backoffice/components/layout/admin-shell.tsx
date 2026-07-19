@@ -26,13 +26,11 @@ export function AdminShell({
       <AdminSidebar
         onClose={closeNavigation}
         open={navigationOpen}
+        ownerEmail={ownerEmail}
         projectId={projectId ?? routeProjectId}
       />
       <div className="flex min-h-screen min-w-0 flex-col">
-        <AdminTopbar
-          email={ownerEmail}
-          onOpenNavigation={() => setNavigationOpen(true)}
-        />
+        <AdminTopbar onOpenNavigation={() => setNavigationOpen(true)} />
         <main className="grow p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>

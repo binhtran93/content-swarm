@@ -11,22 +11,11 @@ export default async function NewArticlePage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  const project = await getProjectContext(projectId);
+  await getProjectContext(projectId);
   const topics = await listAvailableArticleTopics(projectId);
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <PageTitle
-        title="New article"
-        description={`Choose an unassigned ${project.name} backlog topic. Nothing is created until confirmation.`}
-        action={
-          <Link
-            className="btn btn-ghost btn-sm"
-            href={`/admin/projects/${projectId}/articles`}
-          >
-            Cancel
-          </Link>
-        }
-      />
+      <PageTitle title="New article" />
       {topics.length ? (
         <ArticleKeywordPicker projectId={projectId} topics={topics} />
       ) : (

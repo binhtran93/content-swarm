@@ -5,15 +5,18 @@ import { useEffect, useRef } from "react";
 
 import { AdminMenuItem } from "@/backoffice/components/layout/admin-menu-item";
 import { getAdminNavigation } from "@/backoffice/config/navigation";
+import { SignOutButton } from "@/features/auth/backoffice/sign-out-button";
 
 export function AdminSidebar({
   open,
   onClose,
   projectId,
+  ownerEmail,
 }: {
   open: boolean;
   onClose: () => void;
   projectId?: string;
+  ownerEmail?: string;
 }) {
   const pathname = usePathname();
   const routeProjectId = pathname.match(/^\/admin\/projects\/([^/]+)/)?.[1];
@@ -73,6 +76,17 @@ export function AdminSidebar({
             })}
           </ul>
         </nav>
+        <div className="border-base-300 shrink-0 border-t px-3 py-3">
+          {ownerEmail ? (
+            <p
+              className="text-base-content/55 truncate px-3 pb-1 text-xs"
+              title={ownerEmail}
+            >
+              {ownerEmail}
+            </p>
+          ) : null}
+          <SignOutButton className="w-full justify-start" />
+        </div>
       </aside>
       {open ? (
         <button

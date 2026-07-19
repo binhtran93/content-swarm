@@ -28,14 +28,15 @@ export default async function ArticlesPage({
     <div className="mx-auto max-w-7xl space-y-6">
       <PageTitle
         title="Articles"
-        description={`Author and publish content for ${data.project.name}.`}
         action={
-          <Link
-            className="btn btn-primary btn-sm"
-            href={`/admin/projects/${projectId}/articles/new`}
-          >
-            New article
-          </Link>
+          data.articles.length ? (
+            <Link
+              className="btn btn-primary btn-sm"
+              href={`/admin/projects/${projectId}/articles/new`}
+            >
+              New article
+            </Link>
+          ) : undefined
         }
       />
       <ArticleList articles={data.articles} projectId={projectId} />

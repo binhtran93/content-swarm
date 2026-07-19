@@ -13,6 +13,8 @@ export async function deleteArticleAction(
   _previousState: DeleteArticleActionState,
   _formData: FormData,
 ): Promise<DeleteArticleActionState> {
+  void _previousState;
+  void _formData;
   try {
     await deleteArticle(projectId, articleId);
   } catch (error) {

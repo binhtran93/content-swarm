@@ -62,7 +62,6 @@ export default async function KeywordsPage({
             Project settings
           </Link>
         }
-        description={``}
         title="Keyword research"
       />
       <div className="tabs tabs-border" role="tablist">

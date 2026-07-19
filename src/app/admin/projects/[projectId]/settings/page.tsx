@@ -44,7 +44,6 @@ export default async function ProjectSettingsPage({
             ← All projects
           </Link>
         }
-        description={`Settings for ${project.projectId}`}
         title={project.name}
       />
 

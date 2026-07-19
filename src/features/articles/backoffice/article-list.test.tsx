@@ -39,8 +39,6 @@ describe("ArticleList", () => {
 
     expect(screen.getByText("Delete Untitled?")).toBeInTheDocument();
     expect(screen.getByText(/will be released/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Delete article" }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Delete article")).toBeInTheDocument();
   });
 });

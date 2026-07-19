@@ -1,23 +1,35 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 export function PageTitle({
   title,
-  description,
   action,
 }: {
   title: string;
-  description?: string;
   action?: ReactNode;
 }) {
-  return (
-    <div className="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        {description ? (
-          <p className="text-base-content/60 mt-1">{description}</p>
-        ) : null}
-      </div>
-      {action}
-    </div>
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    queueMicrotask(() => {
+      if (active) setTarget(document.getElementById("admin-page-title"));
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!target) return null;
+
+  return createPortal(
+    <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+      <h1 className="truncate text-lg font-semibold tracking-tight">{title}</h1>
+      {action ? <div className="shrink-0">{action}</div> : null}
+    </div>,
+    target,
   );
 }

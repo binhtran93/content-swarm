@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { AdminShell } from "@/backoffice/components/layout/admin-shell";
+import { PageTitle } from "@/backoffice/components/ui/page-title";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/admin/projects",
@@ -30,5 +31,25 @@ describe("AdminShell", () => {
   it("contains the real sign-out action", () => {
     render(<AdminShell>Content</AdminShell>);
     expect(screen.getByRole("button", { name: "Sign out" })).toBeVisible();
+  });
+
+  it("places page titles and actions in the shared top bar", async () => {
+    render(
+      <AdminShell>
+        <PageTitle
+          action={<button type="button">Create</button>}
+          title="Articles"
+        />
+        <div>Content</div>
+      </AdminShell>,
+    );
+
+    const topbar = screen.getByRole("banner");
+    expect(topbar).toContainElement(
+      await screen.findByRole("heading", { name: "Articles" }),
+    );
+    expect(topbar).toContainElement(
+      screen.getByRole("button", { name: "Create" }),
+    );
   });
 });

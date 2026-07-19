@@ -86,7 +86,6 @@ export default async function ArticlePage({
     <div className="mx-auto max-w-7xl space-y-6">
       <PageTitle
         title={article.title ?? "Untitled article"}
-        description={`${article.locale} · ${article.status}`}
         action={
           <Link
             className="btn btn-ghost btn-sm"

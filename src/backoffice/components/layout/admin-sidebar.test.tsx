@@ -8,6 +8,13 @@ let pathname = "/admin/projects";
 vi.mock("next/navigation", () => ({
   usePathname: () => pathname,
 }));
+vi.mock("@/features/auth/backoffice/sign-out-button", () => ({
+  SignOutButton: ({ className }: { className?: string }) => (
+    <button className={className} type="button">
+      Sign out
+    </button>
+  ),
+}));
 
 describe("AdminSidebar", () => {
   beforeEach(() => {
@@ -37,5 +44,20 @@ describe("AdminSidebar", () => {
     render(<AdminSidebar onClose={onClose} open />);
     fireEvent.keyDown(window, { key: "Escape" });
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("shows account controls in the sidebar footer", () => {
+    render(
+      <AdminSidebar
+        onClose={vi.fn()}
+        open={false}
+        ownerEmail="owner@example.com"
+      />,
+    );
+
+    expect(screen.getByText("owner@example.com")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Sign out" })).toHaveClass(
+      "justify-start",
+    );
   });
 });

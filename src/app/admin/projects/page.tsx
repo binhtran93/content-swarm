@@ -62,12 +62,11 @@ export default async function ProjectsPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <PageTitle
         action={
-          <Link className="btn btn-primary" href="/admin/projects/new">
+          <Link className="btn btn-primary btn-sm" href="/admin/projects/new">
             <span aria-hidden="true">＋</span>
             New project
           </Link>
         }
-        description="Manage independent editorial and publishing workspaces."
         title="Projects"
       />
 
