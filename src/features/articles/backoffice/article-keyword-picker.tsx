@@ -53,7 +53,7 @@ export function ArticleKeywordPicker({
                 value={item.primary.keywordId}
               />
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium">
+                <span className="block truncate text-sm font-normal">
                   {item.primary.keyword}
                 </span>
               </span>
