@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+import {
+  defaultProjectAcquisition,
+  projectAcquisitionSchema,
+} from "@/features/projects/model/project-acquisition";
+
 const projectId = z
   .string()
   .trim()
@@ -34,9 +39,11 @@ export const projectInputSchemas = {
     projectId,
     ...fields,
     topics: topics.default([]),
+    acquisition: projectAcquisitionSchema.default(defaultProjectAcquisition),
   }),
   update: z.object({
     ...fields,
     topics,
+    acquisition: projectAcquisitionSchema,
   }),
 };

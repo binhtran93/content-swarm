@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireSupportedLocale } from "@/config/supported-locales";
 import { getPublicRouteMode } from "@/public-site/config/public-url";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
+import { SubiqAcquisitionBoundary } from "@/public-site/sites/subiq/acquisition-boundary";
 import { SubiqLandingPage } from "@/public-site/sites/subiq/landing-page";
 
 type RouteProps = { params: Promise<{ locale: string }> };
@@ -23,5 +24,9 @@ export async function generateMetadata({ params }: RouteProps) {
 }
 
 export default async function RootLocalizedSubiqPage({ params }: RouteProps) {
-  return <SubiqLandingPage locale={resolveRootLocale((await params).locale)} />;
+  return (
+    <SubiqAcquisitionBoundary>
+      <SubiqLandingPage locale={resolveRootLocale((await params).locale)} />
+    </SubiqAcquisitionBoundary>
+  );
 }

@@ -36,6 +36,7 @@ export async function createProject(
         name: validated.name,
         description: validated.description,
         topics: validated.topics,
+        acquisition: validated.acquisition,
         status: "active",
         createdAt: now,
         updatedAt: now,

@@ -7,7 +7,7 @@ export function SubiqPrivacyPage() {
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Privacy Policy
         </h1>
-        <p className="mb-8 text-sm text-zinc-600">Effective Date: 13.07.2026</p>
+        <p className="mb-8 text-sm text-zinc-600">Effective Date: 19.07.2026</p>
 
         <p className="mb-6 leading-8 text-zinc-700">
           At SubIQ (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;),
@@ -107,6 +107,10 @@ export function SubiqPrivacyPage() {
               Support correspondence and any information you choose to include
               when you contact us.
             </li>
+            <li>
+              Your email address, selected site language, consent time, and the
+              signup location when you choose to join the SubIQ launch waitlist.
+            </li>
           </ul>
         </section>
 
@@ -118,7 +122,7 @@ export function SubiqPrivacyPage() {
             <li>
               Directly from you when you add or edit a subscription, change
               settings, select a company, use a cancellation or refund tool,
-              enable reminders, or contact support.
+              enable reminders, join the launch waitlist, or contact support.
             </li>
             <li>
               Automatically through Firebase and similar technologies when the
@@ -158,6 +162,10 @@ export function SubiqPrivacyPage() {
               reliability.
             </li>
             <li>Respond to support, privacy, and data deletion requests.</li>
+            <li>
+              Record your waitlist request and email you about SubIQ&apos;s
+              availability or launch.
+            </li>
           </ul>
           <p className="mt-4 leading-8 text-zinc-700">
             We do not sell your personal information, and SubIQ does not use
@@ -291,6 +299,11 @@ export function SubiqPrivacyPage() {
               respond to requests, protect the service, comply with law, or
               investigate misuse.
             </li>
+            <li>
+              Cloudflare Turnstile for detecting and preventing automated
+              waitlist submissions. Cloudflare may process standard network,
+              browser, and challenge information for this purpose.
+            </li>
           </ul>
           <p className="mt-4 leading-8 text-zinc-700">
             These providers may process information under their own privacy
@@ -311,6 +324,10 @@ export function SubiqPrivacyPage() {
             records may be retained for a limited period needed for reporting,
             troubleshooting, abuse prevention, legal compliance, or service
             security.
+          </p>
+          <p className="mb-4 leading-8 text-zinc-700">
+            We retain a waitlist email until SubIQ launches, you ask us to
+            remove it, or it is no longer needed for launch communication.
           </p>
           <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
             <li>
@@ -357,6 +374,10 @@ export function SubiqPrivacyPage() {
             <li>
               Contact support@anmisoft.com to ask about access, correction,
               deletion, or another privacy request.
+            </li>
+            <li>
+              Ask support@anmisoft.com to remove your email from the launch
+              waitlist or stop launch updates.
             </li>
           </ul>
         </section>

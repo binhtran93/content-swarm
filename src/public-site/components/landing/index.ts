@@ -8,6 +8,5 @@ export {
   PhoneFrame,
   PhoneScreenshot,
   SectionHeading,
-  StoreBadges,
 } from "./landing";
 export type { FeatureRow, LandingFaq } from "./landing";

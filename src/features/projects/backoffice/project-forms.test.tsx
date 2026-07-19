@@ -20,6 +20,11 @@ const project = {
   name: "SubIQ",
   description: "Private product context",
   topics: ["SaaS"],
+  acquisition: {
+    mode: "waitlist" as const,
+    appStoreUrl: null,
+    googlePlayUrl: null,
+  },
   status: "active" as const,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
@@ -41,6 +46,9 @@ describe("Project backoffice forms", () => {
     expect(screen.getByDisplayValue("subiq")).toBeDisabled();
     expect(screen.getByDisplayValue("SubIQ")).toBeInTheDocument();
     expect(screen.getByDisplayValue("SaaS")).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Waitlist" })).toBeChecked();
+    expect(screen.getByLabelText("App Store URL")).toHaveValue("");
+    expect(screen.getByLabelText("Google Play URL")).toHaveValue("");
   });
 
   it("requires an explicit archive confirmation with impact copy", () => {

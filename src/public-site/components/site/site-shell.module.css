@@ -126,6 +126,7 @@
   border: 1px solid var(--site-accent);
   border-radius: 8px;
   color: #fff !important;
+  cursor: pointer;
   display: inline-flex;
   font-size: 14px;
   font-weight: 600;

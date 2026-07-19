@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { getPublicRouteMode } from "@/public-site/config/public-url";
+import { SubiqAcquisitionBoundary } from "@/public-site/sites/subiq/acquisition-boundary";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
 import { SubiqLandingPage } from "@/public-site/sites/subiq/landing-page";
 
@@ -11,7 +12,11 @@ export const metadata =
 
 export default function HomePage() {
   if (getPublicRouteMode() === "root") {
-    return <SubiqLandingPage locale="en-US" />;
+    return (
+      <SubiqAcquisitionBoundary>
+        <SubiqLandingPage locale="en-US" />
+      </SubiqAcquisitionBoundary>
+    );
   }
 
   return (

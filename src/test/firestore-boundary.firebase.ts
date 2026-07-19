@@ -35,6 +35,10 @@ describe("Firestore owner boundary", () => {
         .firestore()
         .doc("projects/owner-project/integrationTests/foundation")
         .set({ ok: true });
+      await context
+        .firestore()
+        .doc("projects/owner-project/waitlistSignups/example")
+        .set({ email: "person@example.test" });
     });
   });
 
@@ -64,6 +68,27 @@ describe("Firestore owner boundary", () => {
         .firestore()
         .doc("projects/owner-project")
         .get(),
+    );
+    await assertFails(
+      environment
+        .unauthenticatedContext()
+        .firestore()
+        .doc("projects/owner-project/waitlistSignups/example")
+        .get(),
+    );
+  });
+
+  it("allows only the owner to read server-created waitlist records", async () => {
+    const owner = environment
+      .authenticatedContext(DEPLOYED_OWNER_UID)
+      .firestore();
+    await assertSucceeds(
+      owner.doc("projects/owner-project/waitlistSignups/example").get(),
+    );
+    await assertFails(
+      owner
+        .doc("projects/owner-project/waitlistSignups/browser-write")
+        .set({ email: "blocked@example.test" }),
     );
     await assertFails(
       environment

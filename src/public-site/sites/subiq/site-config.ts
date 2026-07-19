@@ -1,9 +1,9 @@
 import { defaultLocale, supportedLocales } from "@/config/supported-locales";
-import type { PublicSiteConfig } from "@/public-site/config/site-config";
+import { definePublicSiteConfig } from "@/public-site/config/site-config";
 
 const currentYear = new Date().getFullYear();
 
-export const subiqSiteConfig: PublicSiteConfig = {
+export const subiqSiteConfig = definePublicSiteConfig({
   id: "subiq",
   internalBasePath: "/subiq",
   canonicalOrigin: "https://getsubiq.com",
@@ -39,16 +39,18 @@ export const subiqSiteConfig: PublicSiteConfig = {
   },
   storeBadges: [
     {
+      platform: "appStore",
       label: "Download on the App Store",
       imageSrc: "/subiq/app-store.svg",
       width: 134,
       height: 40,
     },
     {
+      platform: "googlePlay",
       label: "Get it on Google Play",
       imageSrc: "/subiq/google-play.svg",
       width: 180,
       height: 54,
     },
   ],
-};
+});

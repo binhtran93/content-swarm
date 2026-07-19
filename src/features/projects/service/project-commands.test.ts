@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { defaultProjectAcquisition } from "@/features/projects/model/project-acquisition";
 import { archiveProject } from "@/features/projects/service/archive-project.server";
 import { createProject } from "@/features/projects/service/create-project.server";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
@@ -102,6 +103,7 @@ describe("Project commands and queries", () => {
       ownerId: "owner-a",
       schemaVersion: 1,
       status: "active",
+      acquisition: defaultProjectAcquisition,
     });
     expect(mock.requireOwner).toHaveBeenCalledOnce();
   });
@@ -123,6 +125,7 @@ describe("Project commands and queries", () => {
         name: "Stolen",
         description: baseInput.description,
         topics: [],
+        acquisition: defaultProjectAcquisition,
       }),
     ).rejects.toThrow("unavailable");
     await expect(archiveProject("subiq")).rejects.toThrow("unavailable");
@@ -134,12 +137,14 @@ describe("Project commands and queries", () => {
       name: "SubIQ Pro",
       description: "Updated private product context.",
       topics: ["SaaS", "Retention"],
+      acquisition: defaultProjectAcquisition,
     });
 
     expect(updated).toMatchObject({
       projectId: "subiq",
       name: "SubIQ Pro",
       topics: ["SaaS", "Retention"],
+      acquisition: defaultProjectAcquisition,
     });
     expect(mock.documents.get("projects/subiq")?.ownerId).toBe("owner-a");
   });
@@ -173,6 +178,7 @@ describe("Project commands and queries", () => {
         name: "No change",
         description: baseInput.description,
         topics: [],
+        acquisition: defaultProjectAcquisition,
       }),
     ).rejects.toThrow("cannot be changed");
   });

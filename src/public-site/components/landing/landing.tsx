@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 
+import type { SupportedLocaleCode } from "@/config/supported-locales";
+import {
+  AcquisitionActions,
+  AcquisitionSectionCopy,
+} from "@/public-site/components/acquisition";
 import type { SiteStoreBadge } from "@/public-site/config/site-config";
 
 import styles from "./landing.module.css";
@@ -56,40 +61,6 @@ export function LandingHero({
         </div>
       </div>
     </section>
-  );
-}
-
-export function StoreBadges({
-  badges,
-  className,
-  ariaLabel,
-}: {
-  badges: readonly SiteStoreBadge[];
-  className?: string;
-  ariaLabel?: string;
-}) {
-  return (
-    <div
-      className={classes(styles.storeBadges, className)}
-      aria-label={ariaLabel}
-    >
-      {badges.map((badge) => (
-        <a
-          href={badge.href ?? ""}
-          className={styles.storeLink}
-          aria-label={badge.label}
-          key={badge.label}
-        >
-          <Image
-            src={badge.imageSrc}
-            alt=""
-            width={badge.width}
-            height={badge.height}
-            className={styles.storeBadge}
-          />
-        </a>
-      ))}
-    </div>
   );
 }
 
@@ -275,12 +246,20 @@ export function FaqSection({
 export function DownloadCta({
   title,
   description,
+  waitlistTitle,
+  waitlistDescription,
   badges,
+  locale,
+  privacyHref,
   id = "download",
 }: {
   title: ReactNode;
   description: string;
+  waitlistTitle: ReactNode;
+  waitlistDescription: string;
   badges: readonly SiteStoreBadge[];
+  locale: SupportedLocaleCode;
+  privacyHref: string;
   id?: string;
 }) {
   return (
@@ -288,13 +267,20 @@ export function DownloadCta({
       <ContentShell>
         <div className={styles.downloadPanel}>
           <div className={styles.downloadCopy}>
-            <h2>{title}</h2>
-            <p>{description}</p>
+            <AcquisitionSectionCopy
+              storesDescription={description}
+              storesTitle={title}
+              waitlistDescription={waitlistDescription}
+              waitlistTitle={waitlistTitle}
+            />
           </div>
-          <StoreBadges
+          <AcquisitionActions
             badges={badges}
             className={styles.downloadActions}
             ariaLabel="App availability"
+            locale={locale}
+            privacyHref={privacyHref}
+            source="final"
           />
         </div>
       </ContentShell>

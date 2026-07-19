@@ -6,6 +6,7 @@ import {
   findSupportedLocale,
   type SupportedLocaleCode,
 } from "@/config/supported-locales";
+import { AcquisitionHeaderCta } from "@/public-site/components/acquisition";
 import type { PublicSiteConfig } from "@/public-site/config/site-config";
 import { LanguageSelector } from "./language-selector";
 import { SiteRouteTheme } from "./site-route-theme";
@@ -105,17 +106,23 @@ export function SiteHeader({
           />
         </Suspense>
 
-        <Link
+        <AcquisitionHeaderCta
+          className={styles.headerCta}
           href={withLocaleRoutePrefix(
             config,
             routePrefix,
             locale,
             config.headerCta.href,
           )}
-          className={styles.headerCta}
-        >
-          {config.headerCta.label}
-        </Link>
+          locale={locale}
+          privacyHref={withLocaleRoutePrefix(
+            config,
+            routePrefix,
+            locale,
+            "/privacy",
+          )}
+          storeLabel={config.headerCta.label}
+        />
       </div>
       {accessory}
     </header>

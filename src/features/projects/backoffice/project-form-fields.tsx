@@ -75,20 +75,88 @@ export function ProjectFormFields({
       </fieldset>
 
       {project ? (
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">Topics</legend>
-          <textarea
-            aria-label="Topics"
-            aria-describedby="topics-help"
-            className="textarea min-h-28 w-full"
-            defaultValue={project.topics.join("\n")}
-            name="topics"
-            placeholder={"SEO\nContent marketing"}
-          />
-          <p className="label" id="topics-help">
-            Up to 100 unique topics, separated by commas or new lines.
-          </p>
-        </fieldset>
+        <>
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">App availability</legend>
+            <div className="join w-fit">
+              <label className="btn join-item has-checked:btn-primary">
+                <input
+                  className="sr-only"
+                  defaultChecked={project.acquisition.mode === "waitlist"}
+                  name="acquisitionMode"
+                  type="radio"
+                  value="waitlist"
+                />
+                Waitlist
+              </label>
+              <label className="btn join-item has-checked:btn-primary">
+                <input
+                  className="sr-only"
+                  defaultChecked={project.acquisition.mode === "stores"}
+                  name="acquisitionMode"
+                  type="radio"
+                  value="stores"
+                />
+                App stores
+              </label>
+            </div>
+            <p className="label">
+              Waitlist mode replaces every download action with an email signup.
+              App stores mode requires at least one store URL.
+            </p>
+          </fieldset>
+
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">
+              App Store URL
+              <span className="font-normal opacity-60">(optional)</span>
+            </legend>
+            <input
+              aria-label="App Store URL"
+              autoCapitalize="none"
+              autoComplete="url"
+              className="input w-full"
+              defaultValue={project.acquisition.appStoreUrl ?? ""}
+              inputMode="url"
+              name="appStoreUrl"
+              placeholder="https://apps.apple.com/app/id…"
+              type="url"
+            />
+          </fieldset>
+
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">
+              Google Play URL
+              <span className="font-normal opacity-60">(optional)</span>
+            </legend>
+            <input
+              aria-label="Google Play URL"
+              autoCapitalize="none"
+              autoComplete="url"
+              className="input w-full"
+              defaultValue={project.acquisition.googlePlayUrl ?? ""}
+              inputMode="url"
+              name="googlePlayUrl"
+              placeholder="https://play.google.com/store/apps/details?id=…"
+              type="url"
+            />
+          </fieldset>
+
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Topics</legend>
+            <textarea
+              aria-label="Topics"
+              aria-describedby="topics-help"
+              className="textarea min-h-28 w-full"
+              defaultValue={project.topics.join("\n")}
+              name="topics"
+              placeholder={"SEO\nContent marketing"}
+            />
+            <p className="label" id="topics-help">
+              Up to 100 unique topics, separated by commas or new lines.
+            </p>
+          </fieldset>
+        </>
       ) : null}
     </>
   );

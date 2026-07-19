@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import type { SupportedLocaleCode } from "@/config/supported-locales";
 import type { Article } from "@/features/articles/model/article";
 import type { Translation } from "@/features/articles/model/translation";
 import articleContentStyles from "@/features/articles/presentation/article-content.module.css";
+import { AcquisitionActions } from "@/public-site/components/acquisition";
 import type { ArticleHeading } from "@/public-site/components/mdx/article-mdx-outline";
 import { renderArticleMdx } from "@/public-site/components/mdx/render-article-mdx.server";
 import type { PublicBlogConfig } from "@/public-site/config/blog-config";
@@ -143,19 +143,18 @@ export async function BlogArticle({
                     {config.blog.installCta.description}
                   </p>
                 </div>
-                <div className={styles.installCtaActions}>
-                  {config.storeBadges.map((badge) => (
-                    <span className={styles.installCtaLink} key={badge.label}>
-                      <Image
-                        src={badge.imageSrc}
-                        alt=""
-                        width={badge.width}
-                        height={badge.height}
-                        className={styles.installCtaBadge}
-                      />
-                    </span>
-                  ))}
-                </div>
+                <AcquisitionActions
+                  badges={config.storeBadges}
+                  className={styles.installCtaActions}
+                  locale={locale}
+                  privacyHref={routeHref(
+                    config,
+                    routePrefix,
+                    locale,
+                    "/privacy",
+                  )}
+                  source="blog"
+                />
               </section>
               <div className={styles.articleEnd}>
                 <p>

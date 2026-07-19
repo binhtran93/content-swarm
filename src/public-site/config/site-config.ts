@@ -6,11 +6,22 @@ export type SiteNavigationItem = {
 };
 
 export type SiteStoreBadge = {
+  platform: "appStore" | "googlePlay";
   label: string;
   imageSrc: string;
   width: number;
   height: number;
-  href?: string;
+};
+
+export type SiteWaitlistPresentation = {
+  ctaLabel: string;
+  title: string;
+  description: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  submitLabel: string;
+  successTitle: string;
+  successDescription: string;
 };
 
 export type PublicSiteConfig = {
@@ -32,6 +43,7 @@ export type PublicSiteConfig = {
   };
   navigation: readonly SiteNavigationItem[];
   headerCta: SiteNavigationItem;
+  waitlist: SiteWaitlistPresentation;
   footer: {
     links: readonly SiteNavigationItem[];
     copyright: string;
@@ -39,3 +51,34 @@ export type PublicSiteConfig = {
   };
   storeBadges: readonly SiteStoreBadge[];
 };
+
+export type PublicSiteConfigInput = Omit<PublicSiteConfig, "waitlist"> & {
+  waitlist?: Partial<SiteWaitlistPresentation>;
+};
+
+export function createDefaultWaitlistPresentation(
+  brandName: string,
+): SiteWaitlistPresentation {
+  return {
+    ctaLabel: "Join waitlist",
+    title: `Join the ${brandName} waitlist`,
+    description: `Get an email when ${brandName} is available`,
+    emailLabel: "Email address",
+    emailPlaceholder: "you@example.com",
+    submitLabel: "Join waitlist",
+    successTitle: "You’re on the list",
+    successDescription: `We’ll let you know when ${brandName} launches`,
+  };
+}
+
+export function definePublicSiteConfig(
+  input: PublicSiteConfigInput,
+): PublicSiteConfig {
+  return {
+    ...input,
+    waitlist: {
+      ...createDefaultWaitlistPresentation(input.brand.name),
+      ...input.waitlist,
+    },
+  };
+}

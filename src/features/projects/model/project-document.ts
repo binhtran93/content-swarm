@@ -1,6 +1,11 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { z } from "zod";
 
+import {
+  defaultProjectAcquisition,
+  projectAcquisitionSchema,
+} from "@/features/projects/model/project-acquisition";
+
 const topics = z
   .array(z.string().min(1).max(80))
   .max(100)
@@ -16,6 +21,7 @@ export const projectDocumentSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(5_000),
   topics,
+  acquisition: projectAcquisitionSchema.default(defaultProjectAcquisition),
   status: z.enum(["active", "archived"]),
   createdAt: z.instanceof(Timestamp),
   updatedAt: z.instanceof(Timestamp),

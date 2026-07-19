@@ -10,10 +10,13 @@ import {
   PhoneFrame,
   PhoneScreenshot,
   SectionHeading,
-  StoreBadges,
 } from "@/public-site/components/landing";
+import { AcquisitionActions } from "@/public-site/components/acquisition";
 import { SiteShell } from "@/public-site/components/site";
-import { getProjectRoutePrefix } from "@/public-site/config/public-url";
+import {
+  getProjectRoutePrefix,
+  withPublicRoute,
+} from "@/public-site/config/public-url";
 import { getPublicTranslator } from "@/public-site/i18n/get-public-translator";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
 import type { SupportedLocaleCode } from "@/config/supported-locales";
@@ -437,6 +440,7 @@ function StorePreview({
 
 export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
   const routePrefix = getProjectRoutePrefix(subiqSiteConfig);
+  const privacyHref = withPublicRoute(subiqSiteConfig, locale, "/privacy");
   const t = getPublicTranslator();
 
   return (
@@ -456,7 +460,14 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
             </>
           }
           description="Track recurring costs, stay ahead of renewals and trials, and find clear guidance when you are ready to cancel"
-          actions={<StoreBadges badges={subiqSiteConfig.storeBadges} />}
+          actions={
+            <AcquisitionActions
+              badges={subiqSiteConfig.storeBadges}
+              locale={locale}
+              privacyHref={privacyHref}
+              source="hero"
+            />
+          }
           visual={
             <>
               <span
@@ -630,7 +641,16 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
             </>
           }
           description="Available now on iOS and Android"
+          waitlistTitle={
+            <>
+              Be first to try{" "}
+              <span className={styles.downloadAccent}>SubIQ</span>
+            </>
+          }
+          waitlistDescription="Join the waitlist and we’ll email you when SubIQ is available"
           badges={subiqSiteConfig.storeBadges}
+          locale={locale}
+          privacyHref={privacyHref}
         />
       </main>
     </SiteShell>
