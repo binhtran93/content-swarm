@@ -927,14 +927,6 @@ export function ArticleWorkspace({
   const base = `/admin/projects/${projectId}/articles/${article.articleId}`;
   return (
     <div className="flex h-full min-h-0 flex-col gap-5">
-      {article.status === "published" ? (
-        <div className="alert alert-warning">
-          <span>
-            This article is published. Every saved edit becomes public
-            immediately.
-          </span>
-        </div>
-      ) : null}
       <div className="tabs tabs-border shrink-0 overflow-x-auto">
         {steps.map((item) =>
           unlocked[item.id] ? (
