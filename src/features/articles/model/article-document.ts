@@ -9,7 +9,7 @@ const storedArticleDocumentSchema = z.object({
   keywordId: z.string().min(1),
   title: z.string().trim().min(1).max(200).nullable(),
   slug: z.string().trim().min(1).max(160).nullable(),
-  topic: z.string().trim().min(1).max(300).nullable(),
+  topics: z.array(z.string().trim().min(1).max(80)).max(20).optional(),
   excerpt: z.string().trim().min(1).max(500).nullable(),
   plan: z.string().trim().min(1).max(40_000).nullable().optional(),
   planReferences: articleReferencesSchema.optional(),
@@ -24,14 +24,16 @@ const storedArticleDocumentSchema = z.object({
   // Read-only compatibility for articles created before Article plan existed.
   brief: z.string().trim().min(1).max(20_000).nullable().optional(),
   outline: z.string().trim().min(1).max(30_000).nullable().optional(),
+  topic: z.string().trim().min(1).max(300).nullable().optional(),
 });
 
 export const articleDocumentSchema = storedArticleDocumentSchema.transform(
-  ({ brief, outline, ...document }) => {
+  ({ brief, outline, topic, ...document }) => {
     const legacyPlan = [brief, outline].filter(Boolean).join("\n\n---\n\n");
 
     return {
       ...document,
+      topics: document.topics ?? (topic ? [topic] : []),
       plan: (document.plan ?? legacyPlan) || null,
       planReferences: document.planReferences ?? [],
       contentReferences: document.contentReferences ?? [],

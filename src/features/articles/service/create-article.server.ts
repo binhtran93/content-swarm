@@ -89,7 +89,7 @@ export async function createArticle(
       keywordId,
       title: titleFromKeyword(keyword.keyword),
       slug: null,
-      topic: null,
+      topics: [],
       excerpt: null,
       plan: null,
       planReferences: [],

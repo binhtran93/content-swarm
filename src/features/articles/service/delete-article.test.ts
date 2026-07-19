@@ -131,7 +131,7 @@ function seed() {
     keywordId: "primary",
     title: "Cancel a membership",
     slug: "cancel-a-membership",
-    topic: "Memberships",
+    topics: ["Memberships"],
     excerpt: null,
     plan: null,
     planReferences: [],

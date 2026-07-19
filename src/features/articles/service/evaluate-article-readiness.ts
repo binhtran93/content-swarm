@@ -15,7 +15,6 @@ export function evaluateArticleReadiness(
   const fields = [
     [article.title, "Title"],
     [article.slug, "Slug"],
-    [article.topic, "Topic"],
     [article.excerpt, "Excerpt"],
     [article.content, "Content"],
     [article.seoTitle, "SEO title"],
@@ -24,6 +23,7 @@ export function evaluateArticleReadiness(
   fields.forEach(([value, label]) => {
     if (!value?.trim()) blockers.push(`${label} is required.`);
   });
+  if (!article.topics.length) blockers.push("At least one topic is required.");
   if (article.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(article.slug))
     blockers.push("Slug is invalid.");
   if (article.content) {

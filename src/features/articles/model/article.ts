@@ -8,7 +8,7 @@ export type Article = {
   keywordId: string;
   title: string | null;
   slug: string | null;
-  topic: string | null;
+  topics: string[];
   excerpt: string | null;
   plan: string | null;
   planReferences: ArticleReference[];

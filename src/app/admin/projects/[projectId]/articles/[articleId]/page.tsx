@@ -16,7 +16,7 @@ function firstIncomplete(
   if (!article.content || !article.excerpt) return "content";
   if (
     !article.slug ||
-    !article.topic ||
+    !article.topics.length ||
     !article.seoTitle ||
     !article.seoDescription
   )
@@ -94,6 +94,7 @@ export default async function ArticlePage({
       <ArticleWorkspace
         article={article}
         canonicalBaseUrl={project.canonicalBaseUrl}
+        projectTopics={project.topics}
         projectId={projectId}
         publishPreview={preview}
         step={step}

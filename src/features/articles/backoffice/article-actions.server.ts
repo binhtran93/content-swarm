@@ -238,7 +238,11 @@ export async function saveSeoAction(
   try {
     await saveArticleSeo(projectId, articleId, {
       slug: String(formData.get("slug") ?? ""),
-      topic: String(formData.get("topic") ?? ""),
+      topics: formData
+        .getAll("topics")
+        .map(String)
+        .map((topic) => topic.trim())
+        .filter(Boolean),
       seoTitle: String(formData.get("seoTitle") ?? ""),
       seoDescription: String(formData.get("seoDescription") ?? ""),
     });

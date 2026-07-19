@@ -25,6 +25,15 @@ function document(overrides: Record<string, unknown> = {}) {
 }
 
 describe("articleDocumentSchema", () => {
+  it("reads a legacy topic as the first article topic", () => {
+    const article = articleDocumentSchema.parse(
+      document({ topic: "Memberships" }),
+    );
+
+    expect(article.topics).toEqual(["Memberships"]);
+    expect(article).not.toHaveProperty("topic");
+  });
+
   it("reads legacy brief and outline data as one article plan", () => {
     const article = articleDocumentSchema.parse(
       document({

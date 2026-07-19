@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Timestamp } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 import { requireOwner } from "@/features/auth/server/require-owner.server";
 import { articleDocumentSchema } from "@/features/articles/model/article-document";
@@ -65,6 +65,7 @@ export async function saveArticleSeo(
     });
     transaction.update(articleReference, {
       ...value,
+      topic: FieldValue.delete(),
       updatedAt: Timestamp.now(),
     });
   });

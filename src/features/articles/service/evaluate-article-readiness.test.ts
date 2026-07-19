@@ -9,7 +9,7 @@ const article: Article = {
   keywordId: "keyword-1",
   title: "A useful title",
   slug: "a-useful-title",
-  topic: "Useful topic",
+  topics: ["Useful topic"],
   excerpt: "A useful summary.",
   plan: "## Article plan",
   planReferences: [],

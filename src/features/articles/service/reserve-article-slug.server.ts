@@ -18,7 +18,7 @@ export async function reserveArticleSlug(
     );
   await saveArticleSeo(projectId, articleId, {
     slug,
-    topic: article.topic ?? "",
+    topics: article.topics,
     seoTitle: article.seoTitle ?? "",
     seoDescription: article.seoDescription ?? "",
   });

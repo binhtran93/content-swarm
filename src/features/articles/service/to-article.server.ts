@@ -15,7 +15,7 @@ export function toArticle(
     keywordId: document.keywordId,
     title: document.title,
     slug: document.slug,
-    topic: document.topic,
+    topics: document.topics,
     excerpt: document.excerpt,
     plan: document.plan,
     planReferences: document.planReferences,

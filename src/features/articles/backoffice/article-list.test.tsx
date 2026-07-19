@@ -19,7 +19,7 @@ describe("ArticleList", () => {
             locale: "en-US",
             title: null,
             slug: null,
-            topic: null,
+            topics: [],
             excerpt: null,
             plan: null,
             planReferences: [],

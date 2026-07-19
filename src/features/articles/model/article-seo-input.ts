@@ -12,7 +12,19 @@ const slug = z
 
 export const articleSeoInputSchema = z.object({
   slug,
-  topic: z.string().trim().min(1, "Enter a topic.").max(300),
+  topics: z
+    .array(z.string().trim().min(1).max(80))
+    .min(1, "Choose or enter at least one topic.")
+    .max(20, "Use no more than 20 topics.")
+    .superRefine((values, context) => {
+      const normalized = values.map((value) => value.toLocaleLowerCase());
+
+      if (new Set(normalized).size !== normalized.length)
+        context.addIssue({
+          code: "custom",
+          message: "Topics must be unique, ignoring capitalization.",
+        });
+    }),
   seoTitle: z.string().trim().min(1, "Enter an SEO title.").max(200),
   seoDescription: z
     .string()

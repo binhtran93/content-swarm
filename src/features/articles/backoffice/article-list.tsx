@@ -75,7 +75,7 @@ export function ArticleList({
                   {article.title ?? "Untitled"}
                 </Link>
               </td>
-              <td>{article.topic ?? "—"}</td>
+              <td>{article.topics.join(", ") || "—"}</td>
               <td>{article.locale}</td>
               <td>
                 <span

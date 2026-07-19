@@ -23,6 +23,7 @@ import {
   saveTranslationAction,
 } from "@/features/articles/backoffice/article-actions.server";
 import { ContentImprovementDialog } from "@/features/articles/backoffice/content-improvement-dialog";
+import { ArticleTopicPicker } from "@/features/articles/backoffice/article-topic-picker";
 import { MarkdownEditor } from "@/features/articles/backoffice/markdown-editor";
 import type { ArticleContentChange } from "@/features/articles/model/article-content-change";
 import type { ArticleReference } from "@/features/articles/model/article-reference";
@@ -477,9 +478,11 @@ function ContentEditor({ article }: { article: Article }) {
 function SeoEditor({
   article,
   canonicalBaseUrl,
+  projectTopics,
 }: {
   article: Article;
   canonicalBaseUrl: string | null;
+  projectTopics: string[];
 }) {
   const [slug, setSlug] = useState(
     article.slug ?? slugifyArticleTitle(article.title ?? ""),
@@ -521,16 +524,10 @@ function SeoEditor({
                 : "Set the project's canonical base URL to preview the final URL."}
             </p>
           </div>
-          <label className="fieldset min-w-0">
-            <span className="fieldset-legend">Topic</span>
-            <input
-              className="input w-full"
-              defaultValue={article.topic ?? ""}
-              maxLength={300}
-              name="topic"
-              required
-            />
-          </label>
+          <ArticleTopicPicker
+            initialTopics={article.topics}
+            options={projectTopics}
+          />
         </div>
         <label className="fieldset">
           <span className="fieldset-legend">
@@ -734,6 +731,7 @@ export function ArticleWorkspace({
   projectId,
   step,
   canonicalBaseUrl,
+  projectTopics,
   translations,
   publishPreview,
 }: {
@@ -741,6 +739,7 @@ export function ArticleWorkspace({
   projectId: string;
   step: Step;
   canonicalBaseUrl: string | null;
+  projectTopics: string[];
   translations: Translation[];
   publishPreview?: React.ReactNode;
 }) {
@@ -787,7 +786,11 @@ export function ArticleWorkspace({
           ) : step === "content" ? (
             <ContentEditor article={article} />
           ) : step === "seo" ? (
-            <SeoEditor article={article} canonicalBaseUrl={canonicalBaseUrl} />
+            <SeoEditor
+              article={article}
+              canonicalBaseUrl={canonicalBaseUrl}
+              projectTopics={projectTopics}
+            />
           ) : step === "translations" ? (
             <TranslationEditor article={article} translations={translations} />
           ) : (
