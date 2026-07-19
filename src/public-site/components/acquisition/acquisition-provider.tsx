@@ -24,6 +24,18 @@ import type {
 
 import styles from "./acquisition.module.css";
 
+export type AcquisitionPresentation = {
+  waitlist: PublicSiteConfig["waitlist"];
+  availability: string;
+  submitting: string;
+  done: string;
+  close: string;
+  notConfigured: string;
+  genericError: string;
+  consent: string;
+  privacyPolicy: string;
+};
+
 type WaitlistRequest = {
   key: number;
   source: "header" | "hero" | "final" | "blog";
@@ -56,10 +68,13 @@ declare global {
 type AcquisitionContextValue = {
   acquisition: ProjectAcquisition;
   brandName: string;
+  defaultLocale: SupportedLocaleCode;
   projectId: string;
   scopeClassName: string;
   siteKey: string;
-  waitlist: PublicSiteConfig["waitlist"];
+  presentations: Readonly<
+    Partial<Record<SupportedLocaleCode, AcquisitionPresentation>>
+  >;
   openWaitlist: (request: Omit<WaitlistRequest, "key">) => void;
 };
 
@@ -71,6 +86,21 @@ function useAcquisition() {
     throw new Error("Acquisition components require AcquisitionProvider.");
   }
   return value;
+}
+
+function getAcquisitionPresentation(
+  context: AcquisitionContextValue,
+  locale: SupportedLocaleCode,
+) {
+  const presentation =
+    context.presentations[locale] ??
+    context.presentations[context.defaultLocale];
+  if (!presentation) {
+    throw new Error(
+      `AcquisitionProvider requires a presentation for its default locale (${context.defaultLocale}).`,
+    );
+  }
+  return presentation;
 }
 
 function WaitlistForm({
@@ -86,6 +116,7 @@ function WaitlistForm({
   request: WaitlistRequest;
   state: JoinWaitlistResult | null;
 }) {
+  const copy = getAcquisitionPresentation(context, request.locale);
   const [scriptReady, setScriptReady] = useState(false);
   const turnstileContainer = useRef<HTMLDivElement>(null);
 
@@ -111,14 +142,14 @@ function WaitlistForm({
       <input name="locale" type="hidden" value={request.locale} />
       <input name="source" type="hidden" value={request.source} />
       <label>
-        <span>{context.waitlist.emailLabel}</span>
+        <span>{copy.waitlist.emailLabel}</span>
         <input
           autoComplete="email"
           autoFocus
           inputMode="email"
           maxLength={254}
           name="email"
-          placeholder={context.waitlist.emailPlaceholder}
+          placeholder={copy.waitlist.emailPlaceholder}
           required
           type="email"
         />
@@ -139,12 +170,12 @@ function WaitlistForm({
         </>
       ) : (
         <p className={styles.error} role="alert">
-          The waitlist is not configured yet.
+          {copy.notConfigured}
         </p>
       )}
       {state && !state.ok ? (
         <p className={styles.error} role="alert">
-          {state.error}
+          {copy.genericError}
         </p>
       ) : null}
       <button
@@ -152,11 +183,11 @@ function WaitlistForm({
         disabled={pending || !context.siteKey}
         type="submit"
       >
-        {pending ? "Joining…" : context.waitlist.submitLabel}
+        {pending ? copy.submitting : copy.waitlist.submitLabel}
       </button>
       <p className={styles.consent}>
-        By joining, you agree to receive launch emails from {context.brandName}.{" "}
-        <Link href={request.privacyHref}>Privacy Policy</Link>
+        {copy.consent}{" "}
+        <Link href={request.privacyHref}>{copy.privacyPolicy}</Link>
       </p>
     </form>
   );
@@ -177,6 +208,7 @@ function WaitlistDialog({
     FormData
   >(joinWaitlistAction, null);
   const succeeded = state?.ok === true;
+  const copy = getAcquisitionPresentation(context, request.locale);
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -197,7 +229,7 @@ function WaitlistDialog({
       <div className={styles.dialogPanel}>
         {!succeeded ? (
           <button
-            aria-label="Close waitlist"
+            aria-label={copy.close}
             className={styles.close}
             onClick={() => dialog.current?.close()}
             type="button"
@@ -208,21 +240,21 @@ function WaitlistDialog({
         {succeeded ? (
           <div className={styles.success} role="status">
             <span aria-hidden="true">✓</span>
-            <h2 id="waitlist-success-title">{context.waitlist.successTitle}</h2>
-            <p>{context.waitlist.successDescription}</p>
+            <h2 id="waitlist-success-title">{copy.waitlist.successTitle}</h2>
+            <p>{copy.waitlist.successDescription}</p>
             <button
               autoFocus
               className={styles.submit}
               onClick={() => dialog.current?.close()}
               type="button"
             >
-              Done
+              {copy.done}
             </button>
           </div>
         ) : (
           <>
-            <h2 id="waitlist-dialog-title">{context.waitlist.title}</h2>
-            <p className={styles.description}>{context.waitlist.description}</p>
+            <h2 id="waitlist-dialog-title">{copy.waitlist.title}</h2>
+            <p className={styles.description}>{copy.waitlist.description}</p>
             <WaitlistForm
               action={action}
               context={context}
@@ -241,27 +273,32 @@ export function AcquisitionProvider({
   acquisition,
   brandName,
   children,
+  defaultLocale,
   projectId,
   scopeClassName,
   siteKey,
-  waitlist,
+  presentations,
 }: {
   acquisition: ProjectAcquisition;
   brandName: string;
   children: ReactNode;
+  defaultLocale: SupportedLocaleCode;
   projectId: string;
   scopeClassName: string;
   siteKey: string;
-  waitlist: PublicSiteConfig["waitlist"];
+  presentations: Readonly<
+    Partial<Record<SupportedLocaleCode, AcquisitionPresentation>>
+  >;
 }) {
   const [request, setRequest] = useState<WaitlistRequest | null>(null);
   const context: AcquisitionContextValue = {
     acquisition,
     brandName,
+    defaultLocale,
     projectId,
     scopeClassName,
     siteKey,
-    waitlist,
+    presentations,
     openWaitlist: (next) => setRequest({ ...next, key: Date.now() }),
   };
   return (
@@ -289,7 +326,7 @@ function storeUrl(
 }
 
 export function AcquisitionActions({
-  ariaLabel = "App availability",
+  ariaLabel,
   badges,
   className,
   locale,
@@ -304,6 +341,7 @@ export function AcquisitionActions({
   source: WaitlistRequest["source"];
 }) {
   const context = useAcquisition();
+  const copy = getAcquisitionPresentation(context, locale);
   if (context.acquisition.mode === "waitlist") {
     return (
       <button
@@ -311,7 +349,7 @@ export function AcquisitionActions({
         onClick={() => context.openWaitlist({ source, locale, privacyHref })}
         type="button"
       >
-        {context.waitlist.ctaLabel}
+        {copy.waitlist.ctaLabel}
       </button>
     );
   }
@@ -322,7 +360,7 @@ export function AcquisitionActions({
   return (
     <div
       className={`${styles.storeBadges} ${className ?? ""}`}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? copy.availability}
     >
       {available.map(({ badge, href }) => (
         <a
@@ -360,6 +398,7 @@ export function AcquisitionHeaderCta({
   storeLabel: string;
 }) {
   const context = useAcquisition();
+  const copy = getAcquisitionPresentation(context, locale);
   return context.acquisition.mode === "waitlist" ? (
     <button
       className={className}
@@ -368,7 +407,7 @@ export function AcquisitionHeaderCta({
       }
       type="button"
     >
-      {context.waitlist.ctaLabel}
+      {copy.waitlist.ctaLabel}
     </button>
   ) : (
     <Link className={className} href={href}>

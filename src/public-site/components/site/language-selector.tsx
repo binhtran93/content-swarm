@@ -84,10 +84,8 @@ export function LanguageSelector({
     if (routePrefix && relative.startsWith(routePrefix))
       relative = relative.slice(routePrefix.length) || "/";
     const first = relative.split("/").filter(Boolean)[0];
-    if (
-      enabledLocales.includes(first as SupportedLocaleCode) &&
-      first !== defaultLocale
-    ) {
+    const routedLocale = supportedLocales.find((item) => item.locale === first);
+    if (routedLocale && routedLocale.locale !== defaultLocale) {
       relative = relative.slice(first.length + 1) || "/";
     }
     const prefix = target === defaultLocale ? "" : `/${target}`;

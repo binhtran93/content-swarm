@@ -1,14 +1,20 @@
 import { notFound } from "next/navigation";
-import { requireSupportedLocale } from "@/config/supported-locales";
+import {
+  defaultLocale,
+  requireSupportedLocale,
+} from "@/config/supported-locales";
 import { createSubiqStaticPageMetadata } from "@/public-site/seo/static-page-seo";
 import { SubiqPrivacyPage } from "@/public-site/sites/subiq/privacy-page";
-import { SubiqStaticPageLayout } from "@/public-site/sites/subiq/static-page-layout";
+import {
+  EnglishLegalNotice,
+  SubiqStaticPageLayout,
+} from "@/public-site/sites/subiq/static-page-layout";
 
 type Props = { params: Promise<{ locale: string }> };
 function resolve(value: string) {
   try {
     const locale = requireSupportedLocale(value).locale;
-    if (locale === "en-US") notFound();
+    if (locale === defaultLocale) notFound();
     return locale;
   } catch {
     notFound();
@@ -24,6 +30,7 @@ export default async function LocalizedPrivacyRoute({ params }: Props) {
   const locale = resolve((await params).locale);
   return (
     <SubiqStaticPageLayout locale={locale}>
+      <EnglishLegalNotice locale={locale} />
       <SubiqPrivacyPage />
     </SubiqStaticPageLayout>
   );

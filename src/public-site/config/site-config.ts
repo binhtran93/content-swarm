@@ -34,6 +34,13 @@ export type PublicSiteConfig = {
   theme: {
     routeProgressColor: string;
   };
+  accessibility?: {
+    changeLanguage: string;
+    primaryNavigation: string;
+    legalNavigation: string;
+    brandHome: string;
+    backToTop: string;
+  };
   brand: {
     name: string;
     wordmarkLead: string;
@@ -61,7 +68,7 @@ export function createDefaultWaitlistPresentation(
 ): SiteWaitlistPresentation {
   return {
     ctaLabel: "Join waitlist",
-    title: `Join the waitlist`,
+    title: `Join the ${brandName} waitlist`,
     description: `Get an email when ${brandName} is available`,
     emailLabel: "Email address",
     emailPlaceholder: "you@example.com",

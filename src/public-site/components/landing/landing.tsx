@@ -277,7 +277,6 @@ export function DownloadCta({
           <AcquisitionActions
             badges={badges}
             className={styles.downloadActions}
-            ariaLabel="App availability"
             locale={locale}
             privacyHref={privacyHref}
             source="final"

@@ -3,7 +3,10 @@ import Link from "next/link";
 export function SubiqTermsPage() {
   return (
     <main className="flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">
-      <article className="w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10">
+      <article
+        lang="en"
+        className="w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10"
+      >
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Terms and Conditions
         </h1>

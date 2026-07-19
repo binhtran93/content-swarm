@@ -6,6 +6,7 @@ import { getPublicTranslation } from "@/features/articles/public/get-public-tran
 import { listPublicArticles } from "@/features/articles/public/list-public-articles.server";
 import { getCanonicalUrl } from "@/public-site/config/public-url";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
+import { subiqStaticLocales } from "@/public-site/sites/subiq/i18n/get-subiq-translator";
 
 export async function buildSubiqSitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = await listPublicArticles(
@@ -42,6 +43,15 @@ export async function buildSubiqSitemap(): Promise<MetadataRoute.Sitemap> {
         path === "/blog" ? ("daily" as const) : ("monthly" as const),
       priority: path === "/" ? 1 : path === "/blog" ? 0.9 : 0.4,
     })),
+    ...subiqStaticLocales
+      .filter((locale) => locale !== subiqSiteConfig.defaultLocale)
+      .flatMap((locale) =>
+        ["/", "/support"].map((path) => ({
+          url: getCanonicalUrl(subiqSiteConfig, locale, path),
+          changeFrequency: "monthly" as const,
+          priority: path === "/" ? 0.9 : 0.4,
+        })),
+      ),
     ...[...localizedBlogLocales].map((locale) => ({
       url: getCanonicalUrl(subiqSiteConfig, locale, "/blog"),
       changeFrequency: "daily" as const,

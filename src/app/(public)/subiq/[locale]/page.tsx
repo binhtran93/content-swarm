@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import {
+  defaultLocale,
   requireSupportedLocale,
   supportedLocales,
 } from "@/config/supported-locales";
@@ -19,7 +20,7 @@ function resolveLocale(value: string) {
 
 export function generateStaticParams() {
   return supportedLocales
-    .filter((item) => item.locale !== "en-US")
+    .filter((item) => item.locale !== defaultLocale)
     .map((item) => ({ locale: item.locale }));
 }
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 
 import {
   ContentShell,
@@ -17,109 +18,15 @@ import {
   getProjectRoutePrefix,
   withPublicRoute,
 } from "@/public-site/config/public-url";
-import { getPublicTranslator } from "@/public-site/i18n/get-public-translator";
-import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
+import {
+  getSubiqTranslator,
+  resolveSubiqStaticLocale,
+} from "@/public-site/sites/subiq/i18n/get-subiq-translator";
+import { getLocalizedSubiqConfig } from "@/public-site/sites/subiq/site-config";
 import type { SupportedLocaleCode } from "@/config/supported-locales";
 
 import "./theme.css";
 import styles from "./landing-page.module.css";
-
-const subscriptionDetailRows = [
-  {
-    number: "01",
-    title: "Subscription cost overview",
-    description: "See the monthly price, lifetime spend, and current status",
-  },
-  {
-    number: "02",
-    title: "Payment history",
-    description: "Review every recorded charge and renewal date in order",
-  },
-  {
-    number: "03",
-    title: "Next renewal",
-    description: "Check the upcoming renewal and current billing cycle",
-  },
-];
-
-const renewalCalendarRows = [
-  {
-    number: "01",
-    title: "Monthly renewal calendar",
-    description: "See each subscription on the date it is due",
-  },
-  {
-    number: "02",
-    title: "Estimated monthly spending",
-    description: "Plan for the estimated total before charges arrive",
-  },
-  {
-    number: "03",
-    title: "Renewal details",
-    description: "Review the price, billing period, and renewal date",
-  },
-];
-
-const analyticsRows = [
-  {
-    number: "01",
-    title: "Monthly spending trends",
-    description: "Compare recurring subscription costs month by month",
-  },
-  {
-    number: "02",
-    title: "Spending by category",
-    description:
-      "See how much goes to productivity, entertainment, education, and more",
-  },
-  {
-    number: "03",
-    title: "Highest-cost subscriptions",
-    description: "Find the subscriptions with the biggest impact on your total",
-  },
-];
-
-const faqs = [
-  {
-    question: "How can SubIQ help me manage my subscriptions?",
-    answer:
-      "SubIQ keeps your recurring expenses, renewal dates, free trials, payment history, and spending insights together in one subscription tracker. Add the services you use to see what is due and how much you are spending in one place.",
-  },
-  {
-    question: "How do I track upcoming subscription renewals?",
-    answer:
-      "Add each subscription’s billing period and renewal date, then view upcoming charges in the SubIQ renewal calendar. You can also enable reminders for the subscriptions you do not want to miss.",
-  },
-  {
-    question: "How can I avoid being charged after a free trial?",
-    answer:
-      "Save the free trial’s end date in SubIQ and turn on a trial reminder. The alert gives you time to review the subscription and cancel with the provider before the paid plan begins.",
-  },
-  {
-    question: "How can I see how much I spend on subscriptions?",
-    answer:
-      "SubIQ shows estimated monthly costs, lifetime spending, category breakdowns, and month-to-month trends. You can use these insights to find the subscriptions with the biggest effect on your budget.",
-  },
-  {
-    question: "How do I cancel an Apple App Store subscription?",
-    answer:
-      "Open SubIQ, tap Tools, then choose App Store Subscriptions. SubIQ opens Apple’s subscription settings, where you can select the subscription and tap Cancel Subscription.",
-  },
-  {
-    question: "How do I cancel a Google Play subscription?",
-    answer:
-      "Open SubIQ, tap Tools, then choose Google Play Subscriptions. SubIQ opens Google Play’s subscription settings, where you can select the subscription, tap Cancel subscription, and follow the instructions.",
-  },
-];
-
-const websiteStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "SubIQ",
-  url: "https://getsubiq.com/",
-  description:
-    "A subscription tracker for recurring expenses, renewal dates, free trials, and subscription spending.",
-};
 
 const logoDevPublishableKey = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 
@@ -310,7 +217,19 @@ function BatteryStatusIcon() {
   );
 }
 
-function PhoneMockup() {
+function PhoneMockup({
+  labels,
+}: {
+  labels: {
+    thisMonth: string;
+    dueTomorrow: string;
+    dueDays: string;
+    home: string;
+    subscriptions: string;
+    tools: string;
+    settings: string;
+  };
+}) {
   return (
     <div className={styles.phoneComposition}>
       <div className={styles.phoneFade}>
@@ -343,7 +262,7 @@ function PhoneMockup() {
             </div>
 
             <div className={styles.phoneSummary}>
-              <span>This month</span>
+              <span>{labels.thisMonth}</span>
               <strong>$237.42</strong>
             </div>
 
@@ -361,7 +280,7 @@ function PhoneMockup() {
                   <span>Disney+</span>
                 </div>
                 <small className={styles.renewalUrgent}>
-                  Payment due tomorrow
+                  {labels.dueTomorrow}
                 </small>
               </div>
               <div className={styles.renewalCard}>
@@ -377,7 +296,7 @@ function PhoneMockup() {
                   <span>Amazon Prime</span>
                 </div>
                 <small className={styles.renewalWarning}>
-                  Payment due in 6 days
+                  {labels.dueDays}
                 </small>
               </div>
             </div>
@@ -385,19 +304,19 @@ function PhoneMockup() {
             <div className={styles.phoneTabs}>
               <div className={styles.activeTab}>
                 <span className={styles.homeGlyph} />
-                <small>Home</small>
+                <small>{labels.home}</small>
               </div>
               <div>
                 <span className={styles.cardGlyph} />
-                <small>Subscriptions</small>
+                <small>{labels.subscriptions}</small>
               </div>
               <div>
                 <span className={styles.gridGlyph} />
-                <small>Tools</small>
+                <small>{labels.tools}</small>
               </div>
               <div>
                 <span className={styles.settingsGlyph}>⚙</span>
-                <small>Settings</small>
+                <small>{labels.settings}</small>
               </div>
             </div>
           </PhoneFrame>
@@ -453,15 +372,38 @@ function StorePreview({
 }
 
 export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
-  const routePrefix = getProjectRoutePrefix(subiqSiteConfig);
-  const privacyHref = withPublicRoute(subiqSiteConfig, locale, "/privacy");
-  const t = getPublicTranslator();
+  const contentLocale = resolveSubiqStaticLocale(locale);
+  const config = getLocalizedSubiqConfig(contentLocale);
+  const routePrefix = getProjectRoutePrefix(config);
+  const privacyHref = withPublicRoute(config, contentLocale, "/privacy");
+  const t = getSubiqTranslator(contentLocale);
+  const accent = (chunks: ReactNode) => (
+    <span className={styles.accentText}>{chunks}</span>
+  );
+  const rows = (group: "cost" | "calendar" | "analytics") =>
+    ([1, 2, 3] as const).map((number) => ({
+      number: `0${number}`,
+      title: t(`landing.${group}${number}Title`),
+      description: t(`landing.${group}${number}Description`),
+    }));
+  const faqs = ([1, 2, 3, 4, 5, 6] as const).map((number) => ({
+    question: t(`landing.faq${number}Question`),
+    answer: t(`landing.faq${number}Answer`),
+  }));
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: config.brand.name,
+    url: config.canonicalOrigin,
+    description: t("seo.websiteDescription"),
+    inLanguage: contentLocale,
+  };
 
   return (
     <SiteShell
-      config={subiqSiteConfig}
+      config={config}
       routePrefix={routePrefix}
-      locale={locale}
+      locale={contentLocale}
       languageMenuLabel={t("site.changeLanguage")}
     >
       <main>
@@ -475,17 +417,12 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
           }}
         />
         <LandingHero
-          title={
-            <>
-              <span>Track every</span> <span>subscription</span>{" "}
-              <span className={styles.accentText}>in one place</span>
-            </>
-          }
-          description="SubIQ is a subscription tracker that keeps recurring costs, renewal dates, and free trials in one place, with spending insights and clear cancellation guidance"
+          title={t.rich("landing.heroTitle", { accent })}
+          description={t("landing.heroDescription")}
           actions={
             <AcquisitionActions
-              badges={subiqSiteConfig.storeBadges}
-              locale={locale}
+              badges={config.storeBadges}
+              locale={contentLocale}
               privacyHref={privacyHref}
               source="hero"
             />
@@ -511,7 +448,17 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
                 className={`${styles.ambientBubble} ${styles.ambientSix}`}
               />
 
-              <PhoneMockup />
+              <PhoneMockup
+                labels={{
+                  thisMonth: t("landing.phoneThisMonth"),
+                  dueTomorrow: t("landing.phoneDueTomorrow"),
+                  dueDays: t("landing.phoneDueDays", { days: 6 }),
+                  home: t("landing.phoneHome"),
+                  subscriptions: t("landing.phoneSubscriptions"),
+                  tools: t("landing.phoneTools"),
+                  settings: t("landing.phoneSettings"),
+                }}
+              />
             </>
           }
         />
@@ -519,65 +466,43 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
         <FeatureShowcaseSection
           id="features"
           tone="muted"
-          eyebrow="Subscription cost tracker"
-          title={
-            <>
-              See the full cost of{" "}
-              <span className={styles.accentText}>every subscription</span>
-            </>
-          }
-          description="Keep each subscription’s monthly price, lifetime spend, status, payment history, and next renewal date together in one clear view"
-          rows={subscriptionDetailRows}
+          eyebrow={t("landing.costEyebrow")}
+          title={t.rich("landing.costTitle", { accent })}
+          description={t("landing.costDescription")}
+          rows={rows("cost")}
           screenshot="/subiq/ss_sub_details.png"
-          screenshotAlt="SubIQ subscription details screen showing Netflix costs, status, and payment timeline"
+          screenshotAlt={t("landing.altDetails")}
         />
 
         <FeatureShowcaseSection
           visualSide="end"
-          eyebrow="Subscription renewal calendar"
-          title={
-            <>
-              Plan for renewals{" "}
-              <span className={styles.accentText}>before they are due</span>
-            </>
-          }
-          description="View upcoming subscription renewal dates and estimated monthly spending in one calendar, so recurring charges never catch you off guard"
-          rows={renewalCalendarRows}
+          eyebrow={t("landing.calendarEyebrow")}
+          title={t.rich("landing.calendarTitle", { accent })}
+          description={t("landing.calendarDescription")}
+          rows={rows("calendar")}
           screenshot="/subiq/ss_calendar.png"
-          screenshotAlt="SubIQ renewal calendar showing July subscription dates and estimated monthly cost"
+          screenshotAlt={t("landing.altCalendar")}
         />
 
         <FeatureShowcaseSection
           id="analytics"
           tone="muted"
           className={styles.analyticsSection}
-          eyebrow="Subscription spending insights"
-          title={
-            <>
-              Understand where your{" "}
-              <span className={styles.accentText}>
-                subscription budget goes
-              </span>
-            </>
-          }
-          description="Compare monthly subscription costs, explore spending by category, and identify the services that have the biggest effect on your budget"
-          rows={analyticsRows}
+          eyebrow={t("landing.analyticsEyebrow")}
+          title={t.rich("landing.analyticsTitle", { accent })}
+          description={t("landing.analyticsDescription")}
+          rows={rows("analytics")}
           screenshot="/subiq/ss_data.png"
-          screenshotAlt="SubIQ analytics screen showing monthly spending trends, category breakdown, and top subscriptions"
+          screenshotAlt={t("landing.altAnalytics")}
         />
 
         <LandingSection className={styles.guidesSection} id="guides">
           <ContentShell className={styles.guidesInner}>
             <SectionHeading
               className={styles.guidesHeading}
-              eyebrow="Subscription cancellation & refund guides"
-              title={
-                <>
-                  Cancel subscriptions or request refunds,{" "}
-                  <span className={styles.accentText}>step by step</span>
-                </>
-              }
-              description="Choose a provider to find clear instructions and helpful links, then complete the cancellation or refund request directly with that provider"
+              eyebrow={t("landing.guidesEyebrow")}
+              title={t.rich("landing.guidesTitle", { accent })}
+              description={t("landing.guidesDescription")}
             />
 
             <div className={styles.guideVisuals}>
@@ -585,13 +510,13 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
                 <div className={styles.guideCaption}>
                   <span>01</span>
                   <div>
-                    <h3>How to cancel a subscription</h3>
+                    <h3>{t("landing.cancelGuide")}</h3>
                   </div>
                 </div>
                 <PhoneScreenshot
                   className={styles.guidePhone}
                   src="/subiq/how_to_cancel.png"
-                  alt="SubIQ cancellation guide showing step-by-step instructions for ending an Amazon Prime membership"
+                  alt={t("landing.altCancel")}
                 />
               </article>
 
@@ -599,13 +524,13 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
                 <div className={styles.guideCaption}>
                   <span>02</span>
                   <div>
-                    <h3>How to request a refund</h3>
+                    <h3>{t("landing.refundGuide")}</h3>
                   </div>
                 </div>
                 <PhoneScreenshot
                   className={styles.guidePhone}
                   src="/subiq/how_to_refund.png"
-                  alt="SubIQ refund guide showing step-by-step instructions for requesting a refund from Canva"
+                  alt={t("landing.altRefund")}
                 />
               </article>
             </div>
@@ -620,14 +545,9 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
             <div className={styles.storeManagementCopy}>
               <SectionHeading
                 className={styles.storeManagementHeading}
-                eyebrow="App Store & Google Play subscriptions"
-                title={
-                  <>
-                    Open your subscription settings in{" "}
-                    <span className={styles.accentText}>one tap</span>
-                  </>
-                }
-                description="Jump from SubIQ to Apple or Google’s subscription settings to review, change, or cancel eligible app subscriptions"
+                eyebrow={t("landing.storesEyebrow")}
+                title={t.rich("landing.storesTitle", { accent })}
+                description={t("landing.storesDescription")}
               />
             </div>
 
@@ -635,44 +555,42 @@ export function SubiqLandingPage({ locale }: { locale: SupportedLocaleCode }) {
               <StorePreview
                 icon="/subiq/app-store-logo.png"
                 label="App Store"
-                device="iPhone & iPad"
+                device={t("landing.appleDevices")}
                 screenshot="/subiq/ios_subs.png"
                 screenshotWidth={1179}
                 screenshotHeight={2556}
-                alt="Apple subscription management screen showing active subscriptions and renewal settings"
+                alt={t("landing.altApple")}
               />
               <StorePreview
                 icon="/subiq/google-play-logo.png"
                 label="Google Play"
-                device="Android"
+                device={t("landing.androidDevice")}
                 screenshot="/subiq/adnroid-subs.jpg"
                 screenshotWidth={1080}
                 screenshotHeight={2400}
-                alt="Google Play subscription management screen showing active and expired subscriptions"
+                alt={t("landing.altGoogle")}
               />
             </div>
           </ContentShell>
         </LandingSection>
 
-        <FaqSection faqs={faqs} title="Subscription tracker FAQs" />
+        <FaqSection faqs={faqs} title={t("landing.faqTitle")} />
 
         <DownloadCta
-          title={
-            <>
-              Download the{" "}
-              <span className={styles.downloadAccent}>SubIQ tracker</span>
-            </>
-          }
-          description="Track subscriptions on iOS and Android"
-          waitlistTitle={
-            <>
-              Be first to try{" "}
-              <span className={styles.downloadAccent}>SubIQ</span>
-            </>
-          }
-          waitlistDescription="Join the waitlist and we’ll email you when the SubIQ subscription tracker is available"
-          badges={subiqSiteConfig.storeBadges}
-          locale={locale}
+          title={t.rich("landing.downloadTitle", {
+            accent: (chunks) => (
+              <span className={styles.downloadAccent}>{chunks}</span>
+            ),
+          })}
+          description={t("landing.downloadDescription")}
+          waitlistTitle={t.rich("landing.waitlistTitle", {
+            accent: (chunks) => (
+              <span className={styles.downloadAccent}>{chunks}</span>
+            ),
+          })}
+          waitlistDescription={t("landing.waitlistDescription")}
+          badges={config.storeBadges}
+          locale={contentLocale}
           privacyHref={privacyHref}
         />
       </main>

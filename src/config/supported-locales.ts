@@ -204,7 +204,7 @@ export const supportedLocales = [
 
 export type SupportedLocaleCode = (typeof supportedLocales)[number]["locale"];
 
-export const defaultLocale: SupportedLocaleCode = "en-US";
+export const defaultLocale = "en-US" satisfies SupportedLocaleCode;
 
 export function findSupportedLocale(locale: string) {
   return supportedLocales.find((item) => item.locale === locale);

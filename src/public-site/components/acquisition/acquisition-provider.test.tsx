@@ -58,10 +58,35 @@ function Subject({
     <AcquisitionProvider
       acquisition={{ mode, appStoreUrl, googlePlayUrl }}
       brandName="Example"
+      defaultLocale="en-US"
       projectId="example"
       scopeClassName="example-site"
       siteKey=""
-      waitlist={waitlist}
+      presentations={{
+        "en-US": {
+          waitlist,
+          availability: "App availability",
+          submitting: "Joining…",
+          done: "Done",
+          close: "Close waitlist",
+          notConfigured: "The waitlist is not configured yet.",
+          genericError: "The waitlist is unavailable.",
+          consent:
+            "By joining, you agree to receive launch emails from Example.",
+          privacyPolicy: "Privacy Policy",
+        },
+        "vi-VN": {
+          waitlist,
+          availability: "Tình trạng ứng dụng",
+          submitting: "Đang đăng ký…",
+          done: "Xong",
+          close: "Đóng",
+          notConfigured: "Chưa được thiết lập.",
+          genericError: "Hiện không khả dụng.",
+          consent: "Khi tham gia, bạn đồng ý nhận email.",
+          privacyPolicy: "Chính sách quyền riêng tư",
+        },
+      }}
     >
       <AcquisitionActions
         badges={badges}

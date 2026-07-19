@@ -25,7 +25,9 @@ export function BlogSiteLayout({
       activeNavigationHref="/blog"
       headerAccessory={<BlogNavigationProgress />}
       locale={locale}
-      languageMenuLabel="Change language"
+      languageMenuLabel={
+        config.accessibility?.changeLanguage ?? "Change language"
+      }
       articleAlternates={articleAlternates}
     >
       {children}

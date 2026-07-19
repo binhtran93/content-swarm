@@ -10,6 +10,7 @@ import {
   getProjectRoutePrefix,
 } from "@/public-site/config/public-url";
 import { subiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
+import { getLocalizedSubiqConfig } from "@/public-site/sites/subiq/site-config";
 
 import "./theme.css";
 
@@ -20,26 +21,30 @@ export async function SubiqBlogArticlePage({
   locale: SupportedLocaleCode;
   slug: string;
 }) {
+  const config = {
+    ...subiqBlogConfig,
+    ...getLocalizedSubiqConfig(locale),
+    blog: subiqBlogConfig.blog,
+  };
   const result = await loadBlogArticle({
     config: subiqBlogConfig,
     locale,
     slug,
   });
   if (!result) notFound();
-  const routePrefix = getProjectRoutePrefix(subiqBlogConfig);
-  const localePrefix =
-    locale === subiqBlogConfig.defaultLocale ? "" : `/${locale}`;
+  const routePrefix = getProjectRoutePrefix(config);
+  const localePrefix = locale === config.defaultLocale ? "" : `/${locale}`;
   if (result.redirectSlug) {
     redirect(`${routePrefix}${localePrefix}/blog/${result.redirectSlug}`);
   }
   const canonical = result.isSourceFallback
     ? getCanonicalUrl(
-        subiqBlogConfig,
-        subiqBlogConfig.defaultLocale,
+        config,
+        config.defaultLocale,
         `/blog/${result.source.slug}`,
       )
     : getCanonicalUrl(
-        subiqBlogConfig,
+        config,
         locale,
         `/blog/${result.translation?.slug ?? result.source.slug}`,
       );
@@ -55,13 +60,13 @@ export async function SubiqBlogArticlePage({
   );
   return (
     <BlogSiteLayout
-      config={subiqBlogConfig}
+      config={config}
       routePrefix={routePrefix}
       locale={locale}
       articleAlternates={articleAlternates}
     >
       <BlogArticle
-        config={subiqBlogConfig}
+        config={config}
         routePrefix={routePrefix}
         locale={locale}
         source={result.source}

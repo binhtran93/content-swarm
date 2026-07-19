@@ -47,7 +47,9 @@ export function SiteHeader({
         <Link
           href={withLocaleRoutePrefix(config, routePrefix, locale, "/")}
           className={styles.brand}
-          aria-label={`${config.brand.name} home`}
+          aria-label={
+            config.accessibility?.brandHome ?? `${config.brand.name} home`
+          }
         >
           <span className={styles.brandMark}>
             <Image
@@ -68,7 +70,12 @@ export function SiteHeader({
           </span>
         </Link>
 
-        <nav className={styles.primaryNav} aria-label="Primary navigation">
+        <nav
+          className={styles.primaryNav}
+          aria-label={
+            config.accessibility?.primaryNavigation ?? "Primary navigation"
+          }
+        >
           {config.navigation.map((item) => {
             const isActive = item.href === activeNavigationHref;
             return (
@@ -144,7 +151,7 @@ export function SiteFooter({
         <Link
           href={withLocaleRoutePrefix(config, routePrefix, locale, "/")}
           className={styles.footerBrand}
-          aria-label="Back to the top"
+          aria-label={config.accessibility?.backToTop ?? "Back to the top"}
         >
           <span className={styles.brandMark}>
             <Image src={config.brand.logoSrc} alt="" width={38} height={38} />
@@ -159,7 +166,11 @@ export function SiteFooter({
           </strong>
         </Link>
 
-        <nav aria-label="Legal and support">
+        <nav
+          aria-label={
+            config.accessibility?.legalNavigation ?? "Legal and support"
+          }
+        >
           {config.footer.links.map((link) => (
             <Link
               href={withLocaleRoutePrefix(

@@ -4,6 +4,7 @@ import { BlogIndex } from "@/public-site/components/blog/blog-index";
 import { BlogSiteLayout } from "@/public-site/components/blog/blog-site-layout";
 import { getProjectRoutePrefix } from "@/public-site/config/public-url";
 import { subiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
+import { getLocalizedSubiqConfig } from "@/public-site/sites/subiq/site-config";
 
 import "./theme.css";
 
@@ -16,7 +17,12 @@ export async function SubiqBlogIndexPage({
   topic?: string;
   cursor?: string;
 }) {
-  const routePrefix = getProjectRoutePrefix(subiqBlogConfig);
+  const config = {
+    ...subiqBlogConfig,
+    ...getLocalizedSubiqConfig(locale),
+    blog: subiqBlogConfig.blog,
+  };
+  const routePrefix = getProjectRoutePrefix(config);
   const result = await loadBlogPage({
     config: subiqBlogConfig,
     locale,
@@ -24,13 +30,9 @@ export async function SubiqBlogIndexPage({
     cursor,
   });
   return (
-    <BlogSiteLayout
-      config={subiqBlogConfig}
-      routePrefix={routePrefix}
-      locale={locale}
-    >
+    <BlogSiteLayout config={config} routePrefix={routePrefix} locale={locale}>
       <BlogIndex
-        config={subiqBlogConfig}
+        config={config}
         routePrefix={routePrefix}
         locale={locale}
         result={result}
