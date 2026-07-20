@@ -218,7 +218,7 @@ export function createEnglishSupportPageContent({
         title: "Account and Data Deletion",
         content: (
           <p>
-            To request deletion of an account or personal data associated with{" "}
+            To request deletion of any account or personal data associated with{" "}
             {productName}, email{" "}
             <a
               href={createEmailHref(

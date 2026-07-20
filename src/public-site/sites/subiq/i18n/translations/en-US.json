@@ -143,7 +143,7 @@
     "getHelp": "Get Help",
     "getHelpBody": "If SubIQ is not working as expected, contact us with the affected feature, what you expected to happen, and what happened instead. Please do not include passwords, full payment-card numbers, or other sensitive account credentials.",
     "deletionTitle": "Account and Data Deletion",
-    "deletionApp": "To request deletion of an account or personal data associated with SubIQ, email <email>support@anmisoft.com</email>. We may ask you to verify ownership before completing the request.",
+    "deletionApp": "To request deletion of any account or personal data associated with SubIQ, email <email>support@anmisoft.com</email>. We may ask you to verify ownership before completing the request.",
     "deletionEmail": "See the <privacy>account deletion section of our Privacy Policy</privacy> for details about deletion and limited retention.",
     "contact": "Contact Us",
     "emailSupport": "Email Support",
