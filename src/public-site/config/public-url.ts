@@ -3,6 +3,14 @@ import type { PublicSiteConfig } from "@/public-site/config/site-config";
 
 export type PublicRouteMode = "project" | "root";
 
+export function isPublicProjectDisabled(projectId: string): boolean {
+  return (process.env.PUBLIC_DISABLED_PROJECTS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .includes(projectId);
+}
+
 export function getPublicRouteMode(): PublicRouteMode {
   const configured = process.env.PUBLIC_ROUTE_MODE;
   if (!configured || configured === "project") return "project";

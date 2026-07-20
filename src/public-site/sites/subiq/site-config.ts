@@ -4,6 +4,7 @@ import {
   type SupportedLocaleCode,
 } from "@/config/supported-locales";
 import { definePublicSiteConfig } from "@/public-site/config/site-config";
+import { publicProjectBasePaths } from "@/public-site/config/public-projects";
 import {
   getSubiqMessages,
   subiqStaticLocales,
@@ -13,7 +14,7 @@ const currentYear = new Date().getFullYear();
 
 export const subiqSiteConfig = definePublicSiteConfig({
   id: "subiq",
-  internalBasePath: "/subiq",
+  internalBasePath: publicProjectBasePaths.subiq,
   canonicalOrigin: "https://getsubiq.com",
   defaultLocale,
   locales: supportedLocales.map((item) => item.locale),
