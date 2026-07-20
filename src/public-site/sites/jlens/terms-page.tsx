@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function JewelryIdentifierTermsPage() {
   return (
-    <main className="flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">
-      <article className="w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10">
+    <main className="legal-document flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">
+      <article className="legal-document__article w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10">
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Terms and Conditions
         </h1>

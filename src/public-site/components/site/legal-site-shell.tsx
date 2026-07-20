@@ -6,6 +6,7 @@ import { SiteRouteTheme } from "./site-route-theme";
 import styles from "./legal-site-shell.module.css";
 
 import "./legal-site-theme.css";
+import "./legal-document.css";
 
 export type LegalSiteConfig = {
   id: string;

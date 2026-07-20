@@ -344,8 +344,9 @@
 
 .faqHeading {
   margin-inline: auto;
-  max-width: none;
-  text-align: center;
+  max-width: 980px;
+  padding-inline: 24px;
+  text-align: left;
 }
 
 .faqList {
@@ -371,12 +372,12 @@
   display: flex;
   font-size: 16px;
   font-weight: 620;
-  justify-content: center;
+  justify-content: flex-start;
   list-style: none;
   min-height: 68px;
-  padding: 19px 64px;
+  padding: 19px 64px 19px 24px;
   position: relative;
-  text-align: center;
+  text-align: left;
 }
 
 .faqItem summary::-webkit-details-marker {
@@ -403,8 +404,8 @@
   font-size: 14px;
   line-height: 1.75;
   margin: -5px 0 0;
-  padding: 0 64px 24px;
-  text-align: center;
+  padding: 0 64px 24px 24px;
+  text-align: left;
 }
 
 .downloadSection {
@@ -579,7 +580,7 @@
   }
 
   .faqItem summary {
-    padding-inline: 52px;
+    padding: 19px 52px 19px 24px;
   }
 
   .faqItem > p {

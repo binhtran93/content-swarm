@@ -52,12 +52,16 @@ describe("legal-only public sites", () => {
   });
 
   it("preserves Jewelry Identifier legal copy while branding the shell as JLens", () => {
-    render(
+    const { container } = render(
       <LegalSiteShell config={jlensSiteConfig}>
         <JewelryIdentifierPrivacyPage />
       </LegalSiteShell>,
     );
 
+    expect(container.querySelector("main")).toHaveClass("legal-document");
+    expect(container.querySelector("article")).toHaveClass(
+      "legal-document__article",
+    );
     expect(screen.getAllByText("JLens")).toHaveLength(2);
     expect(screen.getByText("Effective Date: 02.07.2026")).toBeInTheDocument();
     expect(jewelryPrivacyMetadata.title).toBe("Privacy Policy | JLens");

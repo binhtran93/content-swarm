@@ -12,6 +12,7 @@ import {
   resolveSubiqStaticLocale,
 } from "@/public-site/sites/subiq/i18n/get-subiq-translator";
 
+import "@/public-site/components/site/legal-document.css";
 import "./theme.css";
 
 export function SubiqStaticPageLayout({
