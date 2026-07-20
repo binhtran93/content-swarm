@@ -98,6 +98,7 @@ function RequestFields({
                 ? "Seed keyword"
                 : "Competitor domain"
             }
+            autoComplete="off"
             className="input w-full"
             defaultValue={discovery?.method === method ? discovery.input : ""}
             key={method}

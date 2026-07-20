@@ -114,6 +114,7 @@ describe("Keyword discovery results actions", () => {
     );
 
     expect(input).toHaveAttribute("list", "saved-competitor-domains");
+    expect(input).toHaveAttribute("autocomplete", "off");
     expect([...options].map((option) => option.getAttribute("value"))).toEqual([
       "competitor.com",
       "app.rival.com",
