@@ -63,6 +63,36 @@ const localeFlags = {
   VN,
 };
 
+// Initial market priority based on global web-content language usage. Keep
+// regional variants adjacent and replace this heuristic with product analytics
+// once there is enough language-selector traffic to rank reliably.
+const languageMenuOrder = [
+  "en-US",
+  "es-ES",
+  "de-DE",
+  "ja-JP",
+  "fr-FR",
+  "pt-BR",
+  "pt-PT",
+  "it-IT",
+  "nl-NL",
+  "pl-PL",
+  "tr-TR",
+  "zh-Hant-TW",
+  "id-ID",
+  "vi-VN",
+  "cs-CZ",
+  "ko-KR",
+  "ar-SA",
+  "sv-SE",
+  "ro-RO",
+  "th-TH",
+  "hi-IN",
+] as const satisfies readonly SupportedLocaleCode[];
+const languageMenuPriority = new Map(
+  languageMenuOrder.map((locale, index) => [locale, index] as const),
+);
+
 function compactLanguageLabel(locale: SupportedLocaleCode, label: string) {
   if (locale === "pt-BR" || locale === "pt-PT") return label;
   return label.replace(/\s*\([^()]*\)\s*$/u, "");
@@ -189,6 +219,14 @@ export function LanguageSelector({
     setOpen(false);
   }
 
+  const orderedLocaleOptions = supportedLocales
+    .filter((item) => enabledLocales.includes(item.locale))
+    .sort(
+      (left, right) =>
+        (languageMenuPriority.get(left.locale) ?? Number.MAX_SAFE_INTEGER) -
+        (languageMenuPriority.get(right.locale) ?? Number.MAX_SAFE_INTEGER),
+    );
+
   return (
     <div className={styles.languageSelector} ref={rootRef}>
       <button
@@ -214,28 +252,28 @@ export function LanguageSelector({
           ref={menuRef}
           onKeyDown={moveFocus}
         >
-          {supportedLocales
-            .filter((item) => enabledLocales.includes(item.locale))
-            .map((item) => {
-              const Flag = localeFlags[item.countryCode];
+          {orderedLocaleOptions.map((item) => {
+            const Flag = localeFlags[item.countryCode];
 
-              return (
-                <a
-                  role="menuitemradio"
-                  aria-checked={item.locale === locale}
-                  className={
-                    item.locale === locale ? styles.activeLanguage : undefined
-                  }
-                  dir={item.direction}
-                  href={hrefFor(item.locale)}
-                  key={item.locale}
-                  onClick={(event) => selectLanguage(event, item.locale)}
-                >
-                  <Flag className={styles.languageFlag} aria-hidden="true" />
-                  <span>{compactLanguageLabel(item.locale, item.label)}</span>
-                </a>
-              );
-            })}
+            return (
+              <a
+                role="menuitemradio"
+                aria-checked={item.locale === locale}
+                className={
+                  item.locale === locale ? styles.activeLanguage : undefined
+                }
+                dir="ltr"
+                href={hrefFor(item.locale)}
+                key={item.locale}
+                onClick={(event) => selectLanguage(event, item.locale)}
+              >
+                <Flag className={styles.languageFlag} aria-hidden="true" />
+                <span dir={item.direction}>
+                  {compactLanguageLabel(item.locale, item.label)}
+                </span>
+              </a>
+            );
+          })}
         </div>
       ) : null}
     </div>
