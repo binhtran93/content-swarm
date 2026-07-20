@@ -344,7 +344,7 @@
 
 .faqHeading {
   margin-inline: auto;
-  max-width: 980px;
+  max-width: 760px;
   padding-inline: 24px;
   text-align: left;
 }
@@ -353,7 +353,7 @@
   display: grid;
   gap: 0;
   margin: clamp(44px, 5vw, 64px) auto 0;
-  max-width: 980px;
+  max-width: 760px;
 }
 
 .faqItem {
