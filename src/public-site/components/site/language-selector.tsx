@@ -239,10 +239,7 @@ export function LanguageSelector({
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <CurrentFlag
-          className={styles.languageButtonFlag}
-          aria-hidden="true"
-        />
+        <CurrentFlag className={styles.languageButtonFlag} aria-hidden="true" />
         <span>{current.languageCode.toUpperCase()}</span>
       </button>
       {open ? (
