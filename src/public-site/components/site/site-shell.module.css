@@ -187,13 +187,23 @@
 }
 
 .languageMenu a {
+  align-items: center;
   color: var(--site-text-secondary);
-  display: block;
+  display: flex;
   font-size: 15px;
+  gap: 10px;
   line-height: 18px;
   padding: 6px 18px;
   text-align: start;
   white-space: nowrap;
+}
+
+.languageFlag {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.09);
+  flex: 0 0 auto;
+  height: 14px;
+  width: 21px;
 }
 
 .languageMenu a:hover,

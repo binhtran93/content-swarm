@@ -8,6 +8,29 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import {
+  BR,
+  CZ,
+  DE,
+  ES,
+  FR,
+  ID,
+  IN,
+  IT,
+  JP,
+  KR,
+  NL,
+  PL,
+  PT,
+  RO,
+  SA,
+  SE,
+  TH,
+  TR,
+  TW,
+  US,
+  VN,
+} from "country-flag-icons/react/3x2";
 
 import {
   supportedLocales,
@@ -15,6 +38,30 @@ import {
 } from "@/config/supported-locales";
 
 import styles from "./site-shell.module.css";
+
+const localeFlags = {
+  BR,
+  CZ,
+  DE,
+  ES,
+  FR,
+  ID,
+  IN,
+  IT,
+  JP,
+  KR,
+  NL,
+  PL,
+  PT,
+  RO,
+  SA,
+  SE,
+  TH,
+  TR,
+  TW,
+  US,
+  VN,
+};
 
 function compactLanguageLabel(locale: SupportedLocaleCode, label: string) {
   if (locale === "pt-BR" || locale === "pt-PT") return label;
@@ -169,21 +216,26 @@ export function LanguageSelector({
         >
           {supportedLocales
             .filter((item) => enabledLocales.includes(item.locale))
-            .map((item) => (
-              <a
-                role="menuitemradio"
-                aria-checked={item.locale === locale}
-                className={
-                  item.locale === locale ? styles.activeLanguage : undefined
-                }
-                dir={item.direction}
-                href={hrefFor(item.locale)}
-                key={item.locale}
-                onClick={(event) => selectLanguage(event, item.locale)}
-              >
-                {compactLanguageLabel(item.locale, item.label)}
-              </a>
-            ))}
+            .map((item) => {
+              const Flag = localeFlags[item.countryCode];
+
+              return (
+                <a
+                  role="menuitemradio"
+                  aria-checked={item.locale === locale}
+                  className={
+                    item.locale === locale ? styles.activeLanguage : undefined
+                  }
+                  dir={item.direction}
+                  href={hrefFor(item.locale)}
+                  key={item.locale}
+                  onClick={(event) => selectLanguage(event, item.locale)}
+                >
+                  <Flag className={styles.languageFlag} aria-hidden="true" />
+                  <span>{compactLanguageLabel(item.locale, item.label)}</span>
+                </a>
+              );
+            })}
         </div>
       ) : null}
     </div>
