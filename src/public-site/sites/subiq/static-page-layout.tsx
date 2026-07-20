@@ -16,9 +16,11 @@ import "./theme.css";
 
 export function SubiqStaticPageLayout({
   locale,
+  activeNavigationHref,
   children,
 }: {
   locale: SupportedLocaleCode;
+  activeNavigationHref?: string;
   children: ReactNode;
 }) {
   const contentLocale = resolveSubiqStaticLocale(locale);
@@ -28,6 +30,7 @@ export function SubiqStaticPageLayout({
     <SiteShell
       config={config}
       routePrefix={getProjectRoutePrefix(config)}
+      activeNavigationHref={activeNavigationHref}
       locale={contentLocale}
       languageMenuLabel={t("site.changeLanguage")}
     >

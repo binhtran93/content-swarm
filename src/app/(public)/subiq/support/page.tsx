@@ -6,7 +6,10 @@ import { SubiqSupportPage } from "@/public-site/sites/subiq/support-page";
 export const metadata = createSubiqStaticPageMetadata("support", defaultLocale);
 export default function SupportRoute() {
   return (
-    <SubiqStaticPageLayout locale={defaultLocale}>
+    <SubiqStaticPageLayout
+      locale={defaultLocale}
+      activeNavigationHref="/support"
+    >
       <SubiqSupportPage locale={defaultLocale} />
     </SubiqStaticPageLayout>
   );

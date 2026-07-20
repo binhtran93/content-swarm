@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function LocalizedSupportRoute({ params }: Props) {
   const locale = resolve((await params).locale);
   return (
-    <SubiqStaticPageLayout locale={locale}>
+    <SubiqStaticPageLayout locale={locale} activeNavigationHref="/support">
       <SubiqSupportPage locale={locale} />
     </SubiqStaticPageLayout>
   );
