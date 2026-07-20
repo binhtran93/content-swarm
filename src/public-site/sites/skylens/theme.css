@@ -1,0 +1,13 @@
+.skylens-site {
+  --legal-accent: #c05a2a;
+  --legal-background: #fdf2ec;
+  --legal-border: #f0d8c8;
+  --legal-focus-ring: rgba(192, 90, 42, 0.34);
+  --legal-footer: #f5e0d0;
+  --legal-header: #fffaf7;
+  --legal-shadow: rgba(58, 26, 10, 0.1);
+  --legal-surface: #fffaf7;
+  --legal-surface-muted: #f8e8de;
+  --legal-text: #3a1a0a;
+  --legal-text-secondary: #795041;
+}

@@ -1,0 +1,132 @@
+.page {
+  background: var(--legal-background);
+  color: var(--legal-text);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.page a:focus-visible,
+.page summary:focus-visible {
+  border-radius: 8px;
+  outline: 3px solid var(--legal-focus-ring);
+  outline-offset: 4px;
+}
+
+.header {
+  background: var(--legal-header);
+  border-bottom: 1px solid var(--legal-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.headerInner,
+.footerInner {
+  margin-inline: auto;
+  max-width: 1120px;
+  width: 100%;
+}
+
+.headerInner {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 76px;
+  padding-inline: clamp(20px, 4vw, 48px);
+}
+
+.brand,
+.footerBrand {
+  align-items: center;
+  color: var(--legal-text);
+  display: inline-flex;
+  font-size: 25px;
+  font-weight: 720;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+}
+
+.brandMark {
+  align-items: center;
+  display: inline-flex;
+  height: 46px;
+  justify-content: center;
+  margin-right: 9px;
+  width: 46px;
+}
+
+.brandMark img {
+  height: 44px;
+  object-fit: contain;
+  width: 44px;
+}
+
+.navigation,
+.footerNavigation {
+  align-items: center;
+  display: flex;
+  gap: clamp(18px, 3vw, 34px);
+}
+
+.navigation a,
+.footerNavigation a {
+  color: var(--legal-text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.navigation a:hover,
+.footerNavigation a:hover {
+  color: var(--legal-accent);
+}
+
+.footer {
+  background: var(--legal-footer);
+  border-top: 1px solid var(--legal-border);
+}
+
+.footerInner {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 205px;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.footerBrand {
+  font-size: 22px;
+}
+
+.footerBrand .brandMark,
+.footerBrand .brandMark img {
+  height: 38px;
+  width: 38px;
+}
+
+.footerInner small {
+  color: var(--legal-text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .headerInner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding-block: 12px;
+  }
+
+  .navigation {
+    justify-content: space-between;
+    width: 100%;
+  }
+}

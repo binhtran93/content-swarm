@@ -1,0 +1,13 @@
+.jlens-site {
+  --legal-accent: #8f7439;
+  --legal-background: #f4ebdf;
+  --legal-border: #dfd1bc;
+  --legal-focus-ring: rgba(143, 116, 57, 0.38);
+  --legal-footer: #ede1d1;
+  --legal-header: #faf8f6;
+  --legal-shadow: rgba(48, 42, 35, 0.1);
+  --legal-surface: #faf8f6;
+  --legal-surface-muted: #f0e8de;
+  --legal-text: #302a23;
+  --legal-text-secondary: #6f665c;
+}

@@ -2,6 +2,25 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: "/jewelry-identifier/privacy",
+        destination: "/jlens/privacy",
+        permanent: true,
+      },
+      {
+        source: "/jewelry-identifier/terms",
+        destination: "/jlens/terms",
+        permanent: true,
+      },
+      {
+        source: "/jewelry-identifier/support",
+        destination: "/jlens/support",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     if (process.env.PUBLIC_ROUTE_MODE !== "root") return [];
     return {

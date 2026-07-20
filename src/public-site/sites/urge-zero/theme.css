@@ -1,0 +1,13 @@
+.urge-zero-site {
+  --legal-accent: #d8ad72;
+  --legal-background: #0e1319;
+  --legal-border: #2a3139;
+  --legal-focus-ring: rgba(190, 144, 80, 0.5);
+  --legal-footer: #11171e;
+  --legal-header: #151b22;
+  --legal-shadow: rgba(0, 0, 0, 0.45);
+  --legal-surface: #1a2028;
+  --legal-surface-muted: #151b22;
+  --legal-text: #f4f1ea;
+  --legal-text-secondary: #b3bcc4;
+}

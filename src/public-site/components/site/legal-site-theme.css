@@ -1,0 +1,40 @@
+.legal-site main {
+  background: var(--legal-background);
+  color: var(--legal-text);
+}
+
+.legal-site main > article {
+  background: var(--legal-surface);
+  box-shadow: 0 16px 45px var(--legal-shadow);
+}
+
+.legal-site article :where(p, li) {
+  color: var(--legal-text-secondary);
+}
+
+.legal-site article :where(h1, h2, h3, summary) {
+  color: var(--legal-text);
+}
+
+.legal-site article a {
+  color: var(--legal-accent);
+}
+
+.legal-site article :where(details, div.rounded-lg) {
+  background: var(--legal-surface-muted);
+  border-color: var(--legal-border);
+}
+
+.legal-site article details[open] {
+  border-color: var(--legal-accent);
+}
+
+@media (max-width: 640px) {
+  .legal-site main {
+    padding-block: 28px;
+  }
+
+  .legal-site main > article {
+    border: 1px solid var(--legal-border);
+  }
+}
