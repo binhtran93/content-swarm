@@ -130,10 +130,13 @@ export async function BlogArticle({
                   <p>{copy.onThisPage}</p>
                   <ArticleSectionLinks headings={renderedArticle.headings} />
                 </aside>
-                <details className={styles.mobileTableOfContents}>
-                  <summary>{copy.onThisPage}</summary>
+                <aside
+                  className={styles.mobileTableOfContents}
+                  aria-label={copy.onThisPage}
+                >
+                  <p>{copy.onThisPage}</p>
                   <ArticleSectionLinks headings={renderedArticle.headings} />
-                </details>
+                </aside>
               </>
             ) : null}
             <div className={`${styles.prose} ${articleContentStyles.content}`}>

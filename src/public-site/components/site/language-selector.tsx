@@ -105,6 +105,7 @@ export function LanguageSelector({
   routePrefix,
   label,
   articleAlternates,
+  embedded = false,
 }: {
   locale: SupportedLocaleCode;
   defaultLocale: SupportedLocaleCode;
@@ -112,6 +113,7 @@ export function LanguageSelector({
   routePrefix: string;
   label: string;
   articleAlternates?: Partial<Record<SupportedLocaleCode, string>>;
+  embedded?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [fragment, setFragment] = useState("");
@@ -229,7 +231,10 @@ export function LanguageSelector({
     );
 
   return (
-    <div className={styles.languageSelector} ref={rootRef}>
+    <div
+      className={`${styles.languageSelector} ${embedded ? styles.embeddedLanguageSelector : ""}`}
+      ref={rootRef}
+    >
       <button
         type="button"
         ref={buttonRef}

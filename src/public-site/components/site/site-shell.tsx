@@ -11,6 +11,7 @@ import { isDedicatedSiteAnalyticsDeployment } from "@/public-site/analytics/site
 import { AcquisitionHeaderCta } from "@/public-site/components/acquisition";
 import type { PublicSiteConfig } from "@/public-site/config/site-config";
 import { LanguageSelector } from "./language-selector";
+import { MobileNavigation } from "./mobile-navigation";
 import { SiteRouteTheme } from "./site-route-theme";
 
 import styles from "./site-shell.module.css";
@@ -62,7 +63,7 @@ export function SiteHeader({
               priority
             />
           </span>
-          <span>
+          <span className={styles.brandName}>
             {config.brand.wordmarkLead}
             {config.brand.wordmarkAccent ? (
               <span className={styles.brandAccent}>
@@ -98,40 +99,79 @@ export function SiteHeader({
           })}
         </nav>
 
-        <Suspense
-          fallback={
-            <span className={styles.languageButton} aria-hidden="true">
-              {locale.split("-")[0]?.toUpperCase()}
-            </span>
-          }
-        >
-          <LanguageSelector
-            locale={locale}
-            defaultLocale={config.defaultLocale}
-            enabledLocales={config.locales}
-            routePrefix={routePrefix}
-            label={languageMenuLabel}
-            articleAlternates={articleAlternates}
-          />
-        </Suspense>
+        <div className={styles.headerActions}>
+          <div className={styles.headerLanguage}>
+            <Suspense
+              fallback={
+                <span className={styles.languageButton} aria-hidden="true">
+                  {locale.split("-")[0]?.toUpperCase()}
+                </span>
+              }
+            >
+              <LanguageSelector
+                locale={locale}
+                defaultLocale={config.defaultLocale}
+                enabledLocales={config.locales}
+                routePrefix={routePrefix}
+                label={languageMenuLabel}
+                articleAlternates={articleAlternates}
+              />
+            </Suspense>
+          </div>
 
-        <AcquisitionHeaderCta
-          className={styles.headerCta}
-          href={withLocaleRoutePrefix(
-            config,
-            routePrefix,
-            locale,
-            config.headerCta.href,
-          )}
-          locale={locale}
-          privacyHref={withLocaleRoutePrefix(
-            config,
-            routePrefix,
-            locale,
-            "/privacy",
-          )}
-          storeLabel={config.headerCta.label}
-        />
+          <AcquisitionHeaderCta
+            className={styles.headerCta}
+            href={withLocaleRoutePrefix(
+              config,
+              routePrefix,
+              locale,
+              config.headerCta.href,
+            )}
+            locale={locale}
+            privacyHref={withLocaleRoutePrefix(
+              config,
+              routePrefix,
+              locale,
+              "/privacy",
+            )}
+            storeLabel={config.headerCta.label}
+          />
+
+          <MobileNavigation
+            label={
+              config.accessibility?.primaryNavigation ?? "Primary navigation"
+            }
+            items={config.navigation.map((item) => ({
+              ...item,
+              href: withLocaleRoutePrefix(
+                config,
+                routePrefix,
+                locale,
+                item.href,
+              ),
+              active: item.href === activeNavigationHref,
+            }))}
+            languageSelector={
+              <Suspense
+                fallback={
+                  <span className={styles.languageButton} aria-hidden="true">
+                    {locale.split("-")[0]?.toUpperCase()}
+                  </span>
+                }
+              >
+                <LanguageSelector
+                  locale={locale}
+                  defaultLocale={config.defaultLocale}
+                  enabledLocales={config.locales}
+                  routePrefix={routePrefix}
+                  label={languageMenuLabel}
+                  articleAlternates={articleAlternates}
+                  embedded
+                />
+              </Suspense>
+            }
+          />
+        </div>
       </div>
       {accessory}
     </header>
