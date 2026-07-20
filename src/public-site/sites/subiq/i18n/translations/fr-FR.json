@@ -153,6 +153,7 @@
     "troubleshooting": "Dépannage",
     "reportIssue": "Signaler un problème",
     "reportIntro": "Incluez les détails suivants dans votre e-mail d'assistance lorsqu'ils sont disponibles :",
+    "reportDestination": "Envoyez ces informations à",
     "featureRequests": "Demandes de fonctionnalités",
     "featureBody": "Vous avez une idée pour SubIQ ? Envoyez un courriel à <email>support@anmisoft.com</email> et expliquez le problème que vous souhaitez que cette fonctionnalité résolve.",
     "legalPrivacy": "Mentions légales et confidentialité",

@@ -9,6 +9,7 @@ import { addResultsToBacklog } from "@/features/keywords/service/add-results-to-
 import { getOrReuseDiscovery } from "@/features/keywords/service/get-or-reuse-discovery.server";
 import { KeywordServiceError } from "@/features/keywords/service/keyword-service-error";
 import { removeDiscovery } from "@/features/keywords/service/remove-discovery.server";
+import { appendProjectCompetitor } from "@/features/projects/service/append-project-competitor.server";
 
 export type DiscoveryActionState = { error?: string } | null;
 export type AddDiscoveryResultsActionState = { error?: string } | null;
@@ -47,7 +48,11 @@ export async function runDiscoveryAction(
   const projectId = String(formData.get("projectId") ?? "");
   let discoveryId: string;
   try {
-    const result = await getOrReuseDiscovery(projectId, requestFrom(formData));
+    const request = requestFrom(formData);
+    const result = await getOrReuseDiscovery(projectId, request);
+    if (request.method === "competitor_website") {
+      await appendProjectCompetitor(projectId, result.discovery.input);
+    }
     discoveryId = result.discovery.discoveryId;
   } catch (error) {
     return { error: message(error) };

@@ -6,6 +6,7 @@ import {
   countryCodeSchema,
   languageCodeSchema,
 } from "@/features/keywords/model/keyword-input";
+import { normalizeCompetitorDomain } from "@/features/projects/model/competitor-domain";
 
 export const discoveryOrderBy = {
   keyword_ideas: ["relevance,desc", "keyword_info.search_volume,desc"],
@@ -59,6 +60,20 @@ export const discoveryRequestSchema = z
         path: ["input"],
         message: "Use no more than 200 seed keywords.",
       });
+    }
+    if (request.method === "competitor_website") {
+      try {
+        normalizeCompetitorDomain(request.input);
+      } catch (error) {
+        context.addIssue({
+          code: "custom",
+          path: ["input"],
+          message:
+            error instanceof Error
+              ? error.message
+              : "Enter a valid competitor domain or website URL.",
+        });
+      }
     }
   });
 

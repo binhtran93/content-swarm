@@ -42,6 +42,7 @@ export async function updateProject(
         name: validated.name,
         description: validated.description,
         topics: validated.topics,
+        competitorDomains: validated.competitorDomains,
         acquisition: validated.acquisition,
         updatedAt: Timestamp.now(),
       });

@@ -153,6 +153,7 @@
     "troubleshooting": "トラブルシューティング",
     "reportIssue": "問題を報告する",
     "reportIntro": "可能な場合は、サポート電子メールに次の詳細を含めてください。",
+    "reportDestination": "これらの詳細を次の宛先に送信してください:",
     "featureRequests": "機能リクエスト",
     "featureBody": "SubIQのアイデアがありますか？<email>support@anmisoft.com</email>にメールを送信し、機能が解決してほしい問題について説明してください。",
     "legalPrivacy": "法的およびプライバシー",

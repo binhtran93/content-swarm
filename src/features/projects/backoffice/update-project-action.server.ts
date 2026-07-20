@@ -30,6 +30,10 @@ export async function updateProjectAction(
         .split(/[\n,]/)
         .map((topic) => topic.trim())
         .filter(Boolean),
+      competitorDomains: String(formData.get("competitorDomains") ?? "")
+        .split(/\r?\n/)
+        .map((domain) => domain.trim())
+        .filter(Boolean),
     });
     updateTag(projectAcquisitionCacheTag(projectId));
   } catch (error) {

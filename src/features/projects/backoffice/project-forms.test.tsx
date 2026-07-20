@@ -20,6 +20,7 @@ const project = {
   name: "SubIQ",
   description: "Private product context",
   topics: ["SaaS"],
+  competitorDomains: ["competitor.com"],
   acquisition: {
     mode: "waitlist" as const,
     appStoreUrl: null,
@@ -45,6 +46,7 @@ describe("Project backoffice forms", () => {
     expect(screen.getByDisplayValue("subiq")).toBeDisabled();
     expect(screen.getByDisplayValue("SubIQ")).toBeInTheDocument();
     expect(screen.getByDisplayValue("SaaS")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("competitor.com")).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Waitlist" })).toBeChecked();
     expect(screen.queryByLabelText("App Store URL")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Google Play URL")).not.toBeInTheDocument();

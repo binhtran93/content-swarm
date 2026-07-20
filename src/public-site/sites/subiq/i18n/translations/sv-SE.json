@@ -153,6 +153,7 @@
     "troubleshooting": "Felsökning",
     "reportIssue": "Rapportera ett problem",
     "reportIntro": "Inkludera följande information i ditt supportmejl när det är tillgängligt:",
+    "reportDestination": "Skicka dessa uppgifter till",
     "featureRequests": "Funktionsförfrågningar",
     "featureBody": "Har du en idé för SubIQ? Skicka ett e-postmeddelande till <email>support@anmisoft.com</email> och förklara problemet som du vill att funktionen ska lösa.",
     "legalPrivacy": "Juridik och integritet",

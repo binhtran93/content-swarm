@@ -66,13 +66,14 @@ describe("legal-only public sites", () => {
     );
   });
 
-  it("keeps each app's support address and app-specific guidance", () => {
+  it("uses the common support experience for every legal-only app", () => {
     const jewelry = render(<JewelryIdentifierSupportPage />);
     expect(screen.getAllByText("support@anmisoft.com").length).toBeGreaterThan(
       0,
     );
+    expect(screen.getByText("Report an Issue")).toBeInTheDocument();
     expect(
-      screen.getByText("How do I identify a jewelry piece in the app?"),
+      screen.getByText("JLens version", { exact: false }),
     ).toBeInTheDocument();
     jewelry.unmount();
 
@@ -81,7 +82,7 @@ describe("legal-only public sites", () => {
       0,
     );
     expect(
-      screen.getByText("How do I analyze a photo with SkyLens?"),
+      screen.getByText("SkyLens version", { exact: false }),
     ).toBeInTheDocument();
     expect(skylensTermsMetadata.title).toBe("Terms and Conditions | SkyLens");
     skylens.unmount();
@@ -91,7 +92,7 @@ describe("legal-only public sites", () => {
       0,
     );
     expect(
-      screen.getByText("How do I handle a strong urge right now?"),
+      screen.getByText("Urge Zero version", { exact: false }),
     ).toBeInTheDocument();
   });
 

@@ -50,6 +50,7 @@ describe("Keyword discovery results actions", () => {
   it("requires confirmation before removing a saved discovery", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[discovery]}
         existingNormalizedKeywords={[]}
         projectId="subiq"
@@ -76,6 +77,7 @@ describe("Keyword discovery results actions", () => {
   it("uses the fixed market catalog and defaults to English (United States)", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[]}
         existingNormalizedKeywords={[]}
         projectId="subiq"
@@ -92,9 +94,38 @@ describe("Keyword discovery results actions", () => {
     ).toHaveValue("zh-Hant-TW");
   });
 
+  it("suggests saved competitors while accepting a custom domain", () => {
+    render(
+      <KeywordDiscover
+        competitorDomains={["competitor.com", "app.rival.com"]}
+        discoveries={[]}
+        existingNormalizedKeywords={[]}
+        projectId="subiq"
+        selected={null}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Method" }), {
+      target: { value: "competitor_website" },
+    });
+    const input = screen.getByPlaceholderText("competitor.com");
+    const options = document.querySelectorAll(
+      "#saved-competitor-domains option",
+    );
+
+    expect(input).toHaveAttribute("list", "saved-competitor-domains");
+    expect([...options].map((option) => option.getAttribute("value"))).toEqual([
+      "competitor.com",
+      "app.rival.com",
+    ]);
+    fireEvent.change(input, { target: { value: "new-competitor.com" } });
+    expect(input).toHaveValue("new-competitor.com");
+  });
+
   it("submits selected rows from the header action", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[discovery]}
         existingNormalizedKeywords={[]}
         projectId="subiq"
@@ -125,6 +156,7 @@ describe("Keyword discovery results actions", () => {
   it("disables the header action when every result is already in backlog", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[discovery]}
         existingNormalizedKeywords={["subscription tracker"]}
         projectId="subiq"
@@ -146,6 +178,7 @@ describe("Keyword discovery results actions", () => {
   it("filters results by search, minimum volume, and maximum difficulty", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[filterDiscovery]}
         existingNormalizedKeywords={[]}
         projectId="subiq"
@@ -189,6 +222,7 @@ describe("Keyword discovery results actions", () => {
   it("sorts results from the volume, difficulty, and relevance order headers", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[filterDiscovery]}
         existingNormalizedKeywords={[]}
         projectId="subiq"
@@ -242,6 +276,7 @@ describe("Keyword discovery results actions", () => {
   it("selects and clears every visible keyword from the table header", () => {
     render(
       <KeywordDiscover
+        competitorDomains={[]}
         discoveries={[filterDiscovery]}
         existingNormalizedKeywords={[]}
         projectId="subiq"

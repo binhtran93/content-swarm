@@ -153,6 +153,7 @@
     "troubleshooting": "Sorun giderme",
     "reportIssue": "Sorun Bildir",
     "reportIntro": "Mümkün olduğunda destek e-postanıza aşağıdaki ayrıntıları ekleyin:",
+    "reportDestination": "Bu ayrıntıları şu adrese gönderin:",
     "featureRequests": "Özellik İstekleri",
     "featureBody": "SubIQ için bir fikriniz mi var? <email>support@anmisoft.com</email> adresine e-posta gönderin ve özelliğin çözmesini istediğiniz problemi açıklayın.",
     "legalPrivacy": "Yasal ve Gizlilik",

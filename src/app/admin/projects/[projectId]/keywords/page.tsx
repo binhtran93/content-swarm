@@ -101,6 +101,7 @@ export default async function KeywordsPage({
           }
           return (
             <KeywordDiscover
+              competitorDomains={project.competitorDomains}
               discoveries={discoveries}
               existingNormalizedKeywords={keywords
                 .filter(

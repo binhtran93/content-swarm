@@ -14,6 +14,7 @@ export function toProject(
     name: document.name,
     description: document.description,
     topics: document.topics,
+    competitorDomains: document.competitorDomains,
     acquisition: document.acquisition,
     status: document.status,
     createdAt: document.createdAt.toDate().toISOString(),

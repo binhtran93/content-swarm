@@ -1,3 +1,14 @@
+.legal-site {
+  --site-accent: var(--legal-accent);
+  --site-accent-bright: var(--legal-accent);
+  --site-background: var(--legal-background);
+  --site-border: var(--legal-border);
+  --site-focus-ring: var(--legal-focus-ring);
+  --site-text: var(--legal-text);
+  --site-text-secondary: var(--legal-text-secondary);
+  --site-text-muted: var(--legal-text-secondary);
+}
+
 .legal-site main {
   background: var(--legal-background);
   color: var(--legal-text);

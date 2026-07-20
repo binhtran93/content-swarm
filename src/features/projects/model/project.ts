@@ -5,6 +5,7 @@ export type Project = {
   name: string;
   description: string;
   topics: string[];
+  competitorDomains: string[];
   acquisition: ProjectAcquisition;
   status: "active" | "archived";
   createdAt: string;

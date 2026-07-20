@@ -153,6 +153,7 @@
     "troubleshooting": "문제 해결",
     "reportIssue": "문제 신고",
     "reportIntro": "가능한 경우 지원 이메일에 다음 세부정보를 포함하세요.",
+    "reportDestination": "이 세부 정보를 다음 주소로 보내주세요:",
     "featureRequests": "기능 요청",
     "featureBody": "SubIQ에 대한 아이디어가 있으신가요? <email>support@anmisoft.com</email>으로 이메일을 보내고 기능이 해결하길 원하는 문제를 설명하세요.",
     "legalPrivacy": "법률 및 개인정보 보호",

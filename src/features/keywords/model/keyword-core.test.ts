@@ -56,6 +56,21 @@ describe("keyword identity and discovery normalization", () => {
       "subscription tracker\ncancel subscriptions",
     );
   });
+
+  it("reuses a competitor request across equivalent URL forms", () => {
+    const competitorRequest = {
+      ...request,
+      method: "competitor_website" as const,
+      input: "https://Competitor.com:443/pricing?source=research",
+    };
+
+    expect(normalizeDiscoveryRequest(competitorRequest).input).toBe(
+      "competitor.com",
+    );
+    expect(discoveryRequestKey(competitorRequest)).toBe(
+      discoveryRequestKey({ ...competitorRequest, input: "competitor.com" }),
+    );
+  });
 });
 
 describe("keyword grouping rules", () => {

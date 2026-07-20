@@ -21,7 +21,13 @@ import type { KeywordDiscovery } from "@/features/keywords/model/keyword-discove
 type ResultSortField = "volume" | "difficulty" | "relevanceOrder";
 type SortDirection = "asc" | "desc";
 
-function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
+function RequestFields({
+  competitorDomains,
+  discovery,
+}: {
+  competitorDomains: string[];
+  discovery?: KeywordDiscovery | null;
+}) {
   const [method, setMethod] = useState(discovery?.method ?? "keyword_ideas");
   const selectedLocale = discovery
     ? findSupportedMarket(discovery.countryCode, discovery.languageCode)?.locale
@@ -32,6 +38,7 @@ function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Method</legend>
         <select
+          aria-label="Method"
           className="select w-full"
           name="method"
           value={method}
@@ -86,8 +93,19 @@ function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
           </>
         ) : (
           <input
+            aria-label={
+              method === "related_keywords"
+                ? "Seed keyword"
+                : "Competitor domain"
+            }
             className="input w-full"
-            defaultValue={discovery?.input}
+            defaultValue={discovery?.method === method ? discovery.input : ""}
+            key={method}
+            list={
+              method === "competitor_website"
+                ? "saved-competitor-domains"
+                : undefined
+            }
             name="input"
             placeholder={
               method === "related_keywords"
@@ -97,6 +115,13 @@ function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
             required
           />
         )}
+        {method === "competitor_website" && competitorDomains.length > 0 ? (
+          <datalist id="saved-competitor-domains">
+            {competitorDomains.map((domain) => (
+              <option key={domain} value={domain} />
+            ))}
+          </datalist>
+        ) : null}
       </fieldset>
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Market</legend>
@@ -141,11 +166,13 @@ function RequestFields({ discovery }: { discovery?: KeywordDiscovery | null }) {
 
 export function KeywordDiscover({
   projectId,
+  competitorDomains,
   discoveries,
   selected,
   existingNormalizedKeywords,
 }: {
   projectId: string;
+  competitorDomains: string[];
   discoveries: KeywordDiscovery[];
   selected: KeywordDiscovery | null;
   existingNormalizedKeywords: string[];
@@ -295,7 +322,10 @@ export function KeywordDiscover({
             <div className="collapse-content border-base-300 border-t px-5 pb-5">
               <input name="projectId" type="hidden" value={projectId} />
               <div className="mt-4 grid gap-x-4 gap-y-3 sm:grid-cols-2">
-                <RequestFields discovery={selected} />
+                <RequestFields
+                  competitorDomains={competitorDomains}
+                  discovery={selected}
+                />
               </div>
               <div className="border-base-300 mt-5 flex items-center justify-between gap-4 border-t pt-4">
                 <p className="text-base-content/55 text-xs">

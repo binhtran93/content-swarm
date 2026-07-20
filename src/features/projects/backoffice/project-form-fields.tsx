@@ -174,6 +174,20 @@ export function ProjectFormFields({
               placeholder={"SEO\nContent marketing"}
             />
           </fieldset>
+
+          <fieldset className="fieldset gap-1.5">
+            <legend className="fieldset-legend">Competitors</legend>
+            <textarea
+              aria-label="Competitors"
+              className="textarea min-h-20 w-full"
+              defaultValue={project.competitorDomains.join("\n")}
+              name="competitorDomains"
+              placeholder={"competitor.com\nhttps://another-competitor.com"}
+            />
+            <p className="label">
+              One competitor domain or website URL per line, up to 100.
+            </p>
+          </fieldset>
         </>
       ) : null}
     </>

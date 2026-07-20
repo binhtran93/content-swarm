@@ -4,6 +4,7 @@ import {
   defaultProjectAcquisition,
   projectAcquisitionSchema,
 } from "@/features/projects/model/project-acquisition";
+import { competitorDomainsSchema } from "@/features/projects/model/competitor-domain";
 
 const projectId = z
   .string()
@@ -39,11 +40,13 @@ export const projectInputSchemas = {
     projectId,
     ...fields,
     topics: topics.default([]),
+    competitorDomains: competitorDomainsSchema.default([]),
     acquisition: projectAcquisitionSchema.default(defaultProjectAcquisition),
   }),
   update: z.object({
     ...fields,
     topics,
+    competitorDomains: competitorDomainsSchema,
     acquisition: projectAcquisitionSchema,
   }),
 };

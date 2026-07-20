@@ -7,6 +7,7 @@ import {
   type DiscoveryRequest,
 } from "@/features/keywords/model/discovery-input";
 import { normalizeKeyword } from "@/features/keywords/model/keyword-input";
+import { normalizeCompetitorDomain } from "@/features/projects/model/competitor-domain";
 
 export function normalizeDiscoveryRequest(input: DiscoveryRequest) {
   const request = discoveryRequestSchema.parse(input);
@@ -16,11 +17,7 @@ export function normalizeDiscoveryRequest(input: DiscoveryRequest) {
       request.method === "keyword_ideas"
         ? keywordIdeaSeeds(request.input).join("\n")
         : request.method === "competitor_website"
-          ? request.input
-              .trim()
-              .toLocaleLowerCase("en-US")
-              .replace(/^https?:\/\//, "")
-              .replace(/\/$/, "")
+          ? normalizeCompetitorDomain(request.input)
           : normalizeKeyword(request.input),
     orderBy: [...discoveryOrderBy[request.method]],
   };

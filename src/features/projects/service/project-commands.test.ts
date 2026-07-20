@@ -2,6 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultProjectAcquisition } from "@/features/projects/model/project-acquisition";
+import { appendProjectCompetitor } from "@/features/projects/service/append-project-competitor.server";
 import { archiveProject } from "@/features/projects/service/archive-project.server";
 import { createProject } from "@/features/projects/service/create-project.server";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
@@ -104,6 +105,7 @@ describe("Project commands and queries", () => {
       schemaVersion: 1,
       status: "active",
       acquisition: defaultProjectAcquisition,
+      competitorDomains: [],
     });
     expect(mock.requireOwner).toHaveBeenCalledOnce();
   });
@@ -125,6 +127,7 @@ describe("Project commands and queries", () => {
         name: "Stolen",
         description: baseInput.description,
         topics: [],
+        competitorDomains: [],
         acquisition: defaultProjectAcquisition,
       }),
     ).rejects.toThrow("unavailable");
@@ -137,6 +140,7 @@ describe("Project commands and queries", () => {
       name: "SubIQ Pro",
       description: "Updated private product context.",
       topics: ["SaaS", "Retention"],
+      competitorDomains: ["https://Competitor.com/pricing"],
       acquisition: defaultProjectAcquisition,
     });
 
@@ -144,9 +148,39 @@ describe("Project commands and queries", () => {
       projectId: "subiq",
       name: "SubIQ Pro",
       topics: ["SaaS", "Retention"],
+      competitorDomains: ["competitor.com"],
       acquisition: defaultProjectAcquisition,
     });
     expect(mock.documents.get("projects/subiq")?.ownerId).toBe("owner-a");
+  });
+
+  it("appends one normalized competitor without duplicating it", async () => {
+    await createProject(baseInput);
+
+    await appendProjectCompetitor(
+      "subiq",
+      "https://Competitor.com/pricing?source=research",
+    );
+    await appendProjectCompetitor("subiq", "competitor.com");
+
+    expect(mock.documents.get("projects/subiq")?.competitorDomains).toEqual([
+      "competitor.com",
+    ]);
+  });
+
+  it("does not append competitors for foreign or archived projects", async () => {
+    await createProject(baseInput);
+    mock.ownerUid = "owner-b";
+    await expect(
+      appendProjectCompetitor("subiq", "competitor.com"),
+    ).rejects.toThrow("unavailable");
+
+    mock.ownerUid = "owner-a";
+    await archiveProject("subiq");
+    await expect(
+      appendProjectCompetitor("subiq", "competitor.com"),
+    ).rejects.toThrow("cannot be changed");
+    expect(mock.documents.get("projects/subiq")?.competitorDomains).toEqual([]);
   });
 
   it("lists only active owned projects in recent-first order", async () => {
@@ -178,6 +212,7 @@ describe("Project commands and queries", () => {
         name: "No change",
         description: baseInput.description,
         topics: [],
+        competitorDomains: [],
         acquisition: defaultProjectAcquisition,
       }),
     ).rejects.toThrow("cannot be changed");
