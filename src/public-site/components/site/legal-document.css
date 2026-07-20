@@ -11,8 +11,8 @@
   border-radius: 0 !important;
   box-shadow: none !important;
   margin-inline: auto;
-  max-width: 960px !important;
-  padding: 0 clamp(24px, 4vw, 64px) !important;
+  max-width: var(--legal-document-shell-width, 1440px) !important;
+  padding: 0 var(--legal-document-inline-padding, clamp(24px, 4vw, 64px)) !important;
   width: 100%;
 }
 
@@ -58,6 +58,10 @@
   box-shadow: none !important;
   margin: clamp(40px, 6vw, 64px) 0 0 !important;
   padding: clamp(28px, 4vw, 40px) 0 0 !important;
+}
+
+.legal-document__article > section > * {
+  max-width: 860px;
 }
 
 .legal-document__article section h2 {

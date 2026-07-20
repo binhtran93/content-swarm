@@ -1,4 +1,6 @@
 .legal-site {
+  --legal-document-inline-padding: clamp(20px, 4vw, 48px);
+  --legal-document-shell-width: 1120px;
   --site-accent: var(--legal-accent);
   --site-accent-bright: var(--legal-accent);
   --site-background: var(--legal-background);
