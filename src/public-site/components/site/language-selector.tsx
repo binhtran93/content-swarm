@@ -121,6 +121,7 @@ export function LanguageSelector({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current = supportedLocales.find((item) => item.locale === locale)!;
+  const CurrentFlag = localeFlags[current.countryCode];
 
   useEffect(() => {
     const updateFragment = () => setFragment(window.location.hash);
@@ -238,10 +239,10 @@ export function LanguageSelector({
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-        </svg>
+        <CurrentFlag
+          className={styles.languageButtonFlag}
+          aria-hidden="true"
+        />
         <span>{current.languageCode.toUpperCase()}</span>
       </button>
       {open ? (

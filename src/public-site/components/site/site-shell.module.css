@@ -164,14 +164,6 @@
   padding: 6px 2px;
 }
 
-.languageButton svg {
-  fill: none;
-  height: 18px;
-  stroke: currentColor;
-  stroke-width: 1.65;
-  width: 18px;
-}
-
 .languageMenu {
   background: var(--site-background);
   border: 1px solid var(--site-border);
@@ -193,17 +185,26 @@
   font-size: 15px;
   gap: 10px;
   line-height: 18px;
-  padding: 6px 18px;
+  padding: 8px 18px;
   text-align: start;
   white-space: nowrap;
 }
 
-.languageFlag {
+.languageFlag,
+.languageButtonFlag {
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.09);
   flex: 0 0 auto;
+}
+
+.languageFlag {
   height: 14px;
   width: 21px;
+}
+
+.languageButtonFlag {
+  height: 15px;
+  width: 22.5px;
 }
 
 .languageMenu a:hover,
