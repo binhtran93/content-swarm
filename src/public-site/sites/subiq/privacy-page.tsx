@@ -10,7 +10,7 @@ export function SubiqPrivacyPage() {
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Privacy Policy
         </h1>
-        <p className="mb-8 text-sm text-zinc-600">Effective Date: 19.07.2026</p>
+        <p className="mb-8 text-sm text-zinc-600">Effective Date: 20.07.2026</p>
 
         <p className="mb-6 leading-8 text-zinc-700">
           At SubIQ (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;),
@@ -107,6 +107,14 @@ export function SubiqPrivacyPage() {
               security logs.
             </li>
             <li>
+              When you visit the SubIQ website, Google Analytics records page
+              views and may process the page location and title, site language,
+              approximate location, browser and device information, and a
+              first-party identifier stored in the <code>_ga</code> cookie. We
+              do not send waitlist form contents or Firebase Authentication
+              identifiers as website analytics events.
+            </li>
+            <li>
               Support correspondence and any information you choose to include
               when you contact us.
             </li>
@@ -131,6 +139,10 @@ export function SubiqPrivacyPage() {
               Automatically through Firebase and similar technologies when the
               app creates an anonymous account, synchronizes data, records
               analytics, or calls a cloud service.
+            </li>
+            <li>
+              Through first-party cookies and similar technologies when the
+              dedicated SubIQ website records page views.
             </li>
             <li>
               From generated app activity, such as calculated renewal dates,
@@ -198,12 +210,15 @@ export function SubiqPrivacyPage() {
             password.
           </p>
           <p className="leading-8 text-zinc-700">
-            SubIQ also uses Firebase Analytics to understand app usage and
-            reliability. Analytics may process an app-instance identifier, the
+            The SubIQ mobile app uses Firebase Analytics to understand app usage
+            and reliability. It may process an app-instance identifier, the
             anonymous Firebase identifier associated with your session, device
-            and app information, and interaction events. We do not use Firebase
-            Analytics to collect the prices or other contents of your
-            subscription records as analytics event data.
+            and app information, and interaction events. The dedicated SubIQ
+            website uses Google Analytics to measure page views and may set a
+            first-party <code>_ga</code> cookie to distinguish visits and
+            sessions. We do not use these analytics services to collect
+            subscription record contents, waitlist form contents, or website
+            account identifiers as analytics event data.
           </p>
         </section>
 
@@ -381,6 +396,18 @@ export function SubiqPrivacyPage() {
             <li>
               Ask support@anmisoft.com to remove your email from the launch
               waitlist or stop launch updates.
+            </li>
+            <li>
+              Block or delete analytics cookies using your browser settings, or
+              use the{" "}
+              <a
+                href="https://tools.google.com/dlpage/gaoptout"
+                className="font-medium text-zinc-900 underline-offset-4 hover:underline"
+              >
+                Google Analytics Opt-out Browser Add-on
+              </a>
+              . Blocking analytics does not prevent you from using the SubIQ
+              website.
             </li>
           </ul>
         </section>

@@ -27,6 +27,7 @@ describe("SubIQ public configuration", () => {
       id: "subiq",
       internalBasePath: "/subiq",
       canonicalOrigin: "https://getsubiq.com",
+      analyticsMeasurementId: "G-7XMGQM9LDR",
       scopeClassName: "subiq-site",
       theme: { routeProgressColor: "#2e7d32" },
     });

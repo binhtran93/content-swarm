@@ -6,6 +6,8 @@ import {
   findSupportedLocale,
   type SupportedLocaleCode,
 } from "@/config/supported-locales";
+import { SiteAnalytics } from "@/public-site/analytics/site-analytics";
+import { isDedicatedSiteAnalyticsDeployment } from "@/public-site/analytics/site-analytics-policy";
 import { AcquisitionHeaderCta } from "@/public-site/components/acquisition";
 import type { PublicSiteConfig } from "@/public-site/config/site-config";
 import { LanguageSelector } from "./language-selector";
@@ -217,6 +219,10 @@ export function SiteShell({
   children: ReactNode;
 }) {
   const localeConfig = findSupportedLocale(locale);
+  const analyticsEnabled = isDedicatedSiteAnalyticsDeployment(
+    config.id,
+    process.env,
+  );
 
   return (
     <div
@@ -225,6 +231,11 @@ export function SiteShell({
       lang={locale}
       dir={localeConfig?.direction ?? "ltr"}
     >
+      <SiteAnalytics
+        enabled={analyticsEnabled}
+        canonicalOrigin={config.canonicalOrigin}
+        measurementId={config.analyticsMeasurementId}
+      />
       <SiteRouteTheme progressColor={config.theme.routeProgressColor} />
       <SiteHeader
         config={config}

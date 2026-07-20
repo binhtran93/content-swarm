@@ -55,4 +55,13 @@ describe("public site configuration", () => {
     expect(config.waitlist.emailLabel).toBe("Email address");
     expect(config.waitlist.title).toBe("Join the Example waitlist");
   });
+
+  it("rejects an invalid Google Analytics measurement ID", () => {
+    const input = siteConfigInput();
+    input.analyticsMeasurementId = "UA-OLD-ANALYTICS";
+
+    expect(() => definePublicSiteConfig(input)).toThrow(
+      "Invalid Google Analytics measurement ID",
+    );
+  });
 });

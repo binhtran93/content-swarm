@@ -16,6 +16,7 @@ export const subiqSiteConfig = definePublicSiteConfig({
   id: "subiq",
   internalBasePath: publicProjectBasePaths.subiq,
   canonicalOrigin: "https://getsubiq.com",
+  analyticsMeasurementId: "G-7XMGQM9LDR",
   defaultLocale,
   locales: supportedLocales.map((item) => item.locale),
   scopeClassName: "subiq-site",

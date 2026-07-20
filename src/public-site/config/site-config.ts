@@ -28,6 +28,7 @@ export type PublicSiteConfig = {
   id: string;
   internalBasePath: string;
   canonicalOrigin: string;
+  analyticsMeasurementId?: string;
   defaultLocale: SupportedLocaleCode;
   locales: readonly SupportedLocaleCode[];
   scopeClassName: string;
@@ -81,6 +82,13 @@ export function createDefaultWaitlistPresentation(
 export function definePublicSiteConfig(
   input: PublicSiteConfigInput,
 ): PublicSiteConfig {
+  if (
+    input.analyticsMeasurementId !== undefined &&
+    !/^G-[A-Z0-9]+$/i.test(input.analyticsMeasurementId)
+  ) {
+    throw new Error("Invalid Google Analytics measurement ID");
+  }
+
   return {
     ...input,
     waitlist: {
