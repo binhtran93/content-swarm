@@ -295,7 +295,8 @@ export default function JewelryIdentifierPrivacyPage() {
             </li>
             <li>
               Delete Your Account or Request Data Deletion: You can request
-              account or personal data deletion by emailing support@anmisoft.com.
+              account or personal data deletion by emailing
+              support@anmisoft.com.
             </li>
             <li>
               Opt Out of Targeted Ads: If targeted ads are shown, you can adjust
