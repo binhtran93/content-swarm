@@ -4,6 +4,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 vi.mock("next/font/google", () => ({
   Bodoni_Moda: () => ({ variable: "font-jlens-display" }),
 }));
+vi.mock("@/features/articles/public/list-public-articles.server", () => ({
+  listPublicArticles: vi.fn().mockResolvedValue([]),
+}));
 
 import { AcquisitionProvider } from "@/public-site/components/acquisition";
 import { createJlensLandingMetadata } from "@/public-site/sites/jlens/landing-metadata";
@@ -130,15 +133,16 @@ describe("JLens landing page", () => {
     ).toContain("SoftwareApplication");
   });
 
-  it("publishes canonical social metadata and a four-route sitemap", () => {
+  it("publishes canonical social metadata and includes the blog in its sitemap", async () => {
     const metadata = createJlensLandingMetadata();
     expect(metadata.title).toBe(
       "AI Jewelry Identifier & Value Estimator | JLens",
     );
     expect(metadata.alternates?.canonical).toBe("https://jlensapp.com/");
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
-    expect(sitemap().map((entry) => entry.url)).toEqual([
+    expect((await sitemap()).map((entry) => entry.url)).toEqual([
       "https://jlensapp.com/",
+      "https://jlensapp.com/blog",
       "https://jlensapp.com/support",
       "https://jlensapp.com/privacy",
       "https://jlensapp.com/terms",

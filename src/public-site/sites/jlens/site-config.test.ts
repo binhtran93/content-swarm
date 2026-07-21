@@ -21,8 +21,7 @@ describe("JLens public configuration", () => {
     });
     expect(jlensSiteConfig.navigation.map((item) => item.label)).toEqual([
       "Home",
-      "Features",
-      "Collection",
+      "Blog",
       "FAQ",
       "Support",
     ]);

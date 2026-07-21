@@ -12,7 +12,6 @@ import styles from "./blog.module.css";
 
 export type BlogArticleCopy = {
   untitledArticle: string;
-  defaultTopic: string;
   readingTime: (minutes: number) => string;
   englishOnlyNotice: string;
   onThisPage: string;
@@ -97,7 +96,7 @@ export async function BlogArticle({
           <div className={styles.contentShell}>
             <div className={styles.articleHeroInner}>
               <div className={styles.articleMeta}>
-                <span>{source.topics[0] ?? copy.defaultTopic}</span>
+                {source.topics[0] ? <span>{source.topics[0]}</span> : null}
                 <time dateTime={updatedAt}>
                   {new Intl.DateTimeFormat(locale, {
                     month: "short",

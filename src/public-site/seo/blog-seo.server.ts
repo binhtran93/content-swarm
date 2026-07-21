@@ -20,7 +20,7 @@ export async function createBlogArticleMetadata(
     result.source.seoTitle ??
     result.translation?.title ??
     result.source.title ??
-    "SubIQ guide";
+    `${config.brand.name} guide`;
   const description =
     result.translation?.seoDescription ??
     result.source.seoDescription ??

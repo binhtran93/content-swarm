@@ -75,7 +75,6 @@ export async function SubiqBlogArticlePage({
         canonical={canonical}
         copy={{
           untitledArticle: t("blog.untitledArticle"),
-          defaultTopic: t("blog.defaultTopic"),
           readingTime: (minutes) => t("blog.readingTime", { minutes }),
           englishOnlyNotice: t("blog.englishOnlyNotice"),
           onThisPage: t("blog.onThisPage"),

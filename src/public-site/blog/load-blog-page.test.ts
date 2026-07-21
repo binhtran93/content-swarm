@@ -4,6 +4,7 @@ import { getPublicTranslation } from "@/features/articles/public/get-public-tran
 import { listPublicArticlePage } from "@/features/articles/public/list-public-article-page.server";
 import { listPublicTopics } from "@/features/articles/public/list-public-topics.server";
 import { loadBlogPage } from "@/public-site/blog/load-blog-page.server";
+import { jlensBlogConfig } from "@/public-site/sites/jlens/blog-config";
 import { subiqBlogConfig } from "@/public-site/sites/subiq/blog-config";
 
 vi.mock("@/features/articles/public/get-public-translation.server", () => ({
@@ -37,6 +38,7 @@ const article = (articleId: string, slug: string) => ({
 
 describe("localized blog page composition", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(listPublicArticlePage).mockResolvedValue({
       items: [article("one", "one"), article("two", "two")],
       hasNext: true,
@@ -86,5 +88,21 @@ describe("localized blog page composition", () => {
         topic: "Renewals",
       }),
     );
+  });
+
+  it("scopes JLens blog reads to the JLens project", async () => {
+    await loadBlogPage({
+      config: jlensBlogConfig,
+      locale: "en-US",
+    });
+
+    expect(listPublicArticlePage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        projectId: "jlens",
+        sourceLocale: "en-US",
+      }),
+    );
+    expect(listPublicTopics).toHaveBeenCalledWith("jlens", "en-US");
+    expect(getPublicTranslation).not.toHaveBeenCalled();
   });
 });

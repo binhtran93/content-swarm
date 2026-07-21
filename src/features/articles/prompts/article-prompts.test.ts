@@ -17,7 +17,17 @@ describe("article prompt contracts", () => {
     );
     expect(articlePlanPrompt.system).toContain("as the final H2 section");
     expect(articlePlanPrompt.system).toContain("Omit the FAQ when");
-    expect(articleContentPrompt.version).toBe("article-content-v3");
+    expect(articleContentPrompt.version).toBe("article-content-v4");
+    expect(articleContentPrompt.system).toContain(
+      "complete primary keyword phrase",
+    );
+    expect(articleContentPrompt.system).toContain(
+      "more useful than the plain keyword",
+    );
+    expect(articleContentPrompt.system).toContain(
+      "skilled native editor from the requested market",
+    );
+    expect(articleContentPrompt.system).toContain("nobody speaks that way");
     expect(articleContentPrompt.system).toContain("Do not include an H1");
     expect(articleContentPrompt.system).toContain("do not invent facts");
     expect(articleContentPrompt.system).toContain("Do not use em dashes");

@@ -275,6 +275,7 @@ function ContentEditor({
         window.confirm("Replace your unsaved MDX with the AI proposal?"))
     ) {
       setContent(proposal);
+      if (result?.proposal?.title) setTitle(result.proposal.title);
       setReferences(result?.proposal?.references ?? []);
     }
   }

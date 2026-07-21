@@ -213,6 +213,10 @@
   width: 3px;
 }
 
+.articleMeta time:first-child::before {
+  display: none;
+}
+
 .articleContent h3 {
   color: #171719;
   font-size: clamp(24px, 2.35vw, 34px);
@@ -317,27 +321,27 @@
 }
 
 .articleHeroInner {
-  max-width: 960px;
+  max-width: 900px;
 }
 
 .articleHero h1 {
   color: #090909;
-  font-size: clamp(46px, 5.2vw, 72px);
-  font-weight: 720;
-  letter-spacing: -0.064em;
-  line-height: 0.98;
-  margin: 18px 0 0;
-  max-width: 940px;
+  font-size: clamp(42px, 4.25vw, 60px);
+  font-weight: 680;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 20px 0 0;
+  max-width: 880px;
   text-wrap: balance;
 }
 
 .articleDek {
   color: var(--blog-text-secondary);
-  font-size: clamp(18px, 1.55vw, 22px);
-  letter-spacing: -0.02em;
-  line-height: 1.5;
-  margin: 20px 0 0;
-  max-width: 760px;
+  font-size: clamp(17px, 1.35vw, 20px);
+  letter-spacing: -0.012em;
+  line-height: 1.55;
+  margin: 18px 0 0;
+  max-width: 720px;
 }
 
 .fallbackNotice {
@@ -823,11 +827,11 @@ button.installCtaActions {
   }
 
   .articleHero h1 {
-    font-size: clamp(40px, 10.8vw, 46px);
+    font-size: clamp(36px, 9.6vw, 42px);
   }
 
   .articleDek {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .articleBody {

@@ -31,6 +31,7 @@ export const jlensSiteConfig = definePublicSiteConfig({
   },
   navigation: [
     { label: "Home", href: "/" },
+    { label: "Blog", href: "/blog" },
     { label: "FAQ", href: "/#faq" },
     { label: "Support", href: "/support" },
   ],

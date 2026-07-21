@@ -1,13 +1,27 @@
-import type { ElementType } from "react";
-import { Bleed, Callout, Cards, Steps, Table, Tabs } from "nextra/components";
+import type { ElementType, ReactNode } from "react";
+import {
+  Bleed,
+  Callout,
+  Cards,
+  Steps,
+  Table as NextraTable,
+  Tabs,
+} from "nextra/components";
 
 import type { ArticleMdxComponentName } from "@/features/articles/config/article-mdx-components";
+
+function ArticleTableGroup({ children }: { children?: ReactNode }) {
+  return <>{children}</>;
+}
 
 export const articleMdxComponents = {
   Bleed,
   Callout,
   Cards,
   Steps,
-  Table,
+  Table: ArticleTableGroup,
   Tabs,
-} satisfies Record<ArticleMdxComponentName, ElementType>;
+  table: NextraTable,
+} satisfies Record<ArticleMdxComponentName, ElementType> & {
+  table: ElementType;
+};

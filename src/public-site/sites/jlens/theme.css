@@ -10,10 +10,10 @@
   --site-download-text: #625d54;
   --site-faq-surface: #fffdf8;
   --site-focus-ring: rgb(138 103 36 / 44%);
-  --site-footer-background: #101b17;
-  --site-footer-border: #2a3831;
-  --site-footer-text: #f6f0e5;
-  --site-footer-text-secondary: #aeb8b1;
+  --site-footer-background: #faf7f1;
+  --site-footer-border: #d8cfc2;
+  --site-footer-text: #24231f;
+  --site-footer-text-secondary: #625d54;
   --site-header-background: #fdfaf5;
   --site-header-border: #e5ddd1;
   --site-heading: #1d211c;
@@ -23,6 +23,12 @@
   --site-text: #24231f;
   --site-text-muted: #887f73;
   --site-text-secondary: #625d54;
+  --blog-accent: #8a6724;
+  --blog-accent-soft: #efe4ce;
+  --blog-text: #24231f;
+  --blog-text-secondary: #625d54;
+  --blog-surface: #f0ebe2;
+  --blog-border: #d8cfc2;
   --legal-accent: #8a6724;
   --legal-background: #faf7f1;
   --legal-border: #d8cfc2;

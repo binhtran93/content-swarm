@@ -16,7 +16,7 @@ export const articleMdxComponentDefinitions = {
     properties: [],
   },
   Table: {
-    description: "Structured comparable values in rows and columns.",
+    description: "A responsive wrapper around one Markdown table.",
     properties: [],
   },
   Tabs: {

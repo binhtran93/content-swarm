@@ -41,7 +41,6 @@ export async function SubiqBlogIndexPage({
           articlesLabel: messages.blog.articlesLabel,
           browseByTopic: messages.blog.browseByTopic,
           allTopics: messages.blog.allTopics,
-          defaultTopic: messages.blog.defaultTopic,
           englishOnlyShort: messages.blog.englishOnlyShort,
           emptyTitle: messages.blog.emptyTitle,
           emptyDescription: messages.blog.emptyDescription,

@@ -168,19 +168,22 @@ async function runProject(
     const generated = await retryAutomationOperation(() =>
       generateArticleContent(projectId, articleId!),
     );
+    await updateArticle(projectId, articleId, () => ({
+      title: generated.output.title,
+    }));
     const review = await retryAutomationOperation(() =>
-      reviewArticleContent(projectId, articleId!, generated.output),
+      reviewArticleContent(projectId, articleId!, generated.output.content),
     );
     const improved = review.output.changes.length
       ? await retryAutomationOperation(() =>
           applyArticleContentChanges(
             projectId,
             articleId!,
-            generated.output,
+            generated.output.content,
             review.output.changes,
           ),
         )
-      : generated;
+      : { output: generated.output.content, references: generated.references };
     const excerpt = await retryAutomationOperation(() =>
       generateArticleExcerpt(projectId, articleId!, improved.output),
     );

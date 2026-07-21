@@ -1,12 +1,19 @@
 .page {
   background: var(--site-background, #fff);
   color: var(--site-text, #1c1c1e);
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   overflow-x: clip;
   position: relative;
   isolation: isolate;
+}
+
+.page > main {
+  flex: 1 0 auto;
 }
 
 .page *,
@@ -349,21 +356,20 @@
   background: var(--site-footer-background, #f6f7f6);
   border-top: 1px solid var(--site-footer-border, rgba(60, 60, 67, 0.07));
   color: var(--site-footer-text, var(--site-text, #1c1c1e));
+  flex: 0 0 auto;
 }
 
 .footerInner {
   align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  justify-content: center;
-  min-height: 220px;
-  padding: 44px clamp(24px, 4vw, 64px);
-  text-align: center;
+  display: grid;
+  gap: 32px;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(300px, 1fr);
+  padding: 28px clamp(24px, 4vw, 64px);
 }
 
 .footerBrand {
   font-size: 24px;
+  justify-self: start;
 }
 
 .footerBrand .brandMark {
@@ -380,6 +386,7 @@
 .footerInner nav {
   display: flex;
   gap: 23px;
+  justify-self: center;
 }
 
 .footerInner nav a {
@@ -398,7 +405,9 @@
   flex-direction: column;
   font-size: 13px;
   gap: 5px;
-  text-align: center;
+  justify-self: end;
+  max-width: 520px;
+  text-align: right;
 }
 
 @media (max-width: 1240px) {
@@ -469,8 +478,20 @@
   }
 
   .footerInner {
-    gap: 18px;
-    padding-block: 44px;
+    gap: 14px;
+    grid-template-columns: 1fr;
+    padding-block: 28px;
+    text-align: center;
+  }
+
+  .footerBrand,
+  .footerInner nav,
+  .footerMeta {
+    justify-self: center;
+  }
+
+  .footerMeta {
+    text-align: center;
   }
 }
 

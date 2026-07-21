@@ -32,6 +32,12 @@ export async function getArticleGenerationContext(
   return {
     article,
     project,
+    market: primary
+      ? {
+          countryCode: primary.countryCode,
+          languageCode: primary.languageCode,
+        }
+      : null,
     primaryKeyword: primary?.keyword ?? "",
     supportingKeywords: supporting,
   };

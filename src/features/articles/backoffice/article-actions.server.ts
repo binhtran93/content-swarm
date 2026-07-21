@@ -172,7 +172,8 @@ export async function generateContentAction(
 
     return {
       proposal: {
-        content: result.output,
+        title: result.output.title,
+        content: result.output.content,
         references: result.references,
       },
     };

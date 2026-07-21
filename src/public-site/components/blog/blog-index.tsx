@@ -14,7 +14,6 @@ export type BlogIndexCopy = {
   articlesLabel: string;
   browseByTopic: string;
   allTopics: string;
-  defaultTopic: string;
   englishOnlyShort: string;
   emptyTitle: string;
   emptyDescription: string;
@@ -113,7 +112,9 @@ export function BlogIndex({
                     >
                       <div className={styles.articleContent}>
                         <div className={styles.articleMeta}>
-                          <span>{article.topics[0] ?? copy.defaultTopic}</span>
+                          {article.topics[0] ? (
+                            <span>{article.topics[0]}</span>
+                          ) : null}
                           <time dateTime={article.updatedAt}>
                             {formatDate(article.updatedAt, locale)}
                           </time>

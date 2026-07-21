@@ -1,12 +1,7 @@
-import type { MetadataRoute } from "next";
+import { buildJlensSitemap } from "@/public-site/seo/build-jlens-sitemap.server";
 
-import { getCanonicalUrl } from "@/public-site/config/public-url";
-import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+export const dynamic = "force-dynamic";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return ["/", "/support", "/privacy", "/terms"].map((path) => ({
-    url: getCanonicalUrl(jlensSiteConfig, jlensSiteConfig.defaultLocale, path),
-    changeFrequency: "monthly" as const,
-    priority: path === "/" ? 1 : 0.4,
-  }));
+export default function sitemap() {
+  return buildJlensSitemap();
 }

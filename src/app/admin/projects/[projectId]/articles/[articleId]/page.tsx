@@ -9,8 +9,10 @@ import { getArticleReadiness } from "@/features/articles/service/get-article-rea
 import { listTranslations } from "@/features/articles/service/list-translations.server";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
 import { getCanonicalUrl } from "@/public-site/config/public-url";
+import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
 
+import "@/public-site/sites/jlens/theme.css";
 import "@/public-site/sites/subiq/theme.css";
 
 type Step = "plan" | "content" | "seo" | "translations" | "publish";
@@ -58,6 +60,12 @@ export default async function ArticlePage({
     );
   const { project, article, translations, readiness } = data;
   const articleLocale = findSupportedLocale(article.locale)?.locale;
+  const publicSiteConfig =
+    projectId === jlensSiteConfig.id
+      ? jlensSiteConfig
+      : projectId === subiqSiteConfig.id
+        ? subiqSiteConfig
+        : undefined;
   const requested = Array.isArray(query.step) ? query.step[0] : query.step;
   const valid = ["plan", "content", "seo", "translations", "publish"].includes(
     requested ?? "",
@@ -98,14 +106,10 @@ export default async function ArticlePage({
       />
       <ArticleWorkspace
         article={article}
-        articleThemeClassName={
-          projectId === subiqSiteConfig.id
-            ? subiqSiteConfig.scopeClassName
-            : undefined
-        }
+        articleThemeClassName={publicSiteConfig?.scopeClassName}
         canonicalArticleUrlPrefix={
-          projectId === subiqSiteConfig.id && articleLocale
-            ? getCanonicalUrl(subiqSiteConfig, articleLocale, "/blog/")
+          publicSiteConfig && articleLocale
+            ? getCanonicalUrl(publicSiteConfig, articleLocale, "/blog/")
             : undefined
         }
         projectTopics={project.topics}
