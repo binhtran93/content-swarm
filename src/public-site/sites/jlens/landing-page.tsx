@@ -134,6 +134,7 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
 const careItems = [
   {
     title: "Cleaning",
+    description: "Gentle habits for everyday freshness",
     bullets: [
       "Wipe with a soft, dry microfiber cloth",
       "Avoid harsh chemical cleaners",
@@ -142,6 +143,7 @@ const careItems = [
   },
   {
     title: "Storage",
+    description: "A safer place for pieces between wears",
     bullets: [
       "Store separately to prevent scratches",
       "Keep in a cool, dry place",
@@ -150,6 +152,7 @@ const careItems = [
   },
   {
     title: "Maintenance",
+    description: "Small checks that help prevent bigger problems",
     bullets: [
       "Check clasps, links, and settings regularly",
       "Clean gently after wearing to remove oils",
@@ -158,6 +161,7 @@ const careItems = [
   },
   {
     title: "Avoid",
+    description: "Know what can cause unnecessary wear",
     bullets: [
       "Perfume, hairspray, and cosmetics",
       "Prolonged water or humidity",
@@ -176,6 +180,17 @@ function JlensCareSection() {
             eyebrow="Jewelry care"
             title="Help every piece look its best"
           />
+          <ol className={styles.careTopics}>
+            {careItems.map(({ title, description }, index) => (
+              <li key={title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{title}</strong>
+                  <p>{description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <div className={styles.careVisual}>

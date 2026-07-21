@@ -315,6 +315,51 @@
   grid-area: copy;
 }
 
+.careTopics {
+  display: grid;
+  list-style: none;
+  margin: 38px 0 0;
+  max-width: 680px;
+  padding: 0;
+}
+
+.careTopics li {
+  align-items: start;
+  border-top: 1px solid #ddd3c4;
+  color: #292722;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 52px minmax(0, 1fr);
+  padding: 22px 0;
+}
+
+.careTopics li:last-child {
+  border-bottom: 1px solid #ddd3c4;
+}
+
+.careTopics span {
+  color: #9a742d;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  padding-top: 5px;
+}
+
+.careTopics strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.careTopics p {
+  color: #6d675e;
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 5px 0 0;
+}
+
 .careVisual {
   align-items: center;
   display: flex;
