@@ -1,17 +1,33 @@
 import Link from "next/link";
 
-import { getPublicRouteMode } from "@/public-site/config/public-url";
+import {
+  getDedicatedPublicProjectId,
+  getPublicRouteMode,
+} from "@/public-site/config/public-url";
+import { JlensAcquisitionBoundary } from "@/public-site/sites/jlens/acquisition-boundary";
+import { createJlensLandingMetadata } from "@/public-site/sites/jlens/landing-metadata";
+import { JlensLandingPage } from "@/public-site/sites/jlens/landing-page";
 import { SubiqAcquisitionBoundary } from "@/public-site/sites/subiq/acquisition-boundary";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
 import { SubiqLandingPage } from "@/public-site/sites/subiq/landing-page";
 
-export const metadata =
-  getPublicRouteMode() === "root"
-    ? createSubiqLandingMetadata("en-US")
-    : undefined;
+export function generateMetadata() {
+  if (getPublicRouteMode() !== "root") return undefined;
+  return getDedicatedPublicProjectId() === "jlens"
+    ? createJlensLandingMetadata()
+    : createSubiqLandingMetadata("en-US");
+}
 
 export default function HomePage() {
   if (getPublicRouteMode() === "root") {
+    if (getDedicatedPublicProjectId() === "jlens") {
+      return (
+        <JlensAcquisitionBoundary>
+          <JlensLandingPage />
+        </JlensAcquisitionBoundary>
+      );
+    }
+
     return (
       <SubiqAcquisitionBoundary>
         <SubiqLandingPage locale="en-US" />

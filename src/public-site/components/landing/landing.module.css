@@ -136,7 +136,7 @@
 
 .sectionHeading h2,
 .downloadCopy h2 {
-  color: #101012;
+  color: var(--site-heading, #101012);
   font-size: clamp(38px, 3.5vw, 52px);
   font-weight: 650;
   letter-spacing: -0.045em;
@@ -306,13 +306,13 @@
 }
 
 .detailRows {
-  border-top: 1px solid #d7dbd4;
+  border-top: 1px solid var(--site-border, #d7dbd4);
   margin-top: 42px;
   max-width: 640px;
 }
 
 .detailRow {
-  border-bottom: 1px solid #d7dbd4;
+  border-bottom: 1px solid var(--site-border, #d7dbd4);
   display: grid;
   gap: 20px;
   grid-template-columns: 42px minmax(0, 1fr);
@@ -357,13 +357,13 @@
 }
 
 .faqItem {
-  background: #fff;
-  border-top: 1px solid #dededb;
+  background: var(--site-faq-surface, #fff);
+  border-top: 1px solid var(--site-border, #dededb);
   overflow: hidden;
 }
 
 .faqItem:last-child {
-  border-bottom: 1px solid #dededb;
+  border-bottom: 1px solid var(--site-border, #dededb);
 }
 
 .faqItem summary {
@@ -400,7 +400,7 @@
 }
 
 .faqItem > p {
-  color: #5d655e;
+  color: var(--site-text-secondary, #5d655e);
   font-size: 14px;
   line-height: 1.75;
   margin: -5px 0 0;
@@ -409,8 +409,8 @@
 }
 
 .downloadSection {
-  background: #f1f5ef;
-  border-top: 1px solid #dfe6dc;
+  background: var(--site-download-background, #f1f5ef);
+  border-top: 1px solid var(--site-download-border, #dfe6dc);
   padding-block: clamp(88px, 8vw, 124px);
 }
 
@@ -425,8 +425,12 @@
   max-width: 760px;
 }
 
+.downloadCopy h2 {
+  color: var(--site-download-heading, var(--site-heading, #101012));
+}
+
 .downloadCopy > p:last-child {
-  color: var(--site-text-secondary);
+  color: var(--site-download-text, var(--site-text-secondary));
   font-size: 17px;
   margin: 20px 0 0;
 }

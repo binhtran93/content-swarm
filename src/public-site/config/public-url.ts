@@ -3,6 +3,16 @@ import type { PublicSiteConfig } from "@/public-site/config/site-config";
 
 export type PublicRouteMode = "project" | "root";
 
+const fullPublicProjectIds = ["jlens", "subiq"] as const;
+
+export type FullPublicProjectId = (typeof fullPublicProjectIds)[number];
+
+export function isFullPublicProjectId(
+  projectId: string,
+): projectId is FullPublicProjectId {
+  return fullPublicProjectIds.includes(projectId as FullPublicProjectId);
+}
+
 export function isPublicProjectDisabled(projectId: string): boolean {
   return (process.env.PUBLIC_DISABLED_PROJECTS ?? "")
     .split(",")
@@ -18,6 +28,26 @@ export function getPublicRouteMode(): PublicRouteMode {
   throw new Error(`Unknown public route mode: ${configured}.`);
 }
 
+export function getDedicatedPublicProjectId(): FullPublicProjectId {
+  if (getPublicRouteMode() !== "root") {
+    throw new Error("Dedicated public project requires root route mode.");
+  }
+  return getConfiguredPublicProjectId();
+}
+
+function getConfiguredPublicProjectId(): FullPublicProjectId {
+  const configured = process.env.PUBLIC_PROJECT_ID;
+  if (!configured) {
+    throw new Error(
+      "PUBLIC_PROJECT_ID is required for a dedicated public deployment.",
+    );
+  }
+  if (!isFullPublicProjectId(configured)) {
+    throw new Error(`Unknown public project: ${configured}.`);
+  }
+  return configured;
+}
+
 export function assertPublicProject(
   projectId: string,
   mode: PublicRouteMode = getPublicRouteMode(),
@@ -28,12 +58,12 @@ export function assertPublicProject(
       "PUBLIC_PROJECT_ID is required for a dedicated public deployment.",
     );
   }
-  if (configured && configured !== projectId) {
+  if (mode === "root" && configured && configured !== projectId) {
     throw new Error(
       `Public deployment is configured for ${configured}, not ${projectId}.`,
     );
   }
-  if (projectId !== "subiq") {
+  if (!isFullPublicProjectId(projectId)) {
     throw new Error(`Unknown public project: ${projectId}.`);
   }
 }
@@ -42,8 +72,12 @@ export function getProjectRoutePrefix(
   config: PublicSiteConfig,
   mode: PublicRouteMode = getPublicRouteMode(),
 ): string {
-  assertPublicProject(config.id, mode);
-  return mode === "root" ? "" : config.internalBasePath;
+  assertPublicProject(config.id, "project");
+  if (mode === "project") return config.internalBasePath;
+
+  return getConfiguredPublicProjectId() === config.id
+    ? ""
+    : config.internalBasePath;
 }
 
 export function withPublicRoute(

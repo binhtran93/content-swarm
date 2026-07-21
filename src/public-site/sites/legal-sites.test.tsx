@@ -8,7 +8,6 @@ import {
 import JewelryIdentifierPrivacyPage, {
   metadata as jewelryPrivacyMetadata,
 } from "@/public-site/sites/jlens/privacy-page";
-import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
 import JewelryIdentifierSupportPage from "@/public-site/sites/jlens/support-page";
 import { skylensSiteConfig } from "@/public-site/sites/skylens/site-config";
 import SkylensSupportPage from "@/public-site/sites/skylens/support-page";
@@ -17,11 +16,7 @@ import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
 import UrgeZeroPrivacyPage from "@/public-site/sites/urge-zero/privacy-page";
 import UrgeZeroSupportPage from "@/public-site/sites/urge-zero/support-page";
 
-const configs = [
-  jlensSiteConfig,
-  skylensSiteConfig,
-  urgeZeroSiteConfig,
-] as const;
+const configs = [skylensSiteConfig, urgeZeroSiteConfig] as const;
 
 describe("legal-only public sites", () => {
   it.each(configs)("builds scoped navigation and icons for $name", (config) => {
@@ -52,21 +47,16 @@ describe("legal-only public sites", () => {
   });
 
   it("preserves Jewelry Identifier legal copy while branding the shell as JLens", () => {
-    const { container } = render(
-      <LegalSiteShell config={jlensSiteConfig}>
-        <JewelryIdentifierPrivacyPage />
-      </LegalSiteShell>,
-    );
+    const { container } = render(<JewelryIdentifierPrivacyPage />);
 
     expect(container.querySelector("main")).toHaveClass("legal-document");
     expect(container.querySelector("article")).toHaveClass(
       "legal-document__article",
     );
-    expect(screen.getAllByText("JLens")).toHaveLength(2);
     expect(screen.getByText("Effective Date: 02.07.2026")).toBeInTheDocument();
     expect(jewelryPrivacyMetadata.title).toBe("Privacy Policy | JLens");
     expect(jewelryPrivacyMetadata.description).toBe(
-      "Privacy policy for the JLens app.",
+      "Privacy policy for the JLens jewelry identifier app.",
     );
   });
 

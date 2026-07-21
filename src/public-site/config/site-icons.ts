@@ -10,8 +10,8 @@ export function getPublicSiteIcons(
   const favicon = `${routePrefix}/favicon.png`;
 
   return {
-    icon: [{ url: favicon, type: "image/png", sizes: "944x944" }],
+    icon: [{ url: favicon, type: "image/png" }],
     shortcut: favicon,
-    apple: [{ url: favicon, type: "image/png", sizes: "944x944" }],
+    apple: [{ url: favicon, type: "image/png" }],
   };
 }

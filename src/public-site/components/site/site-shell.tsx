@@ -44,6 +44,8 @@ export function SiteHeader({
   languageMenuLabel?: string;
   articleAlternates?: Partial<Record<SupportedLocaleCode, string>>;
 }) {
+  const hasLanguageSelector = config.locales.length > 1;
+
   return (
     <header className={styles.siteHeader}>
       <div className={styles.headerInner}>
@@ -100,24 +102,26 @@ export function SiteHeader({
         </nav>
 
         <div className={styles.headerActions}>
-          <div className={styles.headerLanguage}>
-            <Suspense
-              fallback={
-                <span className={styles.languageButton} aria-hidden="true">
-                  {locale.split("-")[0]?.toUpperCase()}
-                </span>
-              }
-            >
-              <LanguageSelector
-                locale={locale}
-                defaultLocale={config.defaultLocale}
-                enabledLocales={config.locales}
-                routePrefix={routePrefix}
-                label={languageMenuLabel}
-                articleAlternates={articleAlternates}
-              />
-            </Suspense>
-          </div>
+          {hasLanguageSelector ? (
+            <div className={styles.headerLanguage}>
+              <Suspense
+                fallback={
+                  <span className={styles.languageButton} aria-hidden="true">
+                    {locale.split("-")[0]?.toUpperCase()}
+                  </span>
+                }
+              >
+                <LanguageSelector
+                  locale={locale}
+                  defaultLocale={config.defaultLocale}
+                  enabledLocales={config.locales}
+                  routePrefix={routePrefix}
+                  label={languageMenuLabel}
+                  articleAlternates={articleAlternates}
+                />
+              </Suspense>
+            </div>
+          ) : null}
 
           <AcquisitionHeaderCta
             className={styles.headerCta}
@@ -152,23 +156,25 @@ export function SiteHeader({
               active: item.href === activeNavigationHref,
             }))}
             languageSelector={
-              <Suspense
-                fallback={
-                  <span className={styles.languageButton} aria-hidden="true">
-                    {locale.split("-")[0]?.toUpperCase()}
-                  </span>
-                }
-              >
-                <LanguageSelector
-                  locale={locale}
-                  defaultLocale={config.defaultLocale}
-                  enabledLocales={config.locales}
-                  routePrefix={routePrefix}
-                  label={languageMenuLabel}
-                  articleAlternates={articleAlternates}
-                  embedded
-                />
-              </Suspense>
+              hasLanguageSelector ? (
+                <Suspense
+                  fallback={
+                    <span className={styles.languageButton} aria-hidden="true">
+                      {locale.split("-")[0]?.toUpperCase()}
+                    </span>
+                  }
+                >
+                  <LanguageSelector
+                    locale={locale}
+                    defaultLocale={config.defaultLocale}
+                    enabledLocales={config.locales}
+                    routePrefix={routePrefix}
+                    label={languageMenuLabel}
+                    articleAlternates={articleAlternates}
+                    embedded
+                  />
+                </Suspense>
+              ) : undefined
             }
           />
         </div>

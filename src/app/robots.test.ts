@@ -17,6 +17,15 @@ describe("robots metadata", () => {
     });
   });
 
+  it("publishes the JLens sitemap on its dedicated deployment", () => {
+    process.env.PUBLIC_ROUTE_MODE = "root";
+    process.env.PUBLIC_PROJECT_ID = "jlens";
+
+    expect(robots()).toMatchObject({
+      sitemap: "https://jlensapp.com/sitemap.xml",
+    });
+  });
+
   it("does not publish the SubIQ sitemap on the main deployment", () => {
     process.env.PUBLIC_ROUTE_MODE = "project";
 

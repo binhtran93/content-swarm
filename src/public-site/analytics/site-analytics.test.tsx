@@ -70,4 +70,13 @@ describe("isCanonicalAnalyticsHostname", () => {
       false,
     );
   });
+
+  it("recognizes the dedicated JLENS hostname only", () => {
+    expect(
+      isCanonicalAnalyticsHostname("https://jlensapp.com", "jlensapp.com"),
+    ).toBe(true);
+    expect(
+      isCanonicalAnalyticsHostname("https://jlensapp.com", "anmisoft.com"),
+    ).toBe(false);
+  });
 });

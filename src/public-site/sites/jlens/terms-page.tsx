@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Terms and Conditions | JLens",
-  description: "Terms and conditions for the JLens app.",
-};
+import { withPublicRoute } from "@/public-site/config/public-url";
+import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+import { createJlensStaticPageMetadata } from "@/public-site/sites/jlens/static-page-seo";
+
+export const metadata: Metadata = createJlensStaticPageMetadata("terms");
 
 export default function JewelryIdentifierTermsPage() {
+  const supportHref = withPublicRoute(
+    jlensSiteConfig,
+    jlensSiteConfig.defaultLocale,
+    "/support",
+  );
+
   return (
     <main className="legal-document flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">
       <article className="legal-document__article w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10">
@@ -258,7 +265,7 @@ export default function JewelryIdentifierTermsPage() {
           <p className="leading-8 text-zinc-700">
             Need help with the app? Visit our{" "}
             <Link
-              href="/jlens/support"
+              href={supportHref}
               className="font-medium text-zinc-900 underline-offset-4 hover:underline"
             >
               support page

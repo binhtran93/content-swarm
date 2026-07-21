@@ -11,6 +11,31 @@ describe("site analytics deployment policy", () => {
         PUBLIC_PROJECT_ID: "subiq",
       }),
     ).toBe(true);
+
+    expect(
+      isDedicatedSiteAnalyticsDeployment("jlens", {
+        NODE_ENV: "production",
+        PUBLIC_ROUTE_MODE: "root",
+        PUBLIC_PROJECT_ID: "jlens",
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps JLENS analytics disabled outside its dedicated production build", () => {
+    expect(
+      isDedicatedSiteAnalyticsDeployment("jlens", {
+        NODE_ENV: "production",
+        PUBLIC_ROUTE_MODE: "project",
+        PUBLIC_PROJECT_ID: "jlens",
+      }),
+    ).toBe(false);
+    expect(
+      isDedicatedSiteAnalyticsDeployment("jlens", {
+        NODE_ENV: "production",
+        PUBLIC_ROUTE_MODE: "root",
+        PUBLIC_PROJECT_ID: "subiq",
+      }),
+    ).toBe(false);
   });
 
   it.each([

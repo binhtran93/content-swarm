@@ -1,14 +1,50 @@
 .jlens-site {
-  --legal-accent: #8f7439;
-  --legal-background: #f4ebdf;
-  --legal-border: #dfd1bc;
-  --legal-focus-ring: rgba(143, 116, 57, 0.38);
-  --legal-footer: #ede1d1;
-  --legal-header: #faf8f6;
-  --legal-shadow: rgba(48, 42, 35, 0.1);
-  --legal-surface: #faf8f6;
-  --legal-surface-muted: #f0e8de;
-  --legal-text: #302a23;
-  --legal-text-secondary: #6f665c;
-  --site-on-accent: #fff;
+  --site-accent: #8a6724;
+  --site-accent-bright: #705019;
+  --site-accent-soft: #efe4ce;
+  --site-background: #faf7f1;
+  --site-border: #d8cfc2;
+  --site-download-background: #17251f;
+  --site-download-border: #2c3d34;
+  --site-download-heading: #fffaf0;
+  --site-download-text: #cbd3cc;
+  --site-faq-surface: #fffdf8;
+  --site-focus-ring: rgb(138 103 36 / 44%);
+  --site-footer-background: #101b17;
+  --site-footer-border: #2a3831;
+  --site-footer-text: #f6f0e5;
+  --site-footer-text-secondary: #aeb8b1;
+  --site-header-background: #fdfaf5;
+  --site-header-border: #e5ddd1;
+  --site-heading: #1d211c;
+  --site-nav-text: #292a25;
+  --site-on-accent: #fffdf8;
+  --site-surface-muted: #eee8de;
+  --site-text: #24231f;
+  --site-text-muted: #887f73;
+  --site-text-secondary: #625d54;
+  --legal-accent: #8a6724;
+  --legal-background: #faf7f1;
+  --legal-border: #d8cfc2;
+  --legal-focus-ring: rgb(138 103 36 / 40%);
+  --legal-footer: #e9e1d5;
+  --legal-header: #fdfaf5;
+  --legal-shadow: rgb(36 35 31 / 10%);
+  --legal-surface: #fffdf8;
+  --legal-surface-muted: #eee8de;
+  --legal-text: #24231f;
+  --legal-text-secondary: #625d54;
+}
+
+.jlens-site :where(h1, h2) {
+  font-family: var(--font-jlens-display), Didot, "Bodoni MT", serif;
+}
+
+.jlens-site :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.jlens-site section[id="download"] {
+  background: var(--site-download-background);
+  border-color: var(--site-download-border);
 }

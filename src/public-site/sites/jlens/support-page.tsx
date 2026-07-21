@@ -1,21 +1,29 @@
-import type { Metadata } from "next";
-
 import { EnglishSupportPage } from "@/public-site/components/support";
+import { withPublicRoute } from "@/public-site/config/public-url";
 import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+import { createJlensStaticPageMetadata } from "@/public-site/sites/jlens/static-page-seo";
 
-export const metadata: Metadata = {
-  title: "Support | JLens",
-  description: "Contact JLens support and learn how to report an issue.",
-};
+export const metadata = createJlensStaticPageMetadata("support");
 
 export default function JewelryIdentifierSupportPage() {
+  const privacyHref = withPublicRoute(
+    jlensSiteConfig,
+    jlensSiteConfig.defaultLocale,
+    "/privacy",
+  );
+  const termsHref = withPublicRoute(
+    jlensSiteConfig,
+    jlensSiteConfig.defaultLocale,
+    "/terms",
+  );
+
   return (
     <EnglishSupportPage
-      productName={jlensSiteConfig.name}
-      companyName={jlensSiteConfig.copyrightName}
+      productName={jlensSiteConfig.brand.name}
+      companyName="ANMISOFT"
       supportEmail="support@anmisoft.com"
-      privacyHref={`${jlensSiteConfig.basePath}/privacy`}
-      termsHref={`${jlensSiteConfig.basePath}/terms`}
+      privacyHref={privacyHref}
+      termsHref={termsHref}
     />
   );
 }

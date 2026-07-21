@@ -1,25 +1,46 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import nextConfig from "../../../../next.config";
 
-describe("JLens legacy redirects", () => {
-  it("permanently redirects only the three former legal routes", async () => {
-    await expect(nextConfig.redirects?.()).resolves.toEqual([
-      {
-        source: "/jewelry-identifier/privacy",
-        destination: "/jlens/privacy",
-        permanent: true,
-      },
-      {
-        source: "/jewelry-identifier/terms",
-        destination: "/jlens/terms",
-        permanent: true,
-      },
-      {
-        source: "/jewelry-identifier/support",
-        destination: "/jlens/support",
-        permanent: true,
-      },
-    ]);
+afterEach(() => {
+  delete process.env.PUBLIC_PROJECT_ID;
+  delete process.env.PUBLIC_ROUTE_MODE;
+});
+
+describe("JLens dedicated routing", () => {
+  it("keeps JLENS project routes local and redirects only historical aliases", async () => {
+    const redirects = await nextConfig.redirects?.();
+    expect(redirects).toEqual(
+      expect.arrayContaining([
+        {
+          source: "/jewelry-identifier",
+          destination: "https://jlensapp.com/",
+          permanent: true,
+        },
+        {
+          source: "/jewelry-identifier/support",
+          destination: "https://jlensapp.com/support",
+          permanent: true,
+        },
+        {
+          source: "/jewelry-identifier/terms",
+          destination: "https://jlensapp.com/terms",
+          permanent: true,
+        },
+      ]),
+    );
+    expect(redirects).toHaveLength(4);
+    expect(redirects).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "/jlens" }),
+        expect.objectContaining({ source: "/jlens/support" }),
+        expect.objectContaining({ source: "/jlens/privacy" }),
+        expect.objectContaining({ source: "/jlens/terms" }),
+      ]),
+    );
+  });
+
+  it("does not require per-page rewrite configuration", () => {
+    expect(nextConfig.rewrites).toBeUndefined();
   });
 });

@@ -1,12 +1,19 @@
 import type { MetadataRoute } from "next";
 
-import { getPublicRouteMode } from "@/public-site/config/public-url";
+import {
+  getDedicatedPublicProjectId,
+  getPublicRouteMode,
+} from "@/public-site/config/public-url";
+import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
 
 export default function robots(): MetadataRoute.Robots {
-  const dedicatedSubiqDeployment =
-    getPublicRouteMode() === "root" &&
-    process.env.PUBLIC_PROJECT_ID === subiqSiteConfig.id;
+  const dedicatedConfig =
+    getPublicRouteMode() === "root"
+      ? getDedicatedPublicProjectId() === "jlens"
+        ? jlensSiteConfig
+        : subiqSiteConfig
+      : undefined;
 
   return {
     rules: {
@@ -14,8 +21,8 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin/", "/login", "/api/"],
     },
-    ...(dedicatedSubiqDeployment
-      ? { sitemap: `${subiqSiteConfig.canonicalOrigin}/sitemap.xml` }
+    ...(dedicatedConfig
+      ? { sitemap: `${dedicatedConfig.canonicalOrigin}/sitemap.xml` }
       : {}),
   };
 }

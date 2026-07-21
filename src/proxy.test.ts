@@ -47,6 +47,14 @@ describe("public project route guard", () => {
     expect(proxy(request("/subiq/blog/article")).status).toBe(404);
   });
 
+  it("blocks JLens prefixed pages but permits its assets in JLens root mode", () => {
+    process.env.PUBLIC_ROUTE_MODE = "root";
+    process.env.PUBLIC_PROJECT_ID = "jlens";
+
+    expect(proxy(request("/jlens/privacy")).status).toBe(404);
+    expect(proxy(request("/jlens/ring.png")).status).toBe(200);
+  });
+
   it.each([
     "/subiq/mascot-hi.webp",
     "/subiq/app-store.svg",
@@ -66,11 +74,48 @@ describe("public project route guard", () => {
     expect(proxy(request("/subiq/sitemap.xml")).status).toBe(404);
   });
 
-  it("does not block another project's routes in dedicated root mode", () => {
+  it("blocks every prefixed project page in dedicated root mode", () => {
     process.env.PUBLIC_ROUTE_MODE = "root";
     process.env.PUBLIC_PROJECT_ID = "subiq";
 
-    expect(proxy(request("/jlens/privacy")).status).toBe(200);
+    expect(proxy(request("/jlens/privacy")).status).toBe(404);
+    expect(proxy(request("/skylens/privacy")).status).toBe(404);
+  });
+
+  it.each([
+    ["jlens", "/support", "/jlens/support"],
+    ["jlens", "/new-page", "/jlens/new-page"],
+    ["jlens", "/sitemap.xml", "/jlens/sitemap.xml"],
+    ["jlens", "/og.png", "/jlens/og.png"],
+    ["subiq", "/blog/article", "/subiq/blog/article"],
+    ["subiq", "/vi-VN/support", "/subiq/vi-VN/support"],
+  ])("maps %s dedicated route %s to %s", (projectId, pathname, destination) => {
+    process.env.PUBLIC_ROUTE_MODE = "root";
+    process.env.PUBLIC_PROJECT_ID = projectId;
+
+    expect(proxy(request(pathname)).headers.get("x-middleware-rewrite")).toBe(
+      `https://example.com${destination}`,
+    );
+  });
+
+  it.each(["/", "/robots.txt", "/login", "/admin", "/api/auth/session"])(
+    "preserves root-owned route %s",
+    (pathname) => {
+      process.env.PUBLIC_ROUTE_MODE = "root";
+      process.env.PUBLIC_PROJECT_ID = "jlens";
+
+      const response = proxy(request(pathname));
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("x-middleware-next")).toBe("1");
+    },
+  );
+
+  it("fails closed for an unknown dedicated project", () => {
+    process.env.PUBLIC_ROUTE_MODE = "root";
+    process.env.PUBLIC_PROJECT_ID = "skylens";
+
+    expect(() => proxy(request("/support"))).toThrow("Unknown public project");
   });
 
   it("never blocks unrelated routes", () => {

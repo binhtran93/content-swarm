@@ -55,6 +55,21 @@ describe("readPublicProjectAcquisition", () => {
     );
   });
 
+  it("allows the JLens full public site to read store acquisition", async () => {
+    mock.value = {
+      acquisition: {
+        mode: "stores",
+        appStoreUrl:
+          "https://apps.apple.com/us/app/jlens-jewelry-identifier/id6762078738",
+        googlePlayUrl:
+          "https://play.google.com/store/apps/details?id=com.tdbinh93.jewelryidentifier",
+      },
+    };
+    await expect(readPublicProjectAcquisition("jlens")).resolves.toEqual(
+      mock.value.acquisition,
+    );
+  });
+
   it("rejects missing and unknown public projects", async () => {
     mock.exists = false;
     await expect(readPublicProjectAcquisition("subiq")).rejects.toThrow(
