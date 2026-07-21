@@ -1,5 +1,14 @@
 import Image from "next/image";
-import { History, Images, ScanSearch, ZapOff } from "lucide-react";
+import {
+  Archive,
+  Ban,
+  BrushCleaning,
+  History,
+  Images,
+  ScanSearch,
+  ShieldCheck,
+  ZapOff,
+} from "lucide-react";
 
 import { AcquisitionActions } from "@/public-site/components/acquisition";
 import {
@@ -7,7 +16,9 @@ import {
   DownloadCta,
   FaqSection,
   FeatureShowcaseSection,
+  LandingSection,
   PhoneFrame,
+  SectionHeading,
 } from "@/public-site/components/landing";
 import { withPublicRoute } from "@/public-site/config/public-url";
 import { jlensLandingDescription } from "@/public-site/sites/jlens/landing-metadata";
@@ -20,32 +31,32 @@ const faqs = [
   {
     question: "How do I identify jewelry from a photo?",
     answer:
-      "Open JLens and take a clear photo or choose one from your library. Start with the complete piece, then add a sharp close-up of any hallmark, clasp, engraving, or stone setting when you want more useful visible clues.",
+      "Open JLens and take a clear photo or choose one from your library—start with the complete piece, then add a sharp close-up of any hallmark, clasp, engraving, or stone setting when you want more useful visible clues",
   },
   {
     question: "What jewelry and gemstones can JLens identify?",
     answer:
-      "JLens can analyze photos of rings, necklaces, bracelets, earrings, pendants, watches, loose gemstones, crystals, and minerals. Results describe likely matches based on what is visible in the submitted images.",
+      "JLens can analyze photos of rings, necklaces, bracelets, earrings, pendants, watches, loose gemstones, crystals, and minerals, with likely matches based on what is visible in the submitted images",
   },
   {
     question: "Can JLens confirm whether gold or a diamond is real?",
     answer:
-      "No photo-based AI can certify metal purity or gemstone authenticity. JLens can explain visible marks and possible materials, but professional testing is needed when authenticity matters.",
+      "No photo-based AI can certify metal purity or gemstone authenticity—JLens can explain visible marks and possible materials, but professional testing is needed when authenticity matters",
   },
   {
     question: "Is an estimated value a professional appraisal?",
     answer:
-      "No. JLens provides an informational estimated range based on visible characteristics and available context. Condition, provenance, laboratory testing, and market demand can materially change value, so use a qualified appraiser for insurance, sale, estate, or legal decisions.",
+      "No—JLens provides an informational estimated range based on visible characteristics and available context, while condition, provenance, laboratory testing, and market demand can materially change value, so use a qualified appraiser for insurance, sale, estate, or legal decisions",
   },
   {
     question: "Can I save scans and track a jewelry collection?",
     answer:
-      "Yes. You can save identified pieces, revisit their results, and use the collection view to organize your jewelry and review its combined estimated value.",
+      "Yes—you can save identified pieces, revisit their results, and use the collection view to organize your jewelry and review its combined estimated value",
   },
   {
     question: "Is JLens available on iPhone and Android?",
     answer:
-      "Yes. JLens is available through the Apple App Store for iPhone and iPad and through Google Play for supported Android devices.",
+      "Yes—JLens is available through the Apple App Store for iPhone and iPad and through Google Play for supported Android devices",
   },
 ] as const;
 
@@ -57,7 +68,7 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
           <h1 id="jlens-hero-title">Jewelry Identifier</h1>
           <p className={styles.heroDescription}>
             Snap a photo to uncover clues about a piece, save what you find, and
-            ask questions along the way.
+            ask questions along the way
           </p>
           <AcquisitionActions
             ariaLabel="Download JLens"
@@ -120,6 +131,105 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
   );
 }
 
+const careItems = [
+  {
+    title: "Cleaning",
+    bullets: [
+      "Wipe with a soft, dry microfiber cloth",
+      "Avoid harsh chemical cleaners",
+    ],
+    Icon: BrushCleaning,
+  },
+  {
+    title: "Storage",
+    bullets: [
+      "Store separately to prevent scratches",
+      "Keep in a cool, dry place",
+    ],
+    Icon: Archive,
+  },
+  {
+    title: "Maintenance",
+    bullets: [
+      "Check clasps, links, and settings regularly",
+      "Clean gently after wearing to remove oils",
+    ],
+    Icon: ShieldCheck,
+  },
+  {
+    title: "Avoid",
+    bullets: [
+      "Perfume, hairspray, and cosmetics",
+      "Prolonged water or humidity",
+    ],
+    Icon: Ban,
+  },
+] as const;
+
+function JlensCareSection() {
+  return (
+    <LandingSection className={styles.careSection}>
+      <ContentShell className={styles.careLayout}>
+        <div className={styles.careCopy}>
+          <SectionHeading
+            description="Simple guidance for cleaning, storage, and everyday care"
+            eyebrow="Jewelry care"
+            title="Help every piece look its best"
+          />
+        </div>
+
+        <div className={styles.careVisual}>
+          <div className={styles.carePhone}>
+            <PhoneFrame>
+              <div className={styles.careScreen}>
+                <div className={styles.careComparison}>
+                  <Image
+                    alt="Split before-and-after photo of a gold ring showing visible condition differences"
+                    className={styles.careComparisonImage}
+                    height={1672}
+                    sizes="(max-width: 700px) calc(100vw - 72px), (max-width: 980px) 320px, 390px"
+                    src="/jlens/compare/before-after.png"
+                    width={941}
+                  />
+                  <span
+                    className={`${styles.compareLabel} ${styles.beforeLabel}`}
+                  >
+                    Before
+                  </span>
+                  <span
+                    className={`${styles.compareLabel} ${styles.afterLabel}`}
+                  >
+                    After
+                  </span>
+                </div>
+
+                <article className={styles.careCard}>
+                  <h3>Care &amp; maintenance</h3>
+                  <ul className={styles.careGroups}>
+                    {careItems.map(({ title, bullets, Icon }) => (
+                      <li className={styles.careGroup} key={title}>
+                        <div className={styles.careGroupHeading}>
+                          <Icon aria-hidden="true" />
+                          <strong>{title}</strong>
+                        </div>
+                        <ul className={styles.careBullets}>
+                          {bullets.map((bullet) => (
+                            <li key={bullet}>{bullet}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              </div>
+            </PhoneFrame>
+          </div>
+        </div>
+      </ContentShell>
+    </LandingSection>
+  );
+}
+
 export function JlensLandingPage() {
   const privacyHref = withPublicRoute(
     jlensSiteConfig,
@@ -164,7 +274,7 @@ export function JlensLandingPage() {
 
         <FeatureShowcaseSection
           className={styles.detailsSection}
-          description="Take a photo and get a simple starting point for understanding the piece in front of you."
+          description="Take a photo and get a simple starting point for understanding the piece in front of you"
           eyebrow="Jewelry identification"
           id="features"
           rows={[
@@ -172,98 +282,98 @@ export function JlensLandingPage() {
               number: "01",
               title: "Spot likely materials",
               description:
-                "See which metals and stones may match what’s visible.",
+                "See which metals and stones may match what’s visible",
             },
             {
               number: "02",
               title: "Notice the details",
-              description:
-                "Explore the style, setting, and any readable marks.",
+              description: "Explore the style, setting, and any readable marks",
             },
             {
               number: "03",
               title: "Get a value range",
               description:
-                "See an estimate, then ask a professional when certainty matters.",
+                "See an estimate, then ask a professional when certainty matters",
             },
           ]}
           screenshot="/jlens/details.png"
           screenshotAlt="JLens jewelry identification result showing an estimated value range, metal, gemstone, style, and summary"
-          title="A closer look, in seconds."
+          title="A closer look, in seconds"
           tone="muted"
         />
 
+        <JlensCareSection />
+
         <FeatureShowcaseSection
           className={styles.collectionSection}
-          description="Save the pieces you care about and find them again whenever you need."
+          description="Save the pieces you care about and find them again whenever you need"
           eyebrow="Your collection"
           id="collection"
           rows={[
             {
               number: "01",
               title: "Keep everything together",
-              description: "Store each photo and result in one place.",
+              description: "Store each photo and result in one place",
             },
             {
               number: "02",
               title: "See the bigger picture",
               description:
-                "View the combined estimated value of your saved pieces.",
+                "View the combined estimated value of your saved pieces",
             },
             {
               number: "03",
               title: "Pick up where you left off",
               description:
-                "Return to any piece without starting the search again.",
+                "Return to any piece without starting the search again",
             },
           ]}
           screenshot="/jlens/collection.png"
           screenshotAlt="JLens collection screen organizing jewelry with estimated values in a personal catalog"
-          title="Your jewelry, all in one place."
-          visualSide="end"
+          title="Your jewelry, all in one place"
+          tone="muted"
         />
 
         <FeatureShowcaseSection
           className={styles.chatSection}
-          description="Still curious? Ask a follow-up and get a straightforward answer."
+          description="Still curious? Ask a follow-up and get a straightforward answer"
           eyebrow="Ask JLens"
           id="assistant"
           rows={[
             {
               number: "01",
               title: "Care for it confidently",
-              description:
-                "Ask about cleaning, storage, and everyday handling.",
+              description: "Ask about cleaning, storage, and everyday handling",
             },
             {
               number: "02",
               title: "Make sense of a mark",
               description:
-                "Talk through visible stamps or unfamiliar materials.",
+                "Talk through visible stamps or unfamiliar materials",
             },
             {
               number: "03",
               title: "Know when to get help",
               description:
-                "See when a jeweler or appraiser is the better next step.",
+                "See when a jeweler or appraiser is the better next step",
             },
           ]}
           screenshot="/jlens/chat-2.png"
           screenshotAlt="JLens AI jewelry chat answering a follow-up question about safely cleaning a ring"
-          title="Curious about a piece? Ask away."
-          tone="muted"
+          title="Curious about a piece? Ask away"
+          visualSide="end"
         />
 
         <FaqSection faqs={[...faqs]} />
 
         <DownloadCta
           badges={jlensSiteConfig.storeBadges}
-          description="Download JLens on iPhone, iPad, or Android and start with a clear photo."
+          description="Download JLens on iPhone, iPad, or Android and start with a clear photo"
           locale={jlensSiteConfig.defaultLocale}
           privacyHref={privacyHref}
-          title="Identify the jewelry in front of you."
-          waitlistDescription="Get an email when JLens is available in your region."
-          waitlistTitle="Get JLens launch updates."
+          title="Identify the jewelry in front of you"
+          waitlistDescription="Get an email when JLens is available in your region"
+          waitlistTitle="Get JLens launch updates"
         />
       </main>
     </JlensSiteLayout>

@@ -66,17 +66,36 @@ describe("JLens landing page", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "A closer look, in seconds.",
+        name: "A closer look, in seconds",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Your jewelry, all in one place.",
+        name: "Help every piece look its best",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByAltText(
+        "Split before-and-after photo of a gold ring showing visible condition differences",
+      ),
+    ).toHaveAttribute(
+      "src",
+      expect.stringContaining("compare%2Fbefore-after.png"),
+    );
+    expect(
+      screen.getByText("Wipe with a soft, dry microfiber cloth"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /before|after/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Your jewelry, all in one place",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Curious about a piece? Ask away.",
+        name: "Curious about a piece? Ask away",
       }),
     ).toBeInTheDocument();
     expect(
