@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import { joinWaitlistAction } from "@/features/waitlist/public/join-waitlist-action.server";
 import {
   AcquisitionActions,
+  AcquisitionHeaderCta,
   AcquisitionProvider,
+  detectMobileStorePlatform,
 } from "@/public-site/components/acquisition";
 
 vi.mock("@/features/waitlist/public/join-waitlist-action.server", () => ({
@@ -98,6 +100,46 @@ function Subject({
   );
 }
 
+function HeaderSubject({
+  appStoreUrl = "https://apps.apple.com/us/app/example/id123",
+  googlePlayUrl = "https://play.google.com/store/apps/details?id=com.example",
+}: {
+  appStoreUrl?: string | null;
+  googlePlayUrl?: string | null;
+}) {
+  return (
+    <AcquisitionProvider
+      acquisition={{ mode: "stores", appStoreUrl, googlePlayUrl }}
+      brandName="Example"
+      defaultLocale="en-US"
+      projectId="example"
+      scopeClassName="example-site"
+      siteKey=""
+      presentations={{
+        "en-US": {
+          waitlist,
+          availability: "App availability",
+          submitting: "Joining…",
+          done: "Done",
+          close: "Close",
+          notConfigured: "The waitlist is not configured yet.",
+          genericError: "The waitlist is unavailable.",
+          consent: "By joining, you agree to receive launch emails.",
+          privacyPolicy: "Privacy Policy",
+        },
+      }}
+    >
+      <AcquisitionHeaderCta
+        badges={badges}
+        className="header-cta"
+        locale="en-US"
+        privacyHref="/privacy"
+        storeLabel="Download"
+      />
+    </AcquisitionProvider>
+  );
+}
+
 describe("AcquisitionProvider", () => {
   it("replaces store badges with a waitlist dialog trigger", () => {
     render(<Subject mode="waitlist" />);
@@ -124,6 +166,47 @@ describe("AcquisitionProvider", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows one scannable QR choice at a time on desktop", () => {
+    render(<HeaderSubject />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+
+    expect(
+      screen.getByRole("dialog", { name: "App availability" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Download on the App Store" }),
+    ).toHaveAttribute("href", "https://apps.apple.com/us/app/example/id123");
+    expect(
+      screen.queryByRole("link", { name: "Get it on Google Play" }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Google Play" }));
+
+    expect(
+      screen.getByRole("link", { name: "Get it on Google Play" }),
+    ).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.example",
+    );
+    expect(
+      screen.queryByRole("link", { name: "Download on the App Store" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows only the configured store in the QR chooser", () => {
+    render(<HeaderSubject googlePlayUrl={null} />);
+    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+
+    expect(
+      screen.getByRole("link", { name: "Download on the App Store" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Get it on Google Play" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+  });
+
   it("replaces the signup content with one compact success state", async () => {
     vi.mocked(joinWaitlistAction).mockResolvedValueOnce({ ok: true });
     render(<Subject mode="waitlist" />);
@@ -145,5 +228,41 @@ describe("AcquisitionProvider", () => {
     expect(
       screen.queryByRole("button", { name: "Close waitlist" }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("mobile store detection", () => {
+  it("detects Android and iOS phones", () => {
+    expect(
+      detectMobileStorePlatform({
+        maxTouchPoints: 5,
+        platform: "Linux armv8l",
+        userAgent: "Mozilla/5.0 (Linux; Android 15; Pixel 9)",
+      }),
+    ).toBe("googlePlay");
+    expect(
+      detectMobileStorePlatform({
+        maxTouchPoints: 5,
+        platform: "iPhone",
+        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+      }),
+    ).toBe("appStore");
+  });
+
+  it("recognizes iPads requesting a desktop site without treating Macs as mobile", () => {
+    expect(
+      detectMobileStorePlatform({
+        maxTouchPoints: 5,
+        platform: "MacIntel",
+        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)",
+      }),
+    ).toBe("appStore");
+    expect(
+      detectMobileStorePlatform({
+        maxTouchPoints: 0,
+        platform: "MacIntel",
+        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)",
+      }),
+    ).toBeNull();
   });
 });

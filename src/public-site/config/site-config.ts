@@ -5,6 +5,13 @@ export type SiteNavigationItem = {
   href: string;
 };
 
+export type SiteHeaderCta =
+  | ({ kind: "link" } & SiteNavigationItem)
+  | {
+      kind: "acquisition";
+      label: string;
+    };
+
 export type SiteStoreBadge = {
   platform: "appStore" | "googlePlay";
   label: string;
@@ -50,7 +57,7 @@ export type PublicSiteConfig = {
     logoAlt: string;
   };
   navigation: readonly SiteNavigationItem[];
-  headerCta: SiteNavigationItem;
+  headerCta: SiteHeaderCta;
   waitlist: SiteWaitlistPresentation;
   footer: {
     links: readonly SiteNavigationItem[];

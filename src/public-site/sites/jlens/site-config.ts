@@ -34,7 +34,7 @@ export const jlensSiteConfig = definePublicSiteConfig({
     { label: "FAQ", href: "/#faq" },
     { label: "Support", href: "/support" },
   ],
-  headerCta: { label: "Download", href: "/#download" },
+  headerCta: { kind: "acquisition", label: "Download" },
   waitlist: {
     ctaLabel: "Get launch updates",
     title: "Get JLens launch updates",

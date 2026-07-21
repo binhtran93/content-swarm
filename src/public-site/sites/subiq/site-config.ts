@@ -36,7 +36,7 @@ export const subiqSiteConfig = definePublicSiteConfig({
     { label: "FAQ", href: "/#faq" },
     { label: "Support", href: "/support" },
   ],
-  headerCta: { label: "Download", href: "/#download" },
+  headerCta: { kind: "acquisition", label: "Download" },
   footer: {
     links: [
       { href: "/support", label: "Support" },
@@ -83,7 +83,7 @@ export function getLocalizedSubiqConfig(locale: SupportedLocaleCode) {
       { label: messages.site.faq, href: "/#faq" },
       { label: messages.site.support, href: "/support" },
     ],
-    headerCta: { label: messages.site.download, href: "/#download" },
+    headerCta: { kind: "acquisition", label: messages.site.download },
     footer: {
       ...subiqSiteConfig.footer,
       links: [

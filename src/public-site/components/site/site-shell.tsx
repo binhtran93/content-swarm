@@ -129,23 +129,44 @@ export function SiteHeader({
             </div>
           ) : null}
 
-          <AcquisitionHeaderCta
-            className={styles.headerCta}
-            href={withLocaleRoutePrefix(
-              config,
-              routePrefix,
-              locale,
-              config.headerCta.href,
-            )}
-            locale={locale}
-            privacyHref={withLocaleRoutePrefix(
-              config,
-              routePrefix,
-              locale,
-              "/privacy",
-            )}
-            storeLabel={config.headerCta.label}
-          />
+          {config.headerCta.kind === "acquisition" ? (
+            <AcquisitionHeaderCta
+              badges={config.storeBadges}
+              className={styles.headerCta}
+              locale={locale}
+              privacyHref={withLocaleRoutePrefix(
+                config,
+                routePrefix,
+                locale,
+                "/privacy",
+              )}
+              storeLabel={config.headerCta.label}
+            />
+          ) : config.headerCta.href.includes("#") ? (
+            <a
+              className={styles.headerCta}
+              href={withLocaleRoutePrefix(
+                config,
+                routePrefix,
+                locale,
+                config.headerCta.href,
+              )}
+            >
+              {config.headerCta.label}
+            </a>
+          ) : (
+            <Link
+              className={styles.headerCta}
+              href={withLocaleRoutePrefix(
+                config,
+                routePrefix,
+                locale,
+                config.headerCta.href,
+              )}
+            >
+              {config.headerCta.label}
+            </Link>
+          )}
 
           <MobileNavigation
             label={

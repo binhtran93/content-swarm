@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
+import { QRCodeSVG } from "qrcode.react";
 import {
   createContext,
   type ReactNode,
@@ -43,6 +44,12 @@ type WaitlistRequest = {
   privacyHref: string;
 };
 
+type StoreChooserRequest = {
+  key: number;
+  locale: SupportedLocaleCode;
+  badges: readonly SiteStoreBadge[];
+};
+
 type TurnstileApi = {
   render: (
     target: HTMLElement,
@@ -76,6 +83,7 @@ type AcquisitionContextValue = {
     Partial<Record<SupportedLocaleCode, AcquisitionPresentation>>
   >;
   openWaitlist: (request: Omit<WaitlistRequest, "key">) => void;
+  openStoreChooser: (request: Omit<StoreChooserRequest, "key">) => void;
 };
 
 const AcquisitionContext = createContext<AcquisitionContextValue | null>(null);
@@ -269,6 +277,114 @@ function WaitlistDialog({
   );
 }
 
+function StoreChooserDialog({
+  context,
+  request,
+  onClose,
+}: {
+  context: AcquisitionContextValue;
+  request: StoreChooserRequest;
+  onClose: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const copy = getAcquisitionPresentation(context, request.locale);
+  const available = availableStoreLinks(context.acquisition, request.badges);
+  const [selectedPlatform, setSelectedPlatform] = useState(
+    available[0]?.badge.platform,
+  );
+  const selected =
+    available.find(({ badge }) => badge.platform === selectedPlatform) ??
+    available[0];
+
+  useEffect(() => {
+    dialog.current?.showModal();
+  }, []);
+
+  return (
+    <dialog
+      aria-labelledby="store-chooser-title"
+      className={`${styles.dialog} ${context.scopeClassName}`}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) event.currentTarget.close();
+      }}
+      onClose={onClose}
+      ref={dialog}
+    >
+      <div className={styles.dialogPanel}>
+        <button
+          aria-label={copy.close}
+          autoFocus
+          className={styles.close}
+          onClick={() => dialog.current?.close()}
+          type="button"
+        >
+          ×
+        </button>
+        <h2 id="store-chooser-title">{copy.availability}</h2>
+        {available.length > 1 ? (
+          <div
+            aria-label={copy.availability}
+            className={styles.storeChooserTabs}
+            role="tablist"
+          >
+            {available.map(({ badge }) => (
+              <button
+                aria-controls="store-chooser-panel"
+                aria-selected={badge.platform === selected?.badge.platform}
+                className={styles.storeChooserTab}
+                id={`store-chooser-tab-${badge.platform}`}
+                key={badge.platform}
+                onClick={() => setSelectedPlatform(badge.platform)}
+                role="tab"
+                type="button"
+              >
+                {badge.platform === "appStore" ? "App Store" : "Google Play"}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {selected ? (
+          <div
+            aria-labelledby={
+              available.length > 1
+                ? `store-chooser-tab-${selected.badge.platform}`
+                : undefined
+            }
+            className={styles.storeChooserPanel}
+            id="store-chooser-panel"
+            role={available.length > 1 ? "tabpanel" : undefined}
+          >
+            <a
+              aria-label={selected.badge.label}
+              className={styles.storeChooserOption}
+              href={selected.href}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <span className={styles.qrCode}>
+                <QRCodeSVG
+                  level="M"
+                  marginSize={2}
+                  size={208}
+                  title={selected.badge.label}
+                  value={selected.href}
+                />
+              </span>
+              <Image
+                alt=""
+                className={styles.storeChooserBadge}
+                height={selected.badge.height}
+                src={selected.badge.imageSrc}
+                width={selected.badge.width}
+              />
+            </a>
+          </div>
+        ) : null}
+      </div>
+    </dialog>
+  );
+}
+
 export function AcquisitionProvider({
   acquisition,
   brandName,
@@ -291,6 +407,9 @@ export function AcquisitionProvider({
   >;
 }) {
   const [request, setRequest] = useState<WaitlistRequest | null>(null);
+  const [storeRequest, setStoreRequest] = useState<StoreChooserRequest | null>(
+    null,
+  );
   const context: AcquisitionContextValue = {
     acquisition,
     brandName,
@@ -299,7 +418,14 @@ export function AcquisitionProvider({
     scopeClassName,
     siteKey,
     presentations,
-    openWaitlist: (next) => setRequest({ ...next, key: Date.now() }),
+    openWaitlist: (next) => {
+      setStoreRequest(null);
+      setRequest({ ...next, key: Date.now() });
+    },
+    openStoreChooser: (next) => {
+      setRequest(null);
+      setStoreRequest({ ...next, key: Date.now() });
+    },
   };
   return (
     <AcquisitionContext.Provider value={context}>
@@ -310,6 +436,14 @@ export function AcquisitionProvider({
           key={request.key}
           request={request}
           onClose={() => setRequest(null)}
+        />
+      ) : null}
+      {storeRequest ? (
+        <StoreChooserDialog
+          context={context}
+          key={storeRequest.key}
+          request={storeRequest}
+          onClose={() => setStoreRequest(null)}
         />
       ) : null}
     </AcquisitionContext.Provider>
@@ -323,6 +457,29 @@ function storeUrl(
   return platform === "appStore"
     ? acquisition.appStoreUrl
     : acquisition.googlePlayUrl;
+}
+
+function availableStoreLinks(
+  acquisition: ProjectAcquisition,
+  badges: readonly SiteStoreBadge[],
+) {
+  return badges.flatMap((badge) => {
+    const href = storeUrl(acquisition, badge.platform);
+    return href ? [{ badge, href }] : [];
+  });
+}
+
+export function detectMobileStorePlatform(
+  device: Pick<Navigator, "maxTouchPoints" | "platform" | "userAgent">,
+): SiteStoreBadge["platform"] | null {
+  if (/Android/i.test(device.userAgent)) return "googlePlay";
+  if (
+    /iPad|iPhone|iPod/i.test(device.userAgent) ||
+    (device.platform === "MacIntel" && device.maxTouchPoints > 1)
+  ) {
+    return "appStore";
+  }
+  return null;
 }
 
 export function AcquisitionActions({
@@ -353,10 +510,7 @@ export function AcquisitionActions({
       </button>
     );
   }
-  const available = badges.flatMap((badge) => {
-    const href = storeUrl(context.acquisition, badge.platform);
-    return href ? [{ badge, href }] : [];
-  });
+  const available = availableStoreLinks(context.acquisition, badges);
   return (
     <div
       className={`${styles.storeBadges} ${className ?? ""}`}
@@ -385,38 +539,50 @@ export function AcquisitionActions({
 }
 
 export function AcquisitionHeaderCta({
+  badges,
   className,
-  href,
   locale,
   privacyHref,
   storeLabel,
 }: {
+  badges: readonly SiteStoreBadge[];
   className: string;
-  href: string;
   locale: SupportedLocaleCode;
   privacyHref: string;
   storeLabel: string;
 }) {
   const context = useAcquisition();
   const copy = getAcquisitionPresentation(context, locale);
-  return context.acquisition.mode === "waitlist" ? (
+  if (context.acquisition.mode === "waitlist") {
+    return (
+      <button
+        className={className}
+        onClick={() =>
+          context.openWaitlist({ source: "header", locale, privacyHref })
+        }
+        type="button"
+      >
+        {copy.waitlist.ctaLabel}
+      </button>
+    );
+  }
+
+  return (
     <button
       className={className}
-      onClick={() =>
-        context.openWaitlist({ source: "header", locale, privacyHref })
-      }
+      onClick={() => {
+        const platform = detectMobileStorePlatform(window.navigator);
+        const href = platform && storeUrl(context.acquisition, platform);
+        if (href) {
+          window.location.assign(href);
+          return;
+        }
+        context.openStoreChooser({ badges, locale });
+      }}
       type="button"
     >
-      {copy.waitlist.ctaLabel}
+      {storeLabel}
     </button>
-  ) : href.includes("#") ? (
-    <a className={className} href={href}>
-      {storeLabel}
-    </a>
-  ) : (
-    <Link className={className} href={href}>
-      {storeLabel}
-    </Link>
   );
 }
 

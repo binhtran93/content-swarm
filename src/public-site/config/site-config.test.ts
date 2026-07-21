@@ -26,7 +26,7 @@ function siteConfigInput(
       logoAlt: "Example",
     },
     navigation: [],
-    headerCta: { label: "Download", href: "/#download" },
+    headerCta: { kind: "link", label: "Download", href: "/#download" },
     waitlist,
     footer: { links: [], copyright: "Example" },
     storeBadges: [],

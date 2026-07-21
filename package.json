@@ -36,6 +36,7 @@
     "next-mdx-remote": "^6.0.0",
     "nextjs-toploader": "^3.9.17",
     "nextra": "^4.6.1",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "rehype-slug": "^6.0.0",
