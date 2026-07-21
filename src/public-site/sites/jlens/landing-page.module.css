@@ -108,7 +108,7 @@
 .flashControl {
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  background: rgb(255 253 248 / 58%);
+  background: #ffffff;
   color: #4c4942;
 }
 
@@ -183,9 +183,8 @@
 .historyControl {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background: rgb(255 253 248 / 58%);
-  border: 1px solid rgb(76 73 66 / 16%);
-  box-shadow: 0 6px 18px rgb(50 46 39 / 10%);
+  background: #ffffff;
+  border: 1px solid rgb(76 73 66 / 12%);
   color: #4c4942;
   height: 44px;
   width: 44px;
@@ -199,10 +198,10 @@
 }
 
 .scanControl {
-  background: #fff9ed;
+  background: #ffffff;
   box-shadow:
-    0 0 0 6px rgb(255 253 248 / 42%),
-    0 10px 24px rgb(37 34 29 / 18%);
+    0 0 0 5px rgb(255 255 255 / 48%),
+    0 8px 22px rgb(37 34 29 / 10%);
   color: #35362f;
   height: 70px;
   width: 70px;
