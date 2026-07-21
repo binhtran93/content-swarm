@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { History, Images, ScanSearch, Sparkles, ZapOff } from "lucide-react";
+import { History, Images, ScanSearch, ZapOff } from "lucide-react";
 
 import { AcquisitionActions } from "@/public-site/components/acquisition";
 import {
@@ -54,11 +54,7 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
     <section className={styles.hero} aria-labelledby="jlens-hero-title">
       <ContentShell className={styles.heroInner}>
         <div className={styles.heroCopy}>
-          <p className={styles.heroEyebrow}>JLens · AI jewelry identifier</p>
           <h1 id="jlens-hero-title">Jewelry Identifier</h1>
-          <p className={styles.heroTagline}>
-            Identify jewelry from a photo with JLens.
-          </p>
           <p className={styles.heroDescription}>
             Take or upload a photo to explore likely gemstones, metals,
             hallmarks, styles, and an estimated value range—then save the piece
@@ -79,9 +75,7 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
             <PhoneFrame>
               <div className={styles.scannerInterface}>
                 <div className={styles.scannerTopbar}>
-                  <span className={styles.scannerModeChip}>
-                    Jewelry scan
-                  </span>
+                  <span className={styles.scannerModeChip}>Jewelry scan</span>
                   <span className={styles.flashControl}>
                     <ZapOff />
                   </span>

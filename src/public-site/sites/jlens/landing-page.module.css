@@ -263,8 +263,8 @@
 .calloutMetal {
   --connector-length: 84px;
 
-  bottom: 100px;
-  left: -78px;
+  bottom: 155px;
+  left: -20px;
 }
 
 .calloutMetal .calloutConnector {
@@ -442,8 +442,8 @@
   .calloutMetal {
     --connector-length: 72px;
 
-    bottom: 85px;
-    left: -72px;
+    bottom: 135px;
+    left: -24px;
   }
 }
 
@@ -546,8 +546,8 @@
   .calloutMetal {
     --connector-length: 64px;
 
-    bottom: 78px;
-    left: -25px;
+    bottom: 128px;
+    left: -2px;
   }
 }
 
@@ -566,7 +566,7 @@
   }
 
   .calloutMetal {
-    left: -15px;
+    left: 4px;
   }
 }
 
