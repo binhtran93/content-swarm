@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { History, Images, ScanSearch, Sparkles, ZapOff } from "lucide-react";
 
 import { AcquisitionActions } from "@/public-site/components/acquisition";
 import {
@@ -77,11 +78,24 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
           <div className={styles.phoneComposition}>
             <PhoneFrame>
               <div className={styles.scannerInterface}>
-                <p>Center one piece in the frame</p>
+                <div className={styles.scannerTopbar}>
+                  <span className={styles.scannerModeChip}>
+                    Jewelry scan
+                  </span>
+                  <span className={styles.flashControl}>
+                    <ZapOff />
+                  </span>
+                </div>
                 <div className={styles.scannerDock}>
-                  <span className={styles.galleryControl} />
-                  <span className={styles.scanControl} />
-                  <span className={styles.historyControl} />
+                  <span className={styles.galleryControl}>
+                    <Images />
+                  </span>
+                  <span className={styles.scanControl}>
+                    <ScanSearch />
+                  </span>
+                  <span className={styles.historyControl}>
+                    <History />
+                  </span>
                 </div>
               </div>
             </PhoneFrame>
@@ -108,29 +122,6 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
             </span>
           </div>
         </div>
-      </ContentShell>
-    </section>
-  );
-}
-
-function TrustStrip() {
-  return (
-    <section className={styles.trustStrip} aria-label="About JLens results">
-      <ContentShell>
-        <ul className={styles.trustList}>
-          <li>
-            <span>01</span>
-            AI-assisted photo analysis
-          </li>
-          <li>
-            <span>02</span>
-            Available on iOS and Android
-          </li>
-          <li>
-            <span>03</span>
-            Informational estimates—not professional appraisal or authentication
-          </li>
-        </ul>
       </ContentShell>
     </section>
   );
@@ -177,7 +168,6 @@ export function JlensLandingPage() {
         />
 
         <JlensHero privacyHref={privacyHref} />
-        <TrustStrip />
 
         <FeatureShowcaseSection
           className={styles.detailsSection}
