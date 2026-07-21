@@ -55,8 +55,13 @@ behavior belong in production code and tests.
 
 ## AI behavior
 
-- AI produces an unsaved proposal.
+- Interactive AI actions produce an unsaved proposal.
 - AI never automatically saves, approves, advances workflow state, publishes,
-  archives, or performs a paid provider call without an explicit owner action.
+  archives, or performs a paid provider call without explicit owner authority.
+  Enabling a bounded Project automation is explicit continuing authority for
+  that automation; disabling it revokes authority for future scheduled runs.
+- Scheduled automation uses a dedicated authenticated identity, remains scoped
+  to enabled Projects owned by the deployed owner, and preserves the same
+  content and publication validation as interactive commands.
 - Production prompt definitions and their tests are authoritative; do not copy
   prompt bodies into documentation.

@@ -31,6 +31,15 @@ describe("evaluateArticleReadiness", () => {
     ).toEqual({ ready: true, blockers: [] });
   });
 
+  it("allows publication without taxonomy topics", () => {
+    expect(
+      evaluateArticleReadiness(
+        { ...article, topics: [] },
+        { keywordAssigned: true },
+      ),
+    ).toEqual({ ready: true, blockers: [] });
+  });
+
   it("reports deterministic saved-data blockers", () => {
     const result = evaluateArticleReadiness(
       { ...article, content: "# Unsafe H1", slug: "Bad Slug" },

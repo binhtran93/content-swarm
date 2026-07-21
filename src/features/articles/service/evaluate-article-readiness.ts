@@ -24,8 +24,6 @@ export function evaluateArticleReadiness(
     if (!value?.trim()) blockers.push(`${label} is required.`);
   });
 
-  if (!article.topics.length) blockers.push("At least one topic is required.");
-
   if (article.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(article.slug))
     blockers.push("Slug is invalid.");
 

@@ -14,7 +14,6 @@ export const articleSeoInputSchema = z.object({
   slug,
   topics: z
     .array(z.string().trim().min(1).max(80))
-    .min(1, "Choose or enter at least one topic.")
     .max(20, "Use no more than 20 topics.")
     .superRefine((values, context) => {
       const normalized = values.map((value) => value.toLocaleLowerCase());

@@ -2,6 +2,7 @@ import "server-only";
 
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { cookies } from "next/headers";
+import { AsyncLocalStorage } from "node:async_hooks";
 
 import { ownerSessionConfig } from "@/features/auth/server/session-config.server";
 import { getServerEnv } from "@/platform/env/server-env";
@@ -14,7 +15,16 @@ class OwnerSessionError extends Error {
   }
 }
 
+const automationOwner = new AsyncLocalStorage<string>();
+
+export function runAsAutomationOwner<T>(work: () => Promise<T>): Promise<T> {
+  return automationOwner.run(getServerEnv().FIREBASE_OWNER_UID, work);
+}
+
 export async function requireOwner(): Promise<DecodedIdToken> {
+  const automatedUid = automationOwner.getStore();
+  if (automatedUid) return { uid: automatedUid } as DecodedIdToken;
+
   const sessionCookie = (await cookies()).get(
     ownerSessionConfig.cookieName,
   )?.value;

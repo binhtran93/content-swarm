@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { PageTitle } from "@/backoffice/components/ui/page-title";
+import { ArticleAutomationSettingsForm } from "@/features/articles/automation/article-automation-settings-form";
+import { getArticleAutomationSettings } from "@/features/articles/automation/article-automation-settings.server";
 import { ArchiveProjectControl } from "@/features/projects/backoffice/archive-project-control";
 import { ProjectSettingsForm } from "@/features/projects/backoffice/project-settings-form";
 import type { Project } from "@/features/projects/model/project";
@@ -36,6 +38,9 @@ export default async function ProjectSettingsPage({
   }
 
   const archived = project.status === "archived";
+  const automation = archived
+    ? null
+    : await getArticleAutomationSettings(project.projectId);
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <PageTitle
@@ -77,6 +82,24 @@ export default async function ProjectSettingsPage({
           )}
         </div>
       </section>
+
+      {automation ? (
+        <section className="card bg-base-100 border-base-300 border shadow-sm">
+          <div className="card-body gap-5 p-5 sm:p-6">
+            <div>
+              <h2 className="card-title">Article automation</h2>
+              <p className="text-base-content/60 mt-1 text-sm">
+                Enabling this authorizes scheduled AI generation and automatic
+                publication for this project.
+              </p>
+            </div>
+            <ArticleAutomationSettingsForm
+              projectId={project.projectId}
+              settings={automation}
+            />
+          </div>
+        </section>
+      ) : null}
 
       {!archived ? (
         <section className="card border-error/30 bg-base-100 border shadow-sm">
