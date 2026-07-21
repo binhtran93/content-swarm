@@ -7,7 +7,6 @@ import {
   Images,
   ScanSearch,
   ShieldCheck,
-  ZapOff,
 } from "lucide-react";
 
 import { AcquisitionActions } from "@/public-site/components/acquisition";
@@ -86,12 +85,6 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
           <div className={styles.phoneComposition}>
             <PhoneFrame>
               <div className={styles.scannerInterface}>
-                <div className={styles.scannerTopbar}>
-                  <span className={styles.scannerModeChip}>Jewelry scan</span>
-                  <span className={styles.flashControl}>
-                    <ZapOff />
-                  </span>
-                </div>
                 <div className={styles.scannerDock}>
                   <span className={styles.galleryControl}>
                     <Images />
@@ -122,6 +115,12 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
             </span>
             <span className={`${styles.callout} ${styles.calloutStone}`}>
               Cushion-cut stone
+              <span className={styles.calloutConnector}>
+                <span className={styles.calloutPoint} />
+              </span>
+            </span>
+            <span className={`${styles.callout} ${styles.calloutValue}`}>
+              Est. value $2,400–$2,800
               <span className={styles.calloutConnector}>
                 <span className={styles.calloutPoint} />
               </span>

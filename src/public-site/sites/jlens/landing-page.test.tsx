@@ -67,6 +67,8 @@ describe("JLens landing page", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Jewelry Identifier" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("Est. value $2,400–$2,800")).toBeInTheDocument();
+    expect(screen.queryByText("Jewelry scan")).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         name: "A closer look, in seconds",

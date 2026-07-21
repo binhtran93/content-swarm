@@ -98,59 +98,6 @@
   width: 100%;
 }
 
-.scannerTopbar {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  left: 24px;
-  position: absolute;
-  right: 24px;
-  top: 72px;
-  z-index: 2;
-}
-
-.scannerModeChip,
-.flashControl {
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  background: #ffffff;
-  color: #4c4942;
-}
-
-.scannerModeChip {
-  align-items: center;
-  border-radius: 999px;
-  display: inline-flex;
-  font-size: 11px;
-  font-weight: 650;
-  gap: 7px;
-  letter-spacing: 0.02em;
-  min-height: 34px;
-  padding: 7px 12px;
-}
-
-.scannerModeChip svg {
-  color: #8a6724;
-  height: 15px;
-  stroke-width: 1.8;
-  width: 15px;
-}
-
-.flashControl {
-  align-items: center;
-  border-radius: 50%;
-  display: flex;
-  height: 34px;
-  justify-content: center;
-  width: 34px;
-}
-
-.flashControl svg {
-  height: 17px;
-  stroke-width: 1.8;
-  width: 17px;
-}
-
 .scannerModeLabel {
   bottom: 118px;
   color: #7c5b1d;
@@ -295,6 +242,24 @@
 }
 
 .calloutStone .calloutPoint {
+  bottom: -11px;
+}
+
+.calloutValue {
+  --connector-length: 72px;
+
+  left: 24px;
+  top: 72px;
+}
+
+.calloutValue .calloutConnector {
+  left: 80%;
+  top: 100%;
+  transform: rotate(-30deg);
+  transform-origin: top center;
+}
+
+.calloutValue .calloutPoint {
   bottom: -11px;
 }
 
@@ -603,18 +568,6 @@
     width: 286px;
   }
 
-  .scannerTopbar {
-    left: 20px;
-    right: 20px;
-    top: 60px;
-  }
-
-  .scannerModeChip {
-    font-size: 9px;
-    min-height: 30px;
-    padding: 6px 10px;
-  }
-
   .scannerModeLabel {
     bottom: 104px;
     font-size: 9px;
@@ -662,7 +615,7 @@
     --connector-length: 72px;
 
     right: -96px;
-    top: 125px;
+    top: 170px;
   }
 
   .calloutMetal {
@@ -670,6 +623,13 @@
 
     bottom: 135px;
     left: -24px;
+  }
+
+  .calloutValue {
+    --connector-length: 60px;
+
+    left: 20px;
+    top: 60px;
   }
 }
 
@@ -705,28 +665,6 @@
     height: 585px;
     max-width: 88vw;
     width: 270px;
-  }
-
-  .scannerTopbar {
-    left: 19px;
-    right: 19px;
-    top: 58px;
-  }
-
-  .scannerModeChip {
-    font-size: 9px;
-    min-height: 29px;
-    padding: 5px 9px;
-  }
-
-  .scannerModeChip svg {
-    height: 13px;
-    width: 13px;
-  }
-
-  .flashControl {
-    height: 30px;
-    width: 30px;
   }
 
   .scannerModeLabel {
@@ -765,7 +703,7 @@
     --connector-length: 64px;
 
     right: -52px;
-    top: 120px;
+    top: 155px;
   }
 
   .calloutMetal {
@@ -773,6 +711,13 @@
 
     bottom: 128px;
     left: -2px;
+  }
+
+  .calloutValue {
+    --connector-length: 54px;
+
+    left: 19px;
+    top: 58px;
   }
 
   .careLayout {
