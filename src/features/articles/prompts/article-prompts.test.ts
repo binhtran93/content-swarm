@@ -9,9 +9,14 @@ import { articleTranslationPrompt } from "@/features/articles/prompts/article-tr
 
 describe("article prompt contracts", () => {
   it("keeps versioned proposals editorial and body-only", () => {
-    expect(articlePlanPrompt.version).toBe("article-plan-v2");
+    expect(articlePlanPrompt.version).toBe("article-plan-v3");
     expect(articlePlanPrompt.system).toContain("Do not write article prose");
     expect(articlePlanPrompt.system).toContain("Use Google Search");
+    expect(articlePlanPrompt.system).toContain(
+      "If a FAQ would genuinely help the reader",
+    );
+    expect(articlePlanPrompt.system).toContain("as the final H2 section");
+    expect(articlePlanPrompt.system).toContain("Omit the FAQ when");
     expect(articleContentPrompt.version).toBe("article-content-v3");
     expect(articleContentPrompt.system).toContain("Do not include an H1");
     expect(articleContentPrompt.system).toContain("do not invent facts");
