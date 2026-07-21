@@ -83,18 +83,24 @@ export function SiteHeader({
         >
           {config.navigation.map((item) => {
             const isActive = item.href === activeNavigationHref;
-            return (
-              <Link
-                href={withLocaleRoutePrefix(
-                  config,
-                  routePrefix,
-                  locale,
-                  item.href,
-                )}
-                className={isActive ? styles.activeNav : undefined}
-                aria-current={isActive ? "page" : undefined}
-                key={item.label}
-              >
+            const href = withLocaleRoutePrefix(
+              config,
+              routePrefix,
+              locale,
+              item.href,
+            );
+
+            const navigationProps = {
+              className: isActive ? styles.activeNav : undefined,
+              "aria-current": isActive ? ("page" as const) : undefined,
+            };
+
+            return href.includes("#") ? (
+              <a href={href} key={item.label} {...navigationProps}>
+                {item.label}
+              </a>
+            ) : (
+              <Link href={href} key={item.label} {...navigationProps}>
                 {item.label}
               </Link>
             );

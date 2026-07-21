@@ -409,6 +409,10 @@ export function AcquisitionHeaderCta({
     >
       {copy.waitlist.ctaLabel}
     </button>
+  ) : href.includes("#") ? (
+    <a className={className} href={href}>
+      {storeLabel}
+    </a>
   ) : (
     <Link className={className} href={href}>
       {storeLabel}

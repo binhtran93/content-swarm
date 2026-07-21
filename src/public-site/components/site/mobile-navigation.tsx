@@ -69,17 +69,31 @@ export function MobileNavigation({
           className={styles.mobileMenu}
           id="mobile-primary-navigation"
         >
-          {items.map((item) => (
-            <Link
-              aria-current={item.active ? "page" : undefined}
-              className={item.active ? styles.activeMobileNav : undefined}
-              href={item.href}
-              key={`${item.label}-${item.href}`}
-              onClick={() => setOpen(false)}
-            >
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {items.map((item) => {
+            const navigationProps = {
+              "aria-current": item.active ? ("page" as const) : undefined,
+              className: item.active ? styles.activeMobileNav : undefined,
+              onClick: () => setOpen(false),
+            };
+
+            return item.href.includes("#") ? (
+              <a
+                href={item.href}
+                key={`${item.label}-${item.href}`}
+                {...navigationProps}
+              >
+                <span>{item.label}</span>
+              </a>
+            ) : (
+              <Link
+                href={item.href}
+                key={`${item.label}-${item.href}`}
+                {...navigationProps}
+              >
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
           {languageSelector ? (
             <div className={styles.mobileMenuLanguage}>{languageSelector}</div>
           ) : null}
