@@ -5,6 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { findSupportedMarket } from "@/config/supported-locales";
 import { requireOwner } from "@/features/auth/server/require-owner.server";
 import { articleDocumentSchema } from "@/features/articles/model/article-document";
+import { articleTitleFromKeyword } from "@/features/articles/model/article-title";
 import type { Article } from "@/features/articles/model/article";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
 import { toArticle } from "@/features/articles/service/to-article.server";
@@ -13,13 +14,6 @@ import { keywordDocumentSchema } from "@/features/keywords/model/keyword-documen
 import { assignKeywordTopic } from "@/features/keywords/service/assign-keyword-topic.server";
 import { getServerFirestore } from "@/platform/firebase/firestore.server";
 import { readFirestoreDocument } from "@/platform/firebase/read-firestore-document.server";
-
-function titleFromKeyword(keyword: string): string {
-  const value = keyword.trim();
-  const [first = "", ...rest] = Array.from(value);
-
-  return `${first.toLocaleUpperCase()}${rest.join("")}`;
-}
 
 export async function createArticle(
   projectId: string,
@@ -93,7 +87,7 @@ export async function createArticle(
       schemaVersion: 1,
       locale: market.locale,
       keywordId,
-      title: titleFromKeyword(keyword.keyword),
+      title: articleTitleFromKeyword(keyword.keyword),
       slug: null,
       topics: [],
       excerpt: null,

@@ -16,6 +16,7 @@ import {
   runAsAutomationOwner,
 } from "@/features/auth/server/require-owner.server";
 import { slugifyArticleTitle } from "@/features/articles/model/article-slug";
+import { articleTitleFromKeyword } from "@/features/articles/model/article-title";
 import { publishArticle } from "@/features/articles/publishing/publish-article.server";
 import { createArticle } from "@/features/articles/service/create-article.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
@@ -143,7 +144,7 @@ async function runProject(
   if (stage === "initialize") {
     const context = await getArticleGenerationContext(projectId, articleId);
     await updateArticle(projectId, articleId, () => ({
-      title: context.primaryKeyword,
+      title: articleTitleFromKeyword(context.primaryKeyword),
     }));
     stage = "plan";
     await updateState(reference, leaseId, { stage });
