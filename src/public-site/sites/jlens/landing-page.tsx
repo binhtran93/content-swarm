@@ -65,7 +65,9 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
     <section className={styles.hero} aria-labelledby="jlens-hero-title">
       <ContentShell className={styles.heroInner}>
         <div className={styles.heroCopy}>
-          <h1 id="jlens-hero-title">Jewelry Identifier</h1>
+          <h1 id="jlens-hero-title">
+            Jewelry <span className={styles.heroTitleAccent}>Identifier</span>
+          </h1>
           <p className={styles.heroDescription}>
             Snap a photo to uncover clues about a piece, save what you find, and
             ask questions along the way

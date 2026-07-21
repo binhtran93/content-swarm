@@ -38,13 +38,18 @@
 .heroCopy h1 {
   color: #1d211c;
   font-family: var(--font-jlens-display), Didot, "Bodoni MT", serif;
-  font-size: clamp(76px, 8.5vw, 138px);
+  font-size: clamp(68px, 6vw, 96px);
   font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 0.84;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
   margin: 0;
-  max-width: 820px;
+  max-width: 700px;
   text-wrap: balance;
+}
+
+.heroTitleAccent {
+  color: var(--site-accent);
+  display: block;
 }
 
 .heroTagline {
@@ -518,7 +523,7 @@
   }
 
   .heroCopy h1 {
-    font-size: clamp(72px, 8.3vw, 106px);
+    font-size: clamp(64px, 6.4vw, 80px);
   }
 
   .phoneComposition {
@@ -554,7 +559,7 @@
   }
 
   .heroCopy h1 {
-    font-size: clamp(76px, 13vw, 118px);
+    font-size: clamp(58px, 8vw, 72px);
     margin-inline: auto;
   }
 
@@ -679,8 +684,8 @@
   }
 
   .heroCopy h1 {
-    font-size: clamp(62px, 19vw, 88px);
-    line-height: 0.9;
+    font-size: clamp(48px, 13vw, 60px);
+    line-height: 1.08;
   }
 
   .heroTagline {
