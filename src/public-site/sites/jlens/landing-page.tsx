@@ -56,9 +56,8 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
         <div className={styles.heroCopy}>
           <h1 id="jlens-hero-title">Jewelry Identifier</h1>
           <p className={styles.heroDescription}>
-            Take or upload a photo to explore likely gemstones, metals,
-            hallmarks, styles, and an estimated value range—then save the piece
-            and ask follow-up questions.
+            Snap a photo to uncover clues about a piece, save what you find, and
+            ask questions along the way.
           </p>
           <AcquisitionActions
             ariaLabel="Download JLens"
@@ -165,94 +164,93 @@ export function JlensLandingPage() {
 
         <FeatureShowcaseSection
           className={styles.detailsSection}
-          description="JLens turns visible clues into an organized result with likely item details, possible materials, hallmark observations, and an informational value estimate. Whether you need a ring identifier or broader AI jewelry appraisal context, the result is a starting point—not a professional opinion."
-          eyebrow="AI jewelry identification"
+          description="Take a photo and get a simple starting point for understanding the piece in front of you."
+          eyebrow="Jewelry identification"
           id="features"
           rows={[
             {
               number: "01",
-              title: "Identify likely materials and gemstones",
+              title: "Spot likely materials",
               description:
-                "Use the AI jewelry identifier and gemstone identifier to explore possible metals, stones, cuts, and settings visible in your photos.",
+                "See which metals and stones may match what’s visible.",
             },
             {
               number: "02",
-              title: "Understand style, era, and hallmark clues",
+              title: "Notice the details",
               description:
-                "Turn unfamiliar design details and readable marks into useful terms for further research with a photo-based hallmark scanner.",
+                "Explore the style, setting, and any readable marks.",
             },
             {
               number: "03",
-              title: "Explore an estimated value range",
+              title: "Get a value range",
               description:
-                "Use the jewelry value estimator as a starting point, then consult a qualified professional when you need an appraisal or authentication.",
+                "See an estimate, then ask a professional when certainty matters.",
             },
           ]}
           screenshot="/jlens/details.png"
           screenshotAlt="JLens jewelry identification result showing an estimated value range, metal, gemstone, style, and summary"
-          title="See what your jewelry might be."
+          title="A closer look, in seconds."
           tone="muted"
         />
 
         <FeatureShowcaseSection
           className={styles.collectionSection}
-          description="Use the jewelry inventory app to catalog your jewelry collection, revisit useful details, and track jewelry value estimates across saved pieces."
-          eyebrow="Jewelry collection app"
+          description="Save the pieces you care about and find them again whenever you need."
+          eyebrow="Your collection"
           id="collection"
           rows={[
             {
               number: "01",
-              title: "Build a visual jewelry inventory",
-              description:
-                "Catalog rings, necklaces, bracelets, watches, and gemstones in one personal jewelry collection app.",
+              title: "Keep everything together",
+              description: "Store each photo and result in one place.",
             },
             {
               number: "02",
-              title: "Track estimated collection value",
+              title: "See the bigger picture",
               description:
-                "Review an at-a-glance total based on the informational ranges attached to saved pieces.",
+                "View the combined estimated value of your saved pieces.",
             },
             {
               number: "03",
-              title: "Return to every discovery",
+              title: "Pick up where you left off",
               description:
-                "Revisit photos, identification details, and value context without losing your research across screenshots and notes.",
+                "Return to any piece without starting the search again.",
             },
           ]}
           screenshot="/jlens/collection.png"
           screenshotAlt="JLens collection screen organizing jewelry with estimated values in a personal catalog"
-          title="Keep every discovery in one collection."
+          title="Your jewelry, all in one place."
           visualSide="end"
         />
 
         <FeatureShowcaseSection
           className={styles.chatSection}
-          description="Continue the conversation for jewelry care advice, then prepare clearer hallmark questions and jewelry appraisal questions for a qualified professional."
-          eyebrow="AI jewelry assistant"
+          description="Still curious? Ask a follow-up and get a straightforward answer."
+          eyebrow="Ask JLens"
           id="assistant"
           rows={[
             {
               number: "01",
-              title: "Get jewelry care guidance",
+              title: "Care for it confidently",
               description:
-                "Ask practical follow-up questions about cleaning, storage, and handling based on the piece you scanned.",
+                "Ask about cleaning, storage, and everyday handling.",
             },
             {
               number: "02",
-              title: "Investigate marks and materials",
+              title: "Make sense of a mark",
               description:
-                "Use the AI jeweler conversation to understand visible clues and form better hallmark or appraisal questions.",
+                "Talk through visible stamps or unfamiliar materials.",
             },
             {
               number: "03",
-              title: "Know when to consult a professional",
+              title: "Know when to get help",
               description:
-                "Get clear reminders when physical testing, certified appraisal, or expert authentication is the appropriate next step.",
+                "See when a jeweler or appraiser is the better next step.",
             },
           ]}
           screenshot="/jlens/chat.png"
           screenshotAlt="JLens AI jewelry chat answering a follow-up question about safely cleaning a ring"
-          title="Ask better questions about every piece."
+          title="Curious about a piece? Ask away."
           tone="muted"
         />
 

@@ -66,17 +66,17 @@ describe("JLens landing page", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "See what your jewelry might be.",
+        name: "A closer look, in seconds.",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Keep every discovery in one collection.",
+        name: "Your jewelry, all in one place.",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Ask better questions about every piece.",
+        name: "Curious about a piece? Ask away.",
       }),
     ).toBeInTheDocument();
     expect(

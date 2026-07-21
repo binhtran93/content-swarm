@@ -281,8 +281,8 @@
 .calloutStone {
   --connector-length: 86px;
 
-  right: -88px;
-  top: 170px;
+  right: -118px;
+  top: 140px;
 }
 
 .calloutStone .calloutConnector {
@@ -323,7 +323,7 @@
   }
 
   .calloutStone {
-    right: -72px;
+    right: -102px;
   }
 }
 
@@ -435,8 +435,8 @@
   .calloutStone {
     --connector-length: 72px;
 
-    right: -72px;
-    top: 150px;
+    right: -96px;
+    top: 125px;
   }
 
   .calloutMetal {
@@ -539,8 +539,8 @@
   .calloutStone {
     --connector-length: 64px;
 
-    right: -30px;
-    top: 145px;
+    right: -52px;
+    top: 120px;
   }
 
   .calloutMetal {
@@ -562,7 +562,7 @@
   }
 
   .calloutStone {
-    right: -20px;
+    right: -42px;
   }
 
   .calloutMetal {
