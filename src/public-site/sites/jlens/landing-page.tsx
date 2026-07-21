@@ -194,12 +194,12 @@ function JlensCareSection() {
                   <span
                     className={`${styles.compareLabel} ${styles.beforeLabel}`}
                   >
-                    Before
+                    Before <span aria-hidden="true">🤧</span>
                   </span>
                   <span
                     className={`${styles.compareLabel} ${styles.afterLabel}`}
                   >
-                    After
+                    After <span aria-hidden="true">🥳</span>
                   </span>
                 </div>
 

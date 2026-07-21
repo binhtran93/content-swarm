@@ -361,21 +361,24 @@
   border-radius: 999px;
   box-shadow: 0 6px 18px rgb(54 40 25 / 10%);
   color: #3d382f;
-  font-size: 12px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  padding: 8px 13px;
+  padding: 12px 20px;
   position: absolute;
   top: 72px;
   z-index: 2;
 }
 
 .beforeLabel {
+  color: #d52c1c;
   left: 18px;
 }
 
 .afterLabel {
+  color: #249b5c;
   right: 18px;
+  top: 92px;
 }
 
 .careCard {
