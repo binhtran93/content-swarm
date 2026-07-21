@@ -248,7 +248,7 @@ export function JlensLandingPage() {
                 "See when a jeweler or appraiser is the better next step.",
             },
           ]}
-          screenshot="/jlens/chat.png"
+          screenshot="/jlens/chat-2.png"
           screenshotAlt="JLens AI jewelry chat answering a follow-up question about safely cleaning a ring"
           title="Curious about a piece? Ask away."
           tone="muted"
