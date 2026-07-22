@@ -6,10 +6,26 @@ import {
   getPublicRouteMode,
   isPublicProjectDisabled,
 } from "@/public-site/config/public-url";
-import { getPublicProjectIdFromPathname } from "@/public-site/config/public-projects";
+import {
+  getPublicProjectIdFromPathname,
+  publicProjectBasePaths,
+  type PublicProjectId,
+} from "@/public-site/config/public-projects";
 
 const publicAssetPattern =
   /\.(?:avif|gif|ico|jpe?g|mp4|otf|png|svg|ttf|txt|webm|webp|woff2?)$/i;
+
+const requiredPublicPageSegments = new Set(["privacy", "support", "terms"]);
+
+function isRequiredPublicProjectPage(
+  projectId: PublicProjectId,
+  pathname: string,
+): boolean {
+  const basePath = publicProjectBasePaths[projectId];
+  const segment = pathname.slice(basePath.length + 1);
+
+  return requiredPublicPageSegments.has(segment);
+}
 
 function isRootOwnedRoute(pathname: string): boolean {
   return (
@@ -40,12 +56,15 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(destination);
   }
 
-  const prefixedRouteIsUnavailable = isPublicProjectDisabled(projectId);
+  const isPublicAsset = publicAssetPattern.test(pathname);
+  const disabledProjectRouteIsUnavailable =
+    isPublicProjectDisabled(projectId) &&
+    !isRequiredPublicProjectPage(projectId, pathname) &&
+    !isPublicAsset;
 
-  const isDedicatedProjectPagePrefix =
-    routeMode === "root" && !publicAssetPattern.test(pathname);
+  const isDedicatedProjectPagePrefix = routeMode === "root" && !isPublicAsset;
 
-  if (!prefixedRouteIsUnavailable && !isDedicatedProjectPagePrefix) {
+  if (!disabledProjectRouteIsUnavailable && !isDedicatedProjectPagePrefix) {
     return NextResponse.next();
   }
 

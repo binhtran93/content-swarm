@@ -179,8 +179,10 @@ shared behavior only when it is genuinely shared.
 
 - Serve the landing site at `https://anmisoft.com/{projectId}` from the main
   deployment.
-- Keep `PUBLIC_ROUTE_MODE=project` and do not add the Project to
-  `PUBLIC_DISABLED_PROJECTS`.
+- Keep `PUBLIC_ROUTE_MODE=project`. Do not add the Project to
+  `PUBLIC_DISABLED_PROJECTS` while its full subpath site should remain live;
+  that setting preserves only the default-language Support, Privacy, and Terms
+  pages plus Project static assets.
 - Do not configure a dedicated deployment, DNS, or Project website Analytics.
 - Emit canonical URLs including `/{projectId}`. The current full-site canonical
   helper assumes a dedicated origin; extend and test that helper before using
@@ -211,12 +213,15 @@ canonical-host-gated.
 If Phase 1 or a previous subpath launch exposed URLs externally, preserve them
 with reviewed permanent redirects to the equivalent dedicated URLs. This is
 especially important for Support, Privacy, and Terms URLs registered with app
-stores. Do not add the Project to `PUBLIC_DISABLED_PROJECTS` while those URLs
-would become unexplained 404 responses.
+stores. Without reviewed redirects, the default-language versions of those
+three pages remain rendered on the ANMISOFT subpath when the Project is listed
+in `PUBLIC_DISABLED_PROJECTS`; localized versions return 404.
 
 After redirects and the dedicated deployment are verified, the main deployment
-may stop rendering the Project content. Preserve all existing disabled IDs when
-updating `PUBLIC_DISABLED_PROJECTS`.
+may stop rendering the Project landing page, Blog, sitemap, and other optional
+content by adding the ID to `PUBLIC_DISABLED_PROJECTS`. Required
+default-language pages and Project static assets remain available. Preserve all
+existing disabled IDs when updating the setting.
 
 ### 9. Verify and launch Phase 2
 

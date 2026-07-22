@@ -17,10 +17,10 @@ describe("public project route guard", () => {
   it.each([
     ["subiq", "/subiq"],
     ["subiq", "/subiq/blog/article"],
-    ["subiq", "/subiq/mascot-hi.webp"],
-    ["jlens", "/jlens/privacy"],
-    ["skylens", "/skylens/terms"],
-    ["urge-zero", "/urge-zero/support"],
+    ["subiq", "/subiq/sitemap.xml"],
+    ["jlens", "/jlens/vi-VN/privacy"],
+    ["skylens", "/skylens/en-US/terms"],
+    ["urge-zero", "/urge-zero/de-DE/support"],
   ])("returns 404 when %s disables %s", (projectId, pathname) => {
     process.env.PUBLIC_ROUTE_MODE = "project";
     process.env.PUBLIC_DISABLED_PROJECTS = projectId;
@@ -29,6 +29,41 @@ describe("public project route guard", () => {
 
     expect(response.status).toBe(404);
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it.each(["privacy", "support", "terms"])(
+    "keeps the default SubIQ %s page available when SubIQ is disabled",
+    (page) => {
+      process.env.PUBLIC_ROUTE_MODE = "project";
+      process.env.PUBLIC_DISABLED_PROJECTS = "subiq";
+
+      const response = proxy(request(`/subiq/${page}`));
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("x-middleware-next")).toBe("1");
+    },
+  );
+
+  it.each([
+    ["jlens", "/jlens/privacy"],
+    ["skylens", "/skylens/support"],
+    ["urge-zero", "/urge-zero/terms"],
+  ])("keeps required page %s available at %s", (projectId, pathname) => {
+    process.env.PUBLIC_ROUTE_MODE = "project";
+    process.env.PUBLIC_DISABLED_PROJECTS = projectId;
+
+    expect(proxy(request(pathname)).status).toBe(200);
+  });
+
+  it.each([
+    "/subiq/mascot-hi.webp",
+    "/subiq/app-store.svg",
+    "/subiq/favicon.png",
+  ])("keeps required project asset %s available when disabled", (pathname) => {
+    process.env.PUBLIC_ROUTE_MODE = "project";
+    process.env.PUBLIC_DISABLED_PROJECTS = "subiq";
+
+    expect(proxy(request(pathname)).status).toBe(200);
   });
 
   it("leaves SubIQ routes enabled in project mode by default", () => {
