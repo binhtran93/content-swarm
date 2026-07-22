@@ -42,7 +42,6 @@
   font-family: var(--font-urge-zero-display), Impact, sans-serif;
   font-weight: 400 !important;
   letter-spacing: 0.012em !important;
-  text-transform: uppercase;
 }
 
 .urge-zero-site :where(h1, h2, h3) {

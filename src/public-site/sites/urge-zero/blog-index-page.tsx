@@ -36,9 +36,8 @@ export async function UrgeZeroBlogIndexPage({
           browseByTopic: "Browse by topic",
           allTopics: "All topics",
           englishOnlyShort: "Available in English",
-          emptyTitle: "Guides are coming soon",
-          emptyDescription:
-            "We’re preparing practical guides for urges, habits, setbacks, and steady progress",
+          emptyTitle: "No guides yet",
+          emptyDescription: "Check back soon.",
           paginationLabel: "Blog pagination",
           nextPage: "Next page",
         }}

@@ -39,9 +39,8 @@ export async function JlensBlogIndexPage({
           browseByTopic: "Browse by topic",
           allTopics: "All topics",
           englishOnlyShort: "Available in English",
-          emptyTitle: "Guides are coming soon",
-          emptyDescription:
-            "We’re preparing practical jewelry identification and care guides.",
+          emptyTitle: "No guides yet",
+          emptyDescription: "Check back soon.",
           paginationLabel: "Blog pagination",
           nextPage: "Next page",
         }}

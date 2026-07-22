@@ -4,10 +4,10 @@ import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
 export const urgeZeroBlogConfig: PublicBlogConfig = {
   ...urgeZeroSiteConfig,
   blog: {
-    titleLead: "Practical help for",
-    titleAccent: "the next choice",
+    titleLead: "Help with",
+    titleAccent: "urges",
     description:
-      "Clear, grounded guides for understanding urges, rebuilding habits, handling setbacks, and continuing forward",
+      "Tips for handling urges, building better habits, and getting back on track.",
     postsPerPage: 10,
     installCta: {
       eyebrow: "Be ready for the moment",

@@ -5,6 +5,38 @@ import { BlogIndex } from "@/public-site/components/blog/blog-index";
 import { jlensBlogConfig } from "@/public-site/sites/jlens/blog-config";
 
 describe("JLens blog index", () => {
+  it("hides topic navigation when the blog has no topics", () => {
+    render(
+      <BlogIndex
+        config={jlensBlogConfig}
+        routePrefix="/jlens"
+        locale="en-US"
+        result={{
+          items: [],
+          topics: [],
+          hasNext: false,
+          nextCursor: null,
+        }}
+        copy={{
+          articlesLabel: "Jewelry guides",
+          browseByTopic: "Browse by topic",
+          allTopics: "All topics",
+          englishOnlyShort: "Available in English",
+          emptyTitle: "No guides yet",
+          emptyDescription: "Check back soon.",
+          paginationLabel: "Blog pagination",
+          nextPage: "Next page",
+        }}
+      />,
+    );
+
+    expect(screen.getByText("No guides yet")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("complementary", { name: "Browse by topic" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("All topics")).not.toBeInTheDocument();
+  });
+
   it("does not invent a topic for an article without topics", () => {
     render(
       <BlogIndex
@@ -32,8 +64,8 @@ describe("JLens blog index", () => {
           browseByTopic: "Browse by topic",
           allTopics: "All topics",
           englishOnlyShort: "Available in English",
-          emptyTitle: "Guides are coming soon",
-          emptyDescription: "We’re preparing practical jewelry guides.",
+          emptyTitle: "No guides yet",
+          emptyDescription: "Check back soon.",
           paginationLabel: "Blog pagination",
           nextPage: "Next page",
         }}

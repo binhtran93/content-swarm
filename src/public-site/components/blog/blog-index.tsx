@@ -61,7 +61,7 @@ export function BlogIndex({
       <section className={styles.blogHero} aria-labelledby="blog-title">
         <div className={styles.contentShell}>
           <h1 id="blog-title">
-            {config.blog.titleLead} <span>{config.blog.titleAccent}</span>
+            {config.blog.titleLead} {config.blog.titleAccent}
           </h1>
           <p className={styles.heroDescription}>{config.blog.description}</p>
         </div>
@@ -69,32 +69,40 @@ export function BlogIndex({
 
       <section className={styles.blogContent} aria-label={copy.articlesLabel}>
         <div className={styles.contentShell}>
-          <div className={styles.articleBrowser}>
-            <aside
-              className={styles.filterRail}
-              aria-label={copy.browseByTopic}
-            >
-              <p className={styles.browserLabel}>{copy.browseByTopic}</p>
-              <div className={styles.categoryList}>
-                <Link
-                  className={!activeTopic ? styles.activeCategory : undefined}
-                  href={blogHref}
-                >
-                  {copy.allTopics}
-                </Link>
-                {result.topics.map((topic) => (
+          <div
+            className={`${styles.articleBrowser} ${
+              result.topics.length ? "" : styles.articleBrowserSingle
+            }`}
+          >
+            {result.topics.length ? (
+              <aside
+                className={styles.filterRail}
+                aria-label={copy.browseByTopic}
+              >
+                <p className={styles.browserLabel}>{copy.browseByTopic}</p>
+                <div className={styles.categoryList}>
                   <Link
-                    className={
-                      activeTopic === topic ? styles.activeCategory : undefined
-                    }
-                    href={`${blogHref}?topic=${encodeURIComponent(topic)}`}
-                    key={topic}
+                    className={!activeTopic ? styles.activeCategory : undefined}
+                    href={blogHref}
                   >
-                    {topic}
+                    {copy.allTopics}
                   </Link>
-                ))}
-              </div>
-            </aside>
+                  {result.topics.map((topic) => (
+                    <Link
+                      className={
+                        activeTopic === topic
+                          ? styles.activeCategory
+                          : undefined
+                      }
+                      href={`${blogHref}?topic=${encodeURIComponent(topic)}`}
+                      key={topic}
+                    >
+                      {topic}
+                    </Link>
+                  ))}
+                </div>
+              </aside>
+            ) : null}
 
             <section className={styles.articleArchive} id="article-list">
               {result.items.length ? (

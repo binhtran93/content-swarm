@@ -4,10 +4,9 @@ import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
 export const jlensBlogConfig: PublicBlogConfig = {
   ...jlensSiteConfig,
   blog: {
-    titleLead: "Jewelry knowledge,",
-    titleAccent: "made clearer",
-    description:
-      "Practical guides to identifying, understanding, caring for, and cataloging your jewelry.",
+    titleLead: "Jewelry",
+    titleAccent: "guides",
+    description: "Learn how to identify, care for, and organize your jewelry.",
     postsPerPage: 10,
     installCta: {
       eyebrow: "Identify with confidence",
