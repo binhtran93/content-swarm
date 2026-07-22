@@ -19,5 +19,7 @@ export async function generateMetadata({ params }: RouteProps) {
 }
 
 export default async function JlensBlogArticleRoute({ params }: RouteProps) {
-  return <JlensBlogArticlePage slug={(await params).slug} />;
+  return (
+    <JlensBlogArticlePage locale={defaultLocale} slug={(await params).slug} />
+  );
 }

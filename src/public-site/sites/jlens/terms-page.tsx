@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import {
+  defaultLocale,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
 import { withPublicRoute } from "@/public-site/config/public-url";
 import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
 import { createJlensStaticPageMetadata } from "@/public-site/sites/jlens/static-page-seo";
 
-export const metadata: Metadata = createJlensStaticPageMetadata("terms");
+export const metadata: Metadata = createJlensStaticPageMetadata(
+  "terms",
+  defaultLocale,
+);
 
-export default function JewelryIdentifierTermsPage() {
-  const supportHref = withPublicRoute(
-    jlensSiteConfig,
-    jlensSiteConfig.defaultLocale,
-    "/support",
-  );
+export default function JewelryIdentifierTermsPage({
+  locale = defaultLocale,
+}: {
+  locale?: SupportedLocaleCode;
+}) {
+  const supportHref = withPublicRoute(jlensSiteConfig, locale, "/support");
 
   return (
     <main className="legal-document flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">

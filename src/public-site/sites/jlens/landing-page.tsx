@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import type { SupportedLocaleCode } from "@/config/supported-locales";
 import { AcquisitionActions } from "@/public-site/components/acquisition";
 import {
   ContentShell,
@@ -21,47 +22,25 @@ import {
   SectionHeading,
   ViewportHero,
 } from "@/public-site/components/landing";
-import { withPublicRoute } from "@/public-site/config/public-url";
-import { jlensLandingDescription } from "@/public-site/sites/jlens/landing-metadata";
-import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+import {
+  getCanonicalUrl,
+  withPublicRoute,
+} from "@/public-site/config/public-url";
+import { getLocalizedJlensConfig } from "@/public-site/sites/jlens/site-config";
 import { JlensSiteLayout } from "@/public-site/sites/jlens/site-layout";
+import { getJlensTranslator } from "@/public-site/sites/jlens/i18n/get-jlens-translator";
 
 import styles from "./landing-page.module.css";
 
-const faqs = [
-  {
-    question: "How do I identify jewelry from a photo?",
-    answer:
-      "Open JLens and take a clear photo or choose one from your library—start with the complete piece, then add a sharp close-up of any hallmark, clasp, engraving, or stone setting when you want more useful visible clues",
-  },
-  {
-    question: "What jewelry and gemstones can JLens identify?",
-    answer:
-      "JLens can analyze photos of rings, necklaces, bracelets, earrings, pendants, watches, loose gemstones, crystals, and minerals, with likely matches based on what is visible in the submitted images",
-  },
-  {
-    question: "Can JLens confirm whether gold or a diamond is real?",
-    answer:
-      "No photo-based AI can certify metal purity or gemstone authenticity—JLens can explain visible marks and possible materials, but professional testing is needed when authenticity matters",
-  },
-  {
-    question: "Is an estimated value a professional appraisal?",
-    answer:
-      "No—JLens provides an informational estimated range based on visible characteristics and available context, while condition, provenance, laboratory testing, and market demand can materially change value, so use a qualified appraiser for insurance, sale, estate, or legal decisions",
-  },
-  {
-    question: "Can I save scans and track a jewelry collection?",
-    answer:
-      "Yes—you can save identified pieces, revisit their results, and use the collection view to organize your jewelry and review its combined estimated value",
-  },
-  {
-    question: "Is JLens available on iPhone and Android?",
-    answer:
-      "Yes—JLens is available through the Apple App Store for iPhone and iPad and through Google Play for supported Android devices",
-  },
-] as const;
-
-function JlensHero({ privacyHref }: { privacyHref: string }) {
+function JlensHero({
+  locale,
+  privacyHref,
+}: {
+  locale: SupportedLocaleCode;
+  privacyHref: string;
+}) {
+  const t = getJlensTranslator(locale);
+  const config = getLocalizedJlensConfig(locale);
   return (
     <ViewportHero
       className={styles.hero}
@@ -70,17 +49,18 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
     >
       <div className={styles.heroCopy}>
         <h1 id="jlens-hero-title">
-          Jewelry <span className={styles.heroTitleAccent}>Identifier</span>
+          {t.rich("landing.heroTitle", {
+            accent: (chunks) => (
+              <span className={styles.heroTitleAccent}>{chunks}</span>
+            ),
+          })}
         </h1>
-        <p className={styles.heroDescription}>
-          Snap a photo to uncover clues about a piece, save what you find, and
-          ask questions along the way
-        </p>
+        <p className={styles.heroDescription}>{t("landing.heroDescription")}</p>
         <AcquisitionActions
-          ariaLabel="Download JLens"
-          badges={jlensSiteConfig.storeBadges}
+          ariaLabel={t("landing.downloadAria")}
+          badges={config.storeBadges}
           className={styles.heroActions}
-          locale={jlensSiteConfig.defaultLocale}
+          locale={locale}
           privacyHref={privacyHref}
           source="hero"
         />
@@ -113,19 +93,19 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
             width={722}
           />
           <span className={`${styles.callout} ${styles.calloutMetal}`}>
-            Possible 14K gold
+            {t("landing.possibleGold")}
             <span className={styles.calloutConnector}>
               <span className={styles.calloutPoint} />
             </span>
           </span>
           <span className={`${styles.callout} ${styles.calloutStone}`}>
-            Cushion-cut stone
+            {t("landing.cushionStone")}
             <span className={styles.calloutConnector}>
               <span className={styles.calloutPoint} />
             </span>
           </span>
           <span className={`${styles.callout} ${styles.calloutValue}`}>
-            Est. value $2,600
+            {t("landing.estimatedValue")}
             <span className={styles.calloutConnector}>
               <span className={styles.calloutPoint} />
             </span>
@@ -136,54 +116,42 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
   );
 }
 
-const careItems = [
-  {
-    title: "Cleaning",
-    description: "Gentle habits for everyday freshness",
-    bullets: [
-      "Wipe with a soft, dry microfiber cloth",
-      "Avoid harsh chemical cleaners",
-    ],
-    Icon: BrushCleaning,
-  },
-  {
-    title: "Storage",
-    description: "A safer place for pieces between wears",
-    bullets: [
-      "Store separately to prevent scratches",
-      "Keep in a cool, dry place",
-    ],
-    Icon: Archive,
-  },
-  {
-    title: "Maintenance",
-    description: "Small checks that help prevent bigger problems",
-    bullets: [
-      "Check clasps, links, and settings regularly",
-      "Clean gently after wearing to remove oils",
-    ],
-    Icon: ShieldCheck,
-  },
-  {
-    title: "Avoid",
-    description: "Know what can cause unnecessary wear",
-    bullets: [
-      "Perfume, hairspray, and cosmetics",
-      "Prolonged water or humidity",
-    ],
-    Icon: Ban,
-  },
-] as const;
-
-function JlensCareSection() {
+function JlensCareSection({ locale }: { locale: SupportedLocaleCode }) {
+  const t = getJlensTranslator(locale);
+  const careItems = [
+    {
+      title: t("landing.cleaningTitle"),
+      description: t("landing.cleaningDescription"),
+      bullets: [t("landing.cleaning1"), t("landing.cleaning2")],
+      Icon: BrushCleaning,
+    },
+    {
+      title: t("landing.storageTitle"),
+      description: t("landing.storageDescription"),
+      bullets: [t("landing.storage1"), t("landing.storage2")],
+      Icon: Archive,
+    },
+    {
+      title: t("landing.maintenanceTitle"),
+      description: t("landing.maintenanceDescription"),
+      bullets: [t("landing.maintenance1"), t("landing.maintenance2")],
+      Icon: ShieldCheck,
+    },
+    {
+      title: t("landing.avoidTitle"),
+      description: t("landing.avoidDescription"),
+      bullets: [t("landing.avoid1"), t("landing.avoid2")],
+      Icon: Ban,
+    },
+  ];
   return (
     <LandingSection className={styles.careSection}>
       <ContentShell className={styles.careLayout}>
         <div className={styles.careCopy}>
           <SectionHeading
-            description="Simple guidance for cleaning, storage, and everyday care"
-            eyebrow="Jewelry care"
-            title="Help every piece look its best"
+            description={t("landing.careDescription")}
+            eyebrow={t("landing.careEyebrow")}
+            title={t("landing.careTitle")}
           />
           <ol className={styles.careTopics}>
             {careItems.map(({ title, description }, index) => (
@@ -204,7 +172,7 @@ function JlensCareSection() {
               <div className={styles.careScreen}>
                 <div className={styles.careComparison}>
                   <Image
-                    alt="Split before-and-after photo of a gold ring showing visible condition differences"
+                    alt={t("landing.altCare")}
                     className={styles.careComparisonImage}
                     height={1672}
                     sizes="(max-width: 700px) calc(100vw - 72px), (max-width: 980px) 320px, 390px"
@@ -214,17 +182,17 @@ function JlensCareSection() {
                   <span
                     className={`${styles.compareLabel} ${styles.beforeLabel}`}
                   >
-                    Before <span aria-hidden="true">🤧</span>
+                    {t("landing.before")} <span aria-hidden="true">🤧</span>
                   </span>
                   <span
                     className={`${styles.compareLabel} ${styles.afterLabel}`}
                   >
-                    After <span aria-hidden="true">🥳</span>
+                    {t("landing.after")} <span aria-hidden="true">🥳</span>
                   </span>
                 </div>
 
                 <article className={styles.careCard}>
-                  <h3>Care &amp; maintenance</h3>
+                  <h3>{t("landing.careCardTitle")}</h3>
                   <ul className={styles.careGroups}>
                     {careItems.map(({ title, bullets, Icon }) => (
                       <li className={styles.careGroup} key={title}>
@@ -250,38 +218,37 @@ function JlensCareSection() {
   );
 }
 
-export function JlensLandingPage() {
-  const privacyHref = withPublicRoute(
-    jlensSiteConfig,
-    jlensSiteConfig.defaultLocale,
-    "/privacy",
-  );
+export function JlensLandingPage({ locale }: { locale: SupportedLocaleCode }) {
+  const t = getJlensTranslator(locale);
+  const config = getLocalizedJlensConfig(locale);
+  const privacyHref = withPublicRoute(config, locale, "/privacy");
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": `${jlensSiteConfig.canonicalOrigin}/#website`,
-        name: jlensSiteConfig.brand.name,
-        url: `${jlensSiteConfig.canonicalOrigin}/`,
-        description: jlensLandingDescription,
-        inLanguage: "en-US",
+        "@id": `${config.canonicalOrigin}/#website`,
+        name: config.brand.name,
+        url: getCanonicalUrl(config, locale, "/"),
+        description: t("seo.landingDescription"),
+        inLanguage: locale,
       },
       {
         "@type": "SoftwareApplication",
-        "@id": `${jlensSiteConfig.canonicalOrigin}/#app`,
-        name: jlensSiteConfig.brand.name,
+        "@id": `${config.canonicalOrigin}/#app`,
+        name: config.brand.name,
         applicationCategory: "ReferenceApplication",
         operatingSystem: ["iOS", "Android"],
-        url: `${jlensSiteConfig.canonicalOrigin}/`,
-        image: `${jlensSiteConfig.canonicalOrigin}/og.png`,
-        description: jlensLandingDescription,
+        url: `${config.canonicalOrigin}/`,
+        image: `${config.canonicalOrigin}/og.png`,
+        description: t("seo.landingDescription"),
+        inLanguage: locale,
       },
     ],
   };
 
   return (
-    <JlensSiteLayout activeNavigationHref="/">
+    <JlensSiteLayout locale={locale} activeNavigationHref="/">
       <main>
         <script
           dangerouslySetInnerHTML={{
@@ -290,110 +257,109 @@ export function JlensLandingPage() {
           type="application/ld+json"
         />
 
-        <JlensHero privacyHref={privacyHref} />
+        <JlensHero locale={locale} privacyHref={privacyHref} />
 
         <FeatureShowcaseSection
           className={styles.detailsSection}
-          description="Take a photo and get a simple starting point for understanding the piece in front of you"
-          eyebrow="Jewelry identification"
+          description={t("landing.detailsDescription")}
+          eyebrow={t("landing.detailsEyebrow")}
           id="features"
           rows={[
             {
               number: "01",
-              title: "Spot likely materials",
-              description:
-                "See which metals and stones may match what’s visible",
+              title: t("landing.details1Title"),
+              description: t("landing.details1Description"),
             },
             {
               number: "02",
-              title: "Notice the details",
-              description: "Explore the style, setting, and any readable marks",
+              title: t("landing.details2Title"),
+              description: t("landing.details2Description"),
             },
             {
               number: "03",
-              title: "Get a value range",
-              description:
-                "See an estimate, then ask a professional when certainty matters",
+              title: t("landing.details3Title"),
+              description: t("landing.details3Description"),
             },
           ]}
           screenshot="/jlens/details.png"
-          screenshotAlt="JLens jewelry identification result showing an estimated value range, metal, gemstone, style, and summary"
-          title="A closer look, in seconds"
+          screenshotAlt={t("landing.altDetails")}
+          title={t("landing.detailsTitle")}
           tone="muted"
         />
 
-        <JlensCareSection />
+        <JlensCareSection locale={locale} />
 
         <FeatureShowcaseSection
           className={styles.collectionSection}
-          description="Save the pieces you care about and find them again whenever you need"
-          eyebrow="Your collection"
+          description={t("landing.collectionDescription")}
+          eyebrow={t("landing.collectionEyebrow")}
           id="collection"
           rows={[
             {
               number: "01",
-              title: "Keep everything together",
-              description: "Store each photo and result in one place",
+              title: t("landing.collection1Title"),
+              description: t("landing.collection1Description"),
             },
             {
               number: "02",
-              title: "See the bigger picture",
-              description:
-                "View the combined estimated value of your saved pieces",
+              title: t("landing.collection2Title"),
+              description: t("landing.collection2Description"),
             },
             {
               number: "03",
-              title: "Pick up where you left off",
-              description:
-                "Return to any piece without starting the search again",
+              title: t("landing.collection3Title"),
+              description: t("landing.collection3Description"),
             },
           ]}
           screenshot="/jlens/collection.png"
-          screenshotAlt="JLens collection screen organizing jewelry with estimated values in a personal catalog"
-          title="Your jewelry, all in one place"
+          screenshotAlt={t("landing.altCollection")}
+          title={t("landing.collectionTitle")}
           tone="muted"
         />
 
         <FeatureShowcaseSection
           className={styles.chatSection}
-          description="Still curious? Ask a follow-up and get a straightforward answer"
-          eyebrow="Ask JLens"
+          description={t("landing.chatDescription")}
+          eyebrow={t("landing.chatEyebrow")}
           id="assistant"
           rows={[
             {
               number: "01",
-              title: "Care for it confidently",
-              description: "Ask about cleaning, storage, and everyday handling",
+              title: t("landing.chat1Title"),
+              description: t("landing.chat1Description"),
             },
             {
               number: "02",
-              title: "Make sense of a mark",
-              description:
-                "Talk through visible stamps or unfamiliar materials",
+              title: t("landing.chat2Title"),
+              description: t("landing.chat2Description"),
             },
             {
               number: "03",
-              title: "Know when to get help",
-              description:
-                "See when a jeweler or appraiser is the better next step",
+              title: t("landing.chat3Title"),
+              description: t("landing.chat3Description"),
             },
           ]}
           screenshot="/jlens/chat-2.png"
-          screenshotAlt="JLens AI jewelry chat answering a follow-up question about safely cleaning a ring"
-          title="Curious about a piece? Ask away"
+          screenshotAlt={t("landing.altChat")}
+          title={t("landing.chatTitle")}
           visualSide="end"
         />
 
-        <FaqSection faqs={[...faqs]} />
+        <FaqSection
+          faqs={([1, 2, 3, 4, 5, 6] as const).map((number) => ({
+            question: t(`landing.faq${number}Question`),
+            answer: t(`landing.faq${number}Answer`),
+          }))}
+        />
 
         <DownloadCta
-          badges={jlensSiteConfig.storeBadges}
-          description="Download JLens on iPhone, iPad, or Android and start with a clear photo"
-          locale={jlensSiteConfig.defaultLocale}
+          badges={config.storeBadges}
+          description={t("landing.downloadDescription")}
+          locale={locale}
           privacyHref={privacyHref}
-          title="Identify the jewelry in front of you"
-          waitlistDescription="Get an email when JLens is available in your region"
-          waitlistTitle="Get JLens launch updates"
+          title={t("landing.downloadTitle")}
+          waitlistDescription={t("landing.waitlistDescription")}
+          waitlistTitle={t("landing.waitlistTitle")}
         />
       </main>
     </JlensSiteLayout>

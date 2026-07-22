@@ -2,21 +2,34 @@ import type { ReactNode } from "react";
 
 import { getPublicProjectAcquisition } from "@/features/projects/public/get-public-project-acquisition.server";
 import { AcquisitionProvider } from "@/public-site/components/acquisition";
-import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+import {
+  getLocalizedJlensConfig,
+  jlensSiteConfig,
+} from "@/public-site/sites/jlens/site-config";
+import {
+  getJlensMessages,
+  jlensStaticLocales,
+  type JlensStaticLocale,
+} from "@/public-site/sites/jlens/i18n/get-jlens-translator";
 
-const presentations = {
-  "en-US": {
-    waitlist: jlensSiteConfig.waitlist,
-    availability: "JLens app availability",
-    submitting: "Joining…",
-    done: "Done",
-    close: "Close",
-    notConfigured: "Email signup is temporarily unavailable.",
-    genericError: "We couldn’t complete that request. Please try again.",
-    consent: "By joining, you agree to receive JLens launch emails.",
-    privacyPolicy: "Privacy Policy",
-  },
-} as const;
+function getPresentation(locale: JlensStaticLocale) {
+  const messages = getJlensMessages(locale);
+  return {
+    waitlist: getLocalizedJlensConfig(locale).waitlist,
+    availability: messages.acquisition.availability,
+    submitting: messages.acquisition.submitting,
+    done: messages.acquisition.done,
+    close: messages.acquisition.close,
+    notConfigured: messages.acquisition.notConfigured,
+    genericError: messages.acquisition.genericError,
+    consent: messages.acquisition.consent,
+    privacyPolicy: messages.acquisition.privacyPolicy,
+  };
+}
+
+const presentations = Object.fromEntries(
+  jlensStaticLocales.map((locale) => [locale, getPresentation(locale)]),
+);
 
 export async function JlensAcquisitionBoundary({
   children,

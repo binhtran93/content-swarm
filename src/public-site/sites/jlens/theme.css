@@ -1,4 +1,5 @@
 .jlens-site {
+  --font-jlens-display: var(--font-jlens-display-bodoni);
   --site-accent: #8a6724;
   --site-accent-bright: #705019;
   --site-accent-soft: #efe4ce;
@@ -40,6 +41,34 @@
   --legal-surface-muted: #eee8de;
   --legal-text: #24231f;
   --legal-text-secondary: #625d54;
+}
+
+.jlens-site:lang(vi) {
+  --font-jlens-display: var(--font-jlens-display-vietnamese);
+}
+
+.jlens-site:lang(ar) {
+  --font-jlens-display: var(--font-jlens-display-arabic);
+}
+
+.jlens-site:lang(hi) {
+  --font-jlens-display: var(--font-jlens-display-devanagari);
+}
+
+.jlens-site:lang(th) {
+  --font-jlens-display: var(--font-jlens-display-thai);
+}
+
+.jlens-site:lang(ja) {
+  --font-jlens-display: var(--font-jlens-display-japanese);
+}
+
+.jlens-site:lang(ko) {
+  --font-jlens-display: var(--font-jlens-display-korean);
+}
+
+.jlens-site:lang(zh) {
+  --font-jlens-display: var(--font-jlens-display-traditional-chinese);
 }
 
 .jlens-site :where(h1, h2) {

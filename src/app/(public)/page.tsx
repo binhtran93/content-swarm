@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { defaultLocale } from "@/config/supported-locales";
 import {
   getDedicatedPublicProjectId,
   getPublicRouteMode,
@@ -24,7 +25,7 @@ export function generateMetadata() {
   const projectId = getDedicatedPublicProjectId();
   switch (projectId) {
     case "jlens":
-      return createJlensLandingMetadata();
+      return createJlensLandingMetadata(defaultLocale);
     case "subiq":
       return createSubiqLandingMetadata("en-US");
     case "urge-zero":
@@ -41,7 +42,7 @@ export default function HomePage() {
       case "jlens":
         return (
           <JlensAcquisitionBoundary>
-            <JlensLandingPage />
+            <JlensLandingPage locale={defaultLocale} />
           </JlensAcquisitionBoundary>
         );
       case "subiq":

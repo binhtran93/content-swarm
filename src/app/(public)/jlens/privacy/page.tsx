@@ -1,3 +1,4 @@
+import { defaultLocale } from "@/config/supported-locales";
 import JewelryIdentifierPrivacyPage, {
   metadata as privacyMetadata,
 } from "@/public-site/sites/jlens/privacy-page";
@@ -7,7 +8,7 @@ export const metadata = privacyMetadata;
 
 export default function PrivacyRoute() {
   return (
-    <JlensStaticPageLayout>
+    <JlensStaticPageLayout locale={defaultLocale}>
       <JewelryIdentifierPrivacyPage />
     </JlensStaticPageLayout>
   );

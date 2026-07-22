@@ -2,7 +2,18 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/font/google", () => ({
-  Bodoni_Moda: () => ({ variable: "font-jlens-display" }),
+  Bodoni_Moda: () => ({ variable: "font-jlens-display-bodoni" }),
+  Playfair_Display: () => ({ variable: "font-jlens-display-vietnamese" }),
+  Noto_Naskh_Arabic: () => ({ variable: "font-jlens-display-arabic" }),
+  Noto_Serif_Devanagari: () => ({
+    variable: "font-jlens-display-devanagari",
+  }),
+  Noto_Serif_Thai: () => ({ variable: "font-jlens-display-thai" }),
+  Noto_Serif_JP: () => ({ variable: "font-jlens-display-japanese" }),
+  Noto_Serif_KR: () => ({ variable: "font-jlens-display-korean" }),
+  Noto_Serif_TC: () => ({
+    variable: "font-jlens-display-traditional-chinese",
+  }),
 }));
 vi.mock("@/features/articles/public/list-public-articles.server", () => ({
   listPublicArticles: vi.fn().mockResolvedValue([]),
@@ -50,7 +61,7 @@ function renderLanding() {
       scopeClassName="jlens-site"
       siteKey=""
     >
-      <JlensLandingPage />
+      <JlensLandingPage locale="en-US" />
     </AcquisitionProvider>,
   );
 }
@@ -127,8 +138,8 @@ describe("JLens landing page", () => {
       screen.getAllByRole("link", { name: "Get JLens on Google Play" })[0],
     ).toHaveAttribute("href", googlePlayUrl);
     expect(
-      screen.queryByRole("button", { name: "Change language" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("button", { name: "Change language" }),
+    ).toBeInTheDocument();
     expect(
       container.querySelector('script[type="application/ld+json"]')
         ?.textContent,
@@ -136,18 +147,22 @@ describe("JLens landing page", () => {
   });
 
   it("publishes canonical social metadata and includes the blog in its sitemap", async () => {
-    const metadata = createJlensLandingMetadata();
+    const metadata = createJlensLandingMetadata("en-US");
     expect(metadata.title).toBe(
       "AI Jewelry Identifier & Value Estimator | JLens",
     );
     expect(metadata.alternates?.canonical).toBe("https://jlensapp.com/");
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
-    expect((await sitemap()).map((entry) => entry.url)).toEqual([
-      "https://jlensapp.com/",
-      "https://jlensapp.com/blog",
-      "https://jlensapp.com/support",
-      "https://jlensapp.com/privacy",
-      "https://jlensapp.com/terms",
-    ]);
+    expect((await sitemap()).map((entry) => entry.url)).toEqual(
+      expect.arrayContaining([
+        "https://jlensapp.com/",
+        "https://jlensapp.com/blog",
+        "https://jlensapp.com/support",
+        "https://jlensapp.com/privacy",
+        "https://jlensapp.com/terms",
+        "https://jlensapp.com/vi-VN/",
+        "https://jlensapp.com/vi-VN/support",
+      ]),
+    );
   });
 });

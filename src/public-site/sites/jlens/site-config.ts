@@ -1,6 +1,14 @@
-import { defaultLocale } from "@/config/supported-locales";
+import {
+  defaultLocale,
+  supportedLocales,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
 import { definePublicSiteConfig } from "@/public-site/config/site-config";
 import { publicProjectBasePaths } from "@/public-site/config/public-projects";
+import {
+  getJlensMessages,
+  jlensStaticLocales,
+} from "@/public-site/sites/jlens/i18n/get-jlens-translator";
 
 const currentYear = new Date().getFullYear();
 
@@ -10,7 +18,7 @@ export const jlensSiteConfig = definePublicSiteConfig({
   canonicalOrigin: "https://jlensapp.com",
   analyticsMeasurementId: "G-R89Z9ZW09F",
   defaultLocale,
-  locales: [defaultLocale],
+  locales: supportedLocales.map((item) => item.locale),
   scopeClassName: "jlens-site",
   theme: {
     routeProgressColor: "#8a6724",
@@ -69,3 +77,51 @@ export const jlensSiteConfig = definePublicSiteConfig({
     },
   ],
 });
+
+export function getLocalizedJlensConfig(locale: SupportedLocaleCode) {
+  const messages = getJlensMessages(locale);
+  return {
+    ...jlensSiteConfig,
+    locales: jlensStaticLocales,
+    accessibility: {
+      changeLanguage: messages.site.changeLanguage,
+      primaryNavigation: messages.site.primaryNavigation,
+      legalNavigation: messages.site.legalNavigation,
+      brandHome: messages.site.brandHome,
+      backToTop: messages.site.backToTop,
+    },
+    navigation: [
+      { label: messages.site.home, href: "/" },
+      { label: messages.site.blog, href: "/blog" },
+      { label: messages.site.faq, href: "/#faq" },
+      { label: messages.site.support, href: "/support" },
+    ],
+    headerCta: { kind: "acquisition", label: messages.site.download },
+    footer: {
+      ...jlensSiteConfig.footer,
+      links: [
+        { href: "/support", label: messages.site.support },
+        { href: "/privacy", label: messages.site.privacy },
+        { href: "/terms", label: messages.site.terms },
+      ],
+      disclaimer: messages.site.disclaimer,
+    },
+    waitlist: {
+      ctaLabel: messages.acquisition.cta,
+      title: messages.acquisition.title,
+      description: messages.acquisition.description,
+      emailLabel: messages.acquisition.emailLabel,
+      emailPlaceholder: messages.acquisition.emailPlaceholder,
+      submitLabel: messages.acquisition.submit,
+      successTitle: messages.acquisition.successTitle,
+      successDescription: messages.acquisition.successDescription,
+    },
+    storeBadges: jlensSiteConfig.storeBadges.map((badge) => ({
+      ...badge,
+      label:
+        badge.platform === "appStore"
+          ? messages.acquisition.appStore
+          : messages.acquisition.googlePlay,
+    })),
+  } satisfies typeof jlensSiteConfig;
+}

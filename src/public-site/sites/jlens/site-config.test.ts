@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { getPublicSiteIcons } from "@/public-site/config/site-icons";
-import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+import { supportedLocales } from "@/config/supported-locales";
+import {
+  getLocalizedJlensConfig,
+  jlensSiteConfig,
+} from "@/public-site/sites/jlens/site-config";
 
 afterEach(() => {
   delete process.env.PUBLIC_PROJECT_ID;
@@ -9,13 +13,13 @@ afterEach(() => {
 });
 
 describe("JLens public configuration", () => {
-  it("defines a dedicated English store-acquisition site", () => {
+  it("defines a dedicated localized store-acquisition site", () => {
     expect(jlensSiteConfig).toMatchObject({
       id: "jlens",
       internalBasePath: "/jlens",
       canonicalOrigin: "https://jlensapp.com",
       analyticsMeasurementId: "G-R89Z9ZW09F",
-      locales: ["en-US"],
+      locales: supportedLocales.map((item) => item.locale),
       scopeClassName: "jlens-site",
       theme: { routeProgressColor: "#8a6724" },
     });
@@ -26,6 +30,9 @@ describe("JLens public configuration", () => {
       "Support",
     ]);
     expect(jlensSiteConfig.storeBadges).toHaveLength(2);
+    expect(getLocalizedJlensConfig("vi-VN").navigation[0]?.label).toBe(
+      "Trang chủ",
+    );
   });
 
   it("uses root icon URLs only on its matching dedicated deployment", () => {

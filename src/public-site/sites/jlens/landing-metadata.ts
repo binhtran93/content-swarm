@@ -1,30 +1,44 @@
 import type { Metadata } from "next";
 
+import type { SupportedLocaleCode } from "@/config/supported-locales";
 import { getCanonicalUrl } from "@/public-site/config/public-url";
 import { getPublicSiteIcons } from "@/public-site/config/site-icons";
+import {
+  getJlensStaticCanonicalLocale,
+  getJlensStaticLanguageAlternates,
+} from "@/public-site/seo/jlens-static-localization";
 import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
+import {
+  getJlensTranslator,
+  isJlensStaticLocale,
+} from "@/public-site/sites/jlens/i18n/get-jlens-translator";
 
-export const jlensLandingTitle =
-  "AI Jewelry Identifier & Value Estimator | JLens";
-export const jlensLandingDescription =
-  "Identify jewelry from a photo with JLens. Explore likely metals, gemstones, hallmarks, styles, and estimated value ranges, then save pieces and ask questions.";
-
-export function createJlensLandingMetadata(): Metadata {
+export function createJlensLandingMetadata(
+  locale: SupportedLocaleCode,
+): Metadata {
+  const enabled = isJlensStaticLocale(locale);
+  const t = getJlensTranslator(locale);
+  const title = t("seo.landingTitle");
+  const description = t("seo.landingDescription");
   const canonical = getCanonicalUrl(
     jlensSiteConfig,
-    jlensSiteConfig.defaultLocale,
+    getJlensStaticCanonicalLocale(locale, true),
     "/",
   );
   const socialImage = `${jlensSiteConfig.canonicalOrigin}/og.png`;
 
   return {
-    title: jlensLandingTitle,
-    description: jlensLandingDescription,
+    title,
+    description,
     icons: getPublicSiteIcons(jlensSiteConfig),
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: getJlensStaticLanguageAlternates("/", true),
+    },
+    robots: enabled ? undefined : { index: false, follow: true },
     openGraph: {
-      title: jlensLandingTitle,
-      description: jlensLandingDescription,
+      title,
+      description,
       images: [
         {
           url: socialImage,
@@ -39,8 +53,8 @@ export function createJlensLandingMetadata(): Metadata {
     },
     twitter: {
       card: "summary_large_image",
-      title: jlensLandingTitle,
-      description: jlensLandingDescription,
+      title,
+      description,
       images: [socialImage],
     },
   };

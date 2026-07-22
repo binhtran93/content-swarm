@@ -32,6 +32,7 @@ export default async function JlensBlogRoute({
   const values = await searchParams;
   return (
     <JlensBlogIndexPage
+      locale={defaultLocale}
       topic={first(values.topic)}
       cursor={first(values.cursor)}
     />

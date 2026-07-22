@@ -84,6 +84,7 @@ describe("public project route guard", () => {
 
   it.each([
     ["jlens", "/support", "/jlens/support"],
+    ["jlens", "/vi-VN/support", "/jlens/vi-VN/support"],
     ["jlens", "/blog/jewelry-care", "/jlens/blog/jewelry-care"],
     ["jlens", "/new-page", "/jlens/new-page"],
     ["jlens", "/sitemap.xml", "/jlens/sitemap.xml"],

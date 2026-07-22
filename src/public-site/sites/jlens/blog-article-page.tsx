@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
-import { defaultLocale } from "@/config/supported-locales";
+import type { SupportedLocaleCode } from "@/config/supported-locales";
+import { loadArticleAlternates } from "@/public-site/blog/load-article-alternates.server";
 import { loadBlogArticle } from "@/public-site/blog/load-blog-article.server";
 import { BlogArticle } from "@/public-site/components/blog/blog-article";
 import { BlogSiteLayout } from "@/public-site/components/blog/blog-site-layout";
@@ -8,50 +9,80 @@ import {
   getCanonicalUrl,
   getProjectRoutePrefix,
 } from "@/public-site/config/public-url";
-import { jlensBlogConfig } from "@/public-site/sites/jlens/blog-config";
+import {
+  getLocalizedJlensBlogConfig,
+  jlensBlogConfig,
+} from "@/public-site/sites/jlens/blog-config";
+import { getJlensTranslator } from "@/public-site/sites/jlens/i18n/get-jlens-translator";
 
 import "./theme.css";
 
-export async function JlensBlogArticlePage({ slug }: { slug: string }) {
+export async function JlensBlogArticlePage({
+  locale,
+  slug,
+}: {
+  locale: SupportedLocaleCode;
+  slug: string;
+}) {
+  const config = getLocalizedJlensBlogConfig(locale);
+  const t = getJlensTranslator(locale);
   const result = await loadBlogArticle({
     config: jlensBlogConfig,
-    locale: defaultLocale,
+    locale,
     slug,
   });
   if (!result) notFound();
 
-  const routePrefix = getProjectRoutePrefix(jlensBlogConfig);
+  const routePrefix = getProjectRoutePrefix(config);
+  const localePrefix = locale === config.defaultLocale ? "" : `/${locale}`;
   if (result.redirectSlug) {
-    redirect(`${routePrefix}/blog/${result.redirectSlug}`);
+    redirect(`${routePrefix}${localePrefix}/blog/${result.redirectSlug}`);
   }
 
-  const canonical = getCanonicalUrl(
+  const canonical = result.isSourceFallback
+    ? getCanonicalUrl(
+        config,
+        config.defaultLocale,
+        `/blog/${result.source.slug}`,
+      )
+    : getCanonicalUrl(
+        config,
+        locale,
+        `/blog/${result.translation?.slug ?? result.source.slug}`,
+      );
+  const canonicalAlternates = await loadArticleAlternates(
     jlensBlogConfig,
-    defaultLocale,
-    `/blog/${result.source.slug}`,
+    result.source,
+  );
+  const articleAlternates = Object.fromEntries(
+    Object.entries(canonicalAlternates).map(([target, url]) => [
+      target,
+      `${routePrefix}${new URL(url).pathname}`,
+    ]),
   );
 
   return (
     <BlogSiteLayout
-      config={jlensBlogConfig}
+      config={config}
       routePrefix={routePrefix}
-      locale={defaultLocale}
+      locale={locale}
+      articleAlternates={articleAlternates}
     >
       <BlogArticle
-        config={jlensBlogConfig}
+        config={config}
         routePrefix={routePrefix}
-        locale={defaultLocale}
+        locale={locale}
         source={result.source}
         translation={result.translation}
         isSourceFallback={result.isSourceFallback}
         canonical={canonical}
         copy={{
-          untitledArticle: "Untitled jewelry guide",
-          readingTime: (minutes) => `${minutes} min read`,
-          englishOnlyNotice: "This guide is currently available in English.",
-          onThisPage: "On this page",
-          articleEnd: "End of guide",
-          browseAll: "Browse all jewelry guides",
+          untitledArticle: t("blog.untitledArticle"),
+          readingTime: (minutes) => t("blog.readingTime", { minutes }),
+          englishOnlyNotice: t("blog.englishOnlyNotice"),
+          onThisPage: t("blog.onThisPage"),
+          articleEnd: t("blog.articleEnd"),
+          browseAll: t("blog.browseAll"),
         }}
       />
     </BlogSiteLayout>
