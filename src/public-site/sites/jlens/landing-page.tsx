@@ -125,7 +125,7 @@ function JlensHero({ privacyHref }: { privacyHref: string }) {
             </span>
           </span>
           <span className={`${styles.callout} ${styles.calloutValue}`}>
-            Est. value $2,400–$2,800
+            Est. value $2,600
             <span className={styles.calloutConnector}>
               <span className={styles.calloutPoint} />
             </span>

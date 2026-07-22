@@ -176,14 +176,15 @@
 
 .callout {
   background: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgb(4 14 10 / 28%);
+  border-radius: 1.18cqw;
+  box-shadow: 0 0.59cqw 2.35cqw rgb(4 14 10 / 28%);
   color: #1f241f;
-  font-size: 14px;
+  font-size: clamp(11px, 4.12cqw, 16px);
   font-weight: 760;
   letter-spacing: -0.02em;
-  padding: 10px 14px;
+  padding: 2.94cqw 4.12cqw;
   position: absolute;
+  white-space: nowrap;
   z-index: 7;
 }
 
@@ -191,25 +192,25 @@
   background: #dac9a8;
   height: var(--connector-length);
   position: absolute;
-  width: 2px;
+  width: 0.59cqw;
 }
 
 .calloutPoint {
   background: #fffdf8;
-  border: 4px solid rgb(218 201 168 / 48%);
+  border: 1.18cqw solid rgb(218 201 168 / 48%);
   border-radius: 50%;
-  height: 22px;
+  height: 6.47cqw;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
-  width: 22px;
+  width: 6.47cqw;
 }
 
 .calloutMetal {
-  --connector-length: 84px;
+  --connector-length: 24.71cqw;
 
-  bottom: 155px;
-  left: -20px;
+  bottom: 45.59cqw;
+  left: -5.88cqw;
 }
 
 .calloutMetal .calloutConnector {
@@ -220,14 +221,14 @@
 }
 
 .calloutMetal .calloutPoint {
-  top: -11px;
+  top: -3.24cqw;
 }
 
 .calloutStone {
-  --connector-length: 86px;
+  --connector-length: 25.29cqw;
 
-  right: -118px;
-  top: 140px;
+  right: -34.71cqw;
+  top: 41.18cqw;
 }
 
 .calloutStone .calloutConnector {
@@ -238,14 +239,14 @@
 }
 
 .calloutStone .calloutPoint {
-  bottom: -11px;
+  bottom: -3.24cqw;
 }
 
 .calloutValue {
-  --connector-length: 72px;
+  --connector-length: 21.18cqw;
 
-  left: 24px;
-  top: 72px;
+  left: 12cqw;
+  top: 21.18cqw;
 }
 
 .calloutValue .calloutConnector {
@@ -256,7 +257,7 @@
 }
 
 .calloutValue .calloutPoint {
-  bottom: -11px;
+  bottom: -3.24cqw;
 }
 
 .detailsSection {
@@ -487,10 +488,6 @@
     font-size: clamp(64px, 6.4vw, 80px);
   }
 
-  .calloutStone {
-    right: -102px;
-  }
-
   .careLayout {
     gap: clamp(48px, 6vw, 80px);
     grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
@@ -598,32 +595,6 @@
   .heroRing {
     top: 24%;
   }
-
-  .callout {
-    font-size: 12px;
-    padding: 9px 12px;
-  }
-
-  .calloutStone {
-    --connector-length: 72px;
-
-    right: -96px;
-    top: 170px;
-  }
-
-  .calloutMetal {
-    --connector-length: 72px;
-
-    bottom: 135px;
-    left: -24px;
-  }
-
-  .calloutValue {
-    --connector-length: 60px;
-
-    left: 20px;
-    top: 60px;
-  }
 }
 
 @media (max-width: 700px) {
@@ -681,30 +652,25 @@
     top: 25%;
   }
 
-  .callout {
-    font-size: 12px;
-    padding: 9px 12px;
-  }
-
   .calloutStone {
-    --connector-length: 64px;
+    --connector-length: 18.82cqw;
 
-    right: -52px;
-    top: 155px;
+    right: -5cqw;
+    top: 45.59cqw;
   }
 
   .calloutMetal {
-    --connector-length: 64px;
+    --connector-length: 18.82cqw;
 
-    bottom: 128px;
-    left: -2px;
+    bottom: 37.65cqw;
+    left: 0;
   }
 
   .calloutValue {
-    --connector-length: 54px;
+    --connector-length: 15.88cqw;
 
-    left: 19px;
-    top: 58px;
+    left: 11.5cqw;
+    top: 17.06cqw;
   }
 
   .careLayout {
@@ -721,14 +687,6 @@
 @media (max-width: 420px) {
   .heroVisual {
     min-height: 780px;
-  }
-
-  .calloutStone {
-    right: -42px;
-  }
-
-  .calloutMetal {
-    left: 4px;
   }
 }
 

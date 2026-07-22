@@ -198,6 +198,7 @@
   --phone-frame-max-width: 410px;
 
   aspect-ratio: 393 / 852;
+  container-type: inline-size;
   position: relative;
   width: min(100%, clamp(210px, 35.5svh, var(--phone-frame-max-width, 410px)));
 }
