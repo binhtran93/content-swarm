@@ -40,6 +40,7 @@
 }
 
 .storeLink {
+  border-bottom: 0 !important;
   display: inline-flex;
   line-height: 0;
   text-decoration: none;
