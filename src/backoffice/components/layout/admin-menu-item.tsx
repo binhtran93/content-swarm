@@ -13,6 +13,12 @@ const icons: Record<AdminNavigationItem["icon"], ReactNode> = {
     <path d="M10.5 4a6.5 6.5 0 1 0 4.8 10.88L20 19.59 21.41 18l-4.58-4.58A6.5 6.5 0 0 0 10.5 4m0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9" />
   ),
   articles: <path d="M6 3h9l4 4v14H6zm8 2v4h4M9 13h7M9 17h7" />,
+  videos: (
+    <>
+      <rect height="14" rx="2" width="18" x="3" y="5" />
+      <path d="m10 9 5 3-5 3z" />
+    </>
+  ),
 };
 
 export function AdminMenuItem({

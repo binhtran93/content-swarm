@@ -5,5 +5,6 @@
 /.env*
 !/.env.example
 /coverage
+/.local-videos
 *.tsbuildinfo
 *-debug.log
