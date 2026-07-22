@@ -45,6 +45,10 @@
   max-width: 650px;
 }
 
+.heroHighlight {
+  color: var(--site-accent);
+}
+
 .heroDescription {
   color: #625e57;
   font-size: clamp(17px, 1.25vw, 19px);

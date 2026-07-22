@@ -88,7 +88,10 @@ function UrgeZeroHero({ privacyHref }: { privacyHref: string }) {
       labelledBy="urge-zero-hero-title"
     >
       <div className={styles.heroCopy}>
-        <h1 id="urge-zero-hero-title">Quit porn, one urge at a time</h1>
+        <h1 id="urge-zero-hero-title">
+          <span className={styles.heroHighlight}>Quit porn</span>, one urge at a
+          time
+        </h1>
         <p className={styles.heroDescription}>
           When a porn urge hits, UrgeZero gives you simple tools to pause,
           reset, and choose what happens next
