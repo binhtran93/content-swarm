@@ -149,7 +149,8 @@
   opacity: 1;
 }
 
-.mdxComponentLabel select {
+.mdxComponentLabel select,
+.mdxComponentLabel input {
   border-radius: var(--radius-selector);
   border: 0;
   background: var(--color-base-200);
@@ -158,6 +159,10 @@
   font-size: 0.65rem;
   letter-spacing: 0;
   text-transform: none;
+}
+
+.mdxComponentLabel input {
+  width: 9rem;
 }
 
 .mdxComponent :global([contenteditable="true"]) {

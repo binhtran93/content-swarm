@@ -52,6 +52,9 @@ describe("article content improvement services", () => {
     const [, user, options] = mocks.generateArticleAi.mock.calls[0]!;
 
     expect(JSON.parse(user).currentContent).toContain("Current draft");
+    expect(JSON.parse(user).componentAuthoringGuide).toContain(
+      '<Tab title="First option">',
+    );
     expect(options).not.toHaveProperty("searchGrounding");
   });
 
@@ -92,6 +95,9 @@ describe("article content improvement services", () => {
     expect(JSON.parse(user).approvedChanges).toEqual([
       { before: "Formal original.", after: "Natural replacement." },
     ]);
+    expect(JSON.parse(user).componentAuthoringGuide).toContain(
+      "Never use Nextra items",
+    );
     expect(options).toEqual({ searchGrounding: false });
   });
 

@@ -17,7 +17,7 @@ describe("article prompt contracts", () => {
     );
     expect(articlePlanPrompt.system).toContain("as the final H2 section");
     expect(articlePlanPrompt.system).toContain("Omit the FAQ when");
-    expect(articleContentPrompt.version).toBe("article-content-v4");
+    expect(articleContentPrompt.version).toBe("article-content-v5");
     expect(articleContentPrompt.system).toContain(
       "complete primary keyword phrase",
     );
@@ -32,29 +32,36 @@ describe("article prompt contracts", () => {
     expect(articleContentPrompt.system).toContain("do not invent facts");
     expect(articleContentPrompt.system).toContain("Do not use em dashes");
     expect(articleContentPrompt.system).toContain("not like a contract");
+    expect(articleContentPrompt.system).toContain("componentAuthoringGuide");
     expect(articleExcerptPrompt.version).toBe("article-excerpt-v1");
     expect(articleExcerptPrompt.system).toContain("current article MDX");
     expect(articleExcerptPrompt.system).toContain("Do not use markdown");
     expect(articleContentReviewPrompt.version).toBe(
-      "article-content-review-v1",
+      "article-content-review-v2",
     );
     expect(articleContentReviewPrompt.system).toContain(
       "clear excerpt that lets the user recognize",
     );
-    expect(articleContentApplyPrompt.version).toBe("article-content-apply-v1");
+    expect(articleContentApplyPrompt.version).toBe("article-content-apply-v2");
     expect(articleContentApplyPrompt.system).toContain(
       "Preserve every unselected passage",
+    );
+    expect(articleContentApplyPrompt.system).toContain(
+      "componentAuthoringGuide",
     );
   });
 
   it("requires native localization while preserving MDX and facts", () => {
-    expect(articleTranslationPrompt.version).toBe("article-translation-v1");
+    expect(articleTranslationPrompt.version).toBe("article-translation-v2");
     expect(articleTranslationPrompt.system).toContain(
       "not translated word for word",
     );
     expect(articleTranslationPrompt.system).toContain("Preserve product names");
     expect(articleTranslationPrompt.system).toContain(
       "Do not add, remove, merge, or invent facts",
+    );
+    expect(articleTranslationPrompt.system).toContain(
+      "componentAuthoringGuide",
     );
   });
 });

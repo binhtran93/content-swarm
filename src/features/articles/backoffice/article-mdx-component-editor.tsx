@@ -25,18 +25,24 @@ export function ArticleMdxComponentEditor({
 
   const name = descriptor.name ?? "Component";
   const variant = stringAttribute(mdastNode, "type");
+  const title = stringAttribute(mdastNode, "title");
   const updateMdastNode = useMdastNodeUpdater();
 
-  function updateCalloutType(type: string) {
+  function updateStringAttribute(attributeName: string, value: string) {
     const attributes = mdastNode.attributes.filter(
       (attribute) =>
-        attribute.type !== "mdxJsxAttribute" || attribute.name !== "type",
+        attribute.type !== "mdxJsxAttribute" ||
+        attribute.name !== attributeName,
     );
 
     updateMdastNode({
       attributes: [
         ...attributes,
-        { type: "mdxJsxAttribute", name: "type", value: type },
+        {
+          type: "mdxJsxAttribute",
+          name: attributeName,
+          value,
+        },
       ],
     });
   }
@@ -52,7 +58,9 @@ export function ArticleMdxComponentEditor({
         {name === "Callout" ? (
           <select
             aria-label="Callout type"
-            onChange={(event) => updateCalloutType(event.target.value)}
+            onChange={(event) =>
+              updateStringAttribute("type", event.target.value)
+            }
             value={variant ?? "info"}
           >
             <option value="default">Default</option>
@@ -60,6 +68,16 @@ export function ArticleMdxComponentEditor({
             <option value="warning">Warning</option>
             <option value="error">Error</option>
           </select>
+        ) : null}
+        {name === "Tab" ? (
+          <input
+            aria-label="Tab title"
+            onChange={(event) =>
+              updateStringAttribute("title", event.target.value)
+            }
+            type="text"
+            value={title ?? ""}
+          />
         ) : null}
       </div>
       <NestedLexicalEditor<FlowNode>

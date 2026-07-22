@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { articleMdxComponents } from "@/public-site/components/mdx/article-mdx-components";
@@ -35,5 +35,26 @@ describe("articleMdxComponents", () => {
 
     expect(container.querySelectorAll("table")).toHaveLength(1);
     expect(container.querySelector("table table")).toBeNull();
+  });
+
+  it("renders and switches approved static tabs", async () => {
+    const article = await renderArticleMdx(`<Tabs>
+  <Tab title="Platinum">
+    Naturally white.
+  </Tab>
+  <Tab title="White gold">
+    Rhodium plated.
+  </Tab>
+</Tabs>`);
+    render(article.content);
+
+    const platinum = screen.getByRole("tab", { name: "Platinum" });
+    const whiteGold = screen.getByRole("tab", { name: "White gold" });
+    expect(platinum).toHaveAttribute("aria-selected", "true");
+
+    fireEvent.click(whiteGold);
+
+    expect(whiteGold).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Rhodium plated.")).toBeVisible();
   });
 });

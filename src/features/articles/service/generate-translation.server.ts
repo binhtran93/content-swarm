@@ -1,7 +1,10 @@
 import "server-only";
 
 import { z } from "zod";
-import { articleMdxComponentDescriptions } from "@/features/articles/config/article-mdx-components";
+import {
+  articleMdxAuthoringGuide,
+  articleMdxComponentDescriptions,
+} from "@/features/articles/config/article-mdx-components";
 import { articleTranslationPrompt } from "@/features/articles/prompts/article-translation-prompt";
 import { generateArticleAi } from "@/features/articles/provider/generate-article-ai.server";
 import { ArticleServiceError } from "@/features/articles/service/article-service-error";
@@ -59,6 +62,7 @@ export async function generateTranslation(
         seoDescription: source.seoDescription,
       },
       approvedComponents: articleMdxComponentDescriptions,
+      componentAuthoringGuide: articleMdxAuthoringGuide,
     }),
     {
       format: {

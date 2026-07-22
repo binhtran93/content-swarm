@@ -2,7 +2,10 @@ import "server-only";
 
 import { z } from "zod";
 
-import { articleMdxComponentDescriptions } from "@/features/articles/config/article-mdx-components";
+import {
+  articleMdxAuthoringGuide,
+  articleMdxComponentDescriptions,
+} from "@/features/articles/config/article-mdx-components";
 import { articleWritingRules } from "@/features/articles/config/writing-rules";
 import { isUsefulGeneratedArticleTitle } from "@/features/articles/model/generated-article-title";
 import { articleContentPrompt } from "@/features/articles/prompts/article-content-prompt";
@@ -42,6 +45,7 @@ export async function generateArticleContent(
       plan: article.plan,
       writingRules: articleWritingRules,
       approvedComponents: articleMdxComponentDescriptions,
+      componentAuthoringGuide: articleMdxAuthoringGuide,
     }),
     { format: { name: "article_content", schema: outputSchema } },
   );

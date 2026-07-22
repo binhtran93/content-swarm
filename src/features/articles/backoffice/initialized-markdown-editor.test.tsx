@@ -1,5 +1,5 @@
 import { createRef } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import { describe, expect, it, vi } from "vitest";
 
@@ -22,6 +22,15 @@ Complete the first step.
 ### Second step
 Complete the second step.
 </Steps>
+
+<Tabs>
+<Tab title="Platinum">
+Naturally white.
+</Tab>
+<Tab title="White gold">
+Rhodium plated.
+</Tab>
+</Tabs>
 
 | Option | Cost |
 | --- | ---: |
@@ -54,7 +63,17 @@ describe("InitializedMarkdownEditor", () => {
     expect(roundTrip).toContain('<Callout type="warning">');
     expect(roundTrip).toContain("## Content after the callout");
     expect(roundTrip).toContain("<Steps>");
+    expect(roundTrip).toContain('<Tab title="Platinum">');
     expect(roundTrip).toContain("The code block also survives.");
     expect(roundTrip).toContain("Final paragraph.");
+
+    const tabTitles = screen.getAllByLabelText("Tab title");
+    fireEvent.change(tabTitles[0]!, { target: { value: "Updated metal" } });
+
+    await waitFor(() =>
+      expect(editorRef.current!.getMarkdown()).toContain(
+        '<Tab title="Updated metal">',
+      ),
+    );
   });
 });

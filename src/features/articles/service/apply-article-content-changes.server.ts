@@ -1,5 +1,6 @@
 import "server-only";
 
+import { articleMdxAuthoringGuide } from "@/features/articles/config/article-mdx-components";
 import { articleContentChangesSchema } from "@/features/articles/model/article-content-change";
 import { articleContentApplyPrompt } from "@/features/articles/prompts/article-content-apply-prompt";
 import { generateArticleAi } from "@/features/articles/provider/generate-article-ai.server";
@@ -25,7 +26,11 @@ export async function applyArticleContentChanges(
 
   const result = await generateArticleAi(
     articleContentApplyPrompt.system,
-    JSON.stringify({ content, approvedChanges: changes }),
+    JSON.stringify({
+      content,
+      approvedChanges: changes,
+      componentAuthoringGuide: articleMdxAuthoringGuide,
+    }),
     { searchGrounding: false },
   );
   const resultValidation = validateArticleMdx(result.output);

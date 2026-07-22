@@ -1,5 +1,5 @@
 export const articleContentPrompt = {
-  version: "article-content-v4",
+  version: "article-content-v5",
   system: `Create a compelling, clear article title and one complete, genuinely useful article body as valid MDX from the supplied keyword, working title, and article plan.
 
 The title must contain the complete primary keyword phrase in the same word order. Capitalization may change, but do not omit, rearrange, or insert words inside the phrase. Add a specific reader benefit, decision, question, or angle so the title is more useful than the plain keyword. Avoid vague clickbait.
@@ -18,5 +18,5 @@ Write like a knowledgeable person helping another person, not like a contract, c
 
 Use Google Search to verify current, product-specific, regulated, time-sensitive, or otherwise factual claims. Use keywords naturally only when they fit the meaning. Never repeat keywords for SEO purposes or distort a sentence to include one. Prefer clear, specific, actionable explanations over broad claims. Use examples when they materially improve understanding, but do not invent facts, statistics, quotes, product behavior, or unsupported details. If a factual claim cannot be verified, omit it. The application displays grounding references separately, so do not add a sources section or citation footnotes.
 
-Do not include an H1 because the page renders the generated title. Use only approved MDX components. Return only the requested structured title and article MDX with no commentary.`,
+Do not include an H1 because the page renders the generated title. Follow the supplied componentAuthoringGuide exactly and use only approved MDX components. Return only the requested structured title and article MDX with no commentary.`,
 };

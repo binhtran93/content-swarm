@@ -2,7 +2,10 @@ import "server-only";
 
 import { z } from "zod";
 
-import { articleMdxComponentDescriptions } from "@/features/articles/config/article-mdx-components";
+import {
+  articleMdxAuthoringGuide,
+  articleMdxComponentDescriptions,
+} from "@/features/articles/config/article-mdx-components";
 import { articleWritingRules } from "@/features/articles/config/writing-rules";
 import { articleContentChangesSchema } from "@/features/articles/model/article-content-change";
 import { articleContentReviewPrompt } from "@/features/articles/prompts/article-content-review-prompt";
@@ -42,6 +45,7 @@ export async function reviewArticleContent(
       currentContent,
       writingRules: articleWritingRules,
       approvedComponents: articleMdxComponentDescriptions,
+      componentAuthoringGuide: articleMdxAuthoringGuide,
     }),
     {
       format: {
