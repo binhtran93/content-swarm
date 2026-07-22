@@ -1,6 +1,14 @@
-import { defaultLocale } from "@/config/supported-locales";
+import {
+  defaultLocale,
+  supportedLocales,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
 import { definePublicSiteConfig } from "@/public-site/config/site-config";
 import { publicProjectBasePaths } from "@/public-site/config/public-projects";
+import {
+  getUrgeZeroMessages,
+  urgeZeroStaticLocales,
+} from "@/public-site/sites/urge-zero/i18n/get-urge-zero-translator";
 
 const currentYear = new Date().getFullYear();
 
@@ -10,7 +18,7 @@ export const urgeZeroSiteConfig = definePublicSiteConfig({
   canonicalOrigin: "https://urgezero.com",
   analyticsMeasurementId: "G-5FLBTTBYY1",
   defaultLocale,
-  locales: [defaultLocale],
+  locales: supportedLocales.map((item) => item.locale),
   scopeClassName: "urge-zero-site",
   theme: {
     routeProgressColor: "#BE9050",
@@ -64,3 +72,51 @@ export const urgeZeroSiteConfig = definePublicSiteConfig({
     },
   ],
 });
+
+export function getLocalizedUrgeZeroConfig(locale: SupportedLocaleCode) {
+  const messages = getUrgeZeroMessages(locale);
+  return {
+    ...urgeZeroSiteConfig,
+    locales: urgeZeroStaticLocales,
+    accessibility: {
+      changeLanguage: messages.site.changeLanguage,
+      primaryNavigation: messages.site.primaryNavigation,
+      legalNavigation: messages.site.legalNavigation,
+      brandHome: messages.site.brandHome,
+      backToTop: messages.site.backToTop,
+    },
+    navigation: [
+      { label: messages.site.home, href: "/" },
+      { label: messages.site.blog, href: "/blog" },
+      { label: messages.site.faq, href: "/#faq" },
+      { label: messages.site.support, href: "/support" },
+    ],
+    headerCta: { kind: "acquisition", label: messages.site.download },
+    footer: {
+      ...urgeZeroSiteConfig.footer,
+      links: [
+        { href: "/support", label: messages.site.support },
+        { href: "/privacy", label: messages.site.privacy },
+        { href: "/terms", label: messages.site.terms },
+      ],
+      disclaimer: messages.site.disclaimer,
+    },
+    waitlist: {
+      ctaLabel: messages.acquisition.cta,
+      title: messages.acquisition.title,
+      description: messages.acquisition.description,
+      emailLabel: messages.acquisition.emailLabel,
+      emailPlaceholder: messages.acquisition.emailPlaceholder,
+      submitLabel: messages.acquisition.submit,
+      successTitle: messages.acquisition.successTitle,
+      successDescription: messages.acquisition.successDescription,
+    },
+    storeBadges: urgeZeroSiteConfig.storeBadges.map((badge) => ({
+      ...badge,
+      label:
+        badge.platform === "appStore"
+          ? messages.acquisition.appStore
+          : messages.acquisition.googlePlay,
+    })),
+  } satisfies typeof urgeZeroSiteConfig;
+}

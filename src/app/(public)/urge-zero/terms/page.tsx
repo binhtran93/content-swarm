@@ -7,8 +7,9 @@ export const metadata = termsMetadata;
 
 export default function TermsRoute() {
   return (
-    <UrgeZeroStaticPageLayout>
+    <UrgeZeroStaticPageLayout locale={defaultLocale}>
       <UrgeZeroTermsPage />
     </UrgeZeroStaticPageLayout>
   );
 }
+import { defaultLocale } from "@/config/supported-locales";

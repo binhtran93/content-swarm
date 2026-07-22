@@ -32,6 +32,7 @@ export default async function UrgeZeroBlogRoute({
   const values = await searchParams;
   return (
     <UrgeZeroBlogIndexPage
+      locale={defaultLocale}
       cursor={first(values.cursor)}
       topic={first(values.topic)}
     />

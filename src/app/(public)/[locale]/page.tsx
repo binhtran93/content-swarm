@@ -11,6 +11,9 @@ import { JlensLandingPage } from "@/public-site/sites/jlens/landing-page";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
 import { SubiqAcquisitionBoundary } from "@/public-site/sites/subiq/acquisition-boundary";
 import { SubiqLandingPage } from "@/public-site/sites/subiq/landing-page";
+import { UrgeZeroAcquisitionBoundary } from "@/public-site/sites/urge-zero/acquisition-boundary";
+import { createUrgeZeroLandingMetadata } from "@/public-site/sites/urge-zero/landing-metadata";
+import { UrgeZeroLandingPage } from "@/public-site/sites/urge-zero/landing-page";
 
 type RouteProps = { params: Promise<{ locale: string }> };
 
@@ -32,6 +35,8 @@ export async function generateMetadata({ params }: RouteProps) {
       return createJlensLandingMetadata(locale);
     case "subiq":
       return createSubiqLandingMetadata(locale);
+    case "urge-zero":
+      return createUrgeZeroLandingMetadata(locale);
     default:
       notFound();
   }
@@ -51,6 +56,12 @@ export default async function RootLocalizedSubiqPage({ params }: RouteProps) {
         <SubiqAcquisitionBoundary>
           <SubiqLandingPage locale={locale} />
         </SubiqAcquisitionBoundary>
+      );
+    case "urge-zero":
+      return (
+        <UrgeZeroAcquisitionBoundary>
+          <UrgeZeroLandingPage locale={locale} />
+        </UrgeZeroAcquisitionBoundary>
       );
     default:
       notFound();

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { getPublicSiteIcons } from "@/public-site/config/site-icons";
+import { supportedLocales } from "@/config/supported-locales";
 import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
 
 afterEach(() => {
@@ -9,13 +10,13 @@ afterEach(() => {
 });
 
 describe("UrgeZero public configuration", () => {
-  it("defines the dedicated English two-store site", () => {
+  it("defines the dedicated multilingual two-store site", () => {
     expect(urgeZeroSiteConfig).toMatchObject({
       id: "urge-zero",
       internalBasePath: "/urge-zero",
       canonicalOrigin: "https://urgezero.com",
       analyticsMeasurementId: "G-5FLBTTBYY1",
-      locales: ["en-US"],
+      locales: supportedLocales.map((item) => item.locale),
       scopeClassName: "urge-zero-site",
       theme: { routeProgressColor: "#BE9050" },
     });

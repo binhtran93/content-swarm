@@ -1,6 +1,6 @@
 .urge-zero-site {
   color-scheme: light;
-  font-family: var(--font-urge-zero-body), Inter, Arial, sans-serif;
+  font-family: var(--font-urge-zero-body-latin), Inter, Arial, sans-serif;
   --site-accent: #a87433;
   --site-accent-bright: #8f5f27;
   --site-accent-soft: #f1e5d3;
@@ -25,6 +25,12 @@
   --site-text: #24231f;
   --site-text-muted: #7b756c;
   --site-text-secondary: #68635b;
+  --blog-accent: #a87433;
+  --blog-accent-soft: #f1e5d3;
+  --blog-text: #24231f;
+  --blog-text-secondary: #68635b;
+  --blog-surface: #eee7da;
+  --blog-border: #d8cec0;
   --legal-accent: #9a692c;
   --legal-background: #f6f1e7;
   --legal-border: #ddd4c7;
@@ -39,9 +45,47 @@
 }
 
 .urge-zero-site :where(h1, h2) {
-  font-family: var(--font-urge-zero-display), Impact, sans-serif;
+  font-family: var(--font-urge-zero-display-latin), Impact, sans-serif;
   font-weight: 400 !important;
   letter-spacing: 0.012em !important;
+}
+
+.urge-zero-site:lang(vi) {
+  font-family: var(--font-urge-zero-body-latin), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(vi) :where(h1, h2) {
+  font-family: var(--font-urge-zero-display-vietnamese), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(ar),
+.urge-zero-site:lang(ar) :where(h1, h2) {
+  font-family: var(--font-urge-zero-arabic), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(hi),
+.urge-zero-site:lang(hi) :where(h1, h2) {
+  font-family: var(--font-urge-zero-devanagari), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(th),
+.urge-zero-site:lang(th) :where(h1, h2) {
+  font-family: var(--font-urge-zero-thai), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(ja),
+.urge-zero-site:lang(ja) :where(h1, h2) {
+  font-family: var(--font-urge-zero-japanese), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(ko),
+.urge-zero-site:lang(ko) :where(h1, h2) {
+  font-family: var(--font-urge-zero-korean), Arial, sans-serif;
+}
+
+.urge-zero-site:lang(zh),
+.urge-zero-site:lang(zh) :where(h1, h2) {
+  font-family: var(--font-urge-zero-traditional-chinese), Arial, sans-serif;
 }
 
 .urge-zero-site :where(h1, h2, h3) {

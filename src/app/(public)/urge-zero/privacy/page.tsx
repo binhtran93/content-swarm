@@ -7,8 +7,9 @@ export const metadata = privacyMetadata;
 
 export default function PrivacyRoute() {
   return (
-    <UrgeZeroStaticPageLayout>
+    <UrgeZeroStaticPageLayout locale={defaultLocale}>
       <UrgeZeroPrivacyPage />
     </UrgeZeroStaticPageLayout>
   );
 }
+import { defaultLocale } from "@/config/supported-locales";

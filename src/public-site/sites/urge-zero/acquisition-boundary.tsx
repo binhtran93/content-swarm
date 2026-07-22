@@ -2,21 +2,34 @@ import type { ReactNode } from "react";
 
 import { getPublicProjectAcquisition } from "@/features/projects/public/get-public-project-acquisition.server";
 import { AcquisitionProvider } from "@/public-site/components/acquisition";
-import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
+import {
+  getLocalizedUrgeZeroConfig,
+  urgeZeroSiteConfig,
+} from "@/public-site/sites/urge-zero/site-config";
+import {
+  getUrgeZeroMessages,
+  urgeZeroStaticLocales,
+  type UrgeZeroStaticLocale,
+} from "@/public-site/sites/urge-zero/i18n/get-urge-zero-translator";
 
-const presentations = {
-  "en-US": {
-    waitlist: urgeZeroSiteConfig.waitlist,
-    availability: "UrgeZero app availability",
-    submitting: "Joining…",
-    done: "Done",
-    close: "Close",
-    notConfigured: "Download links are temporarily unavailable.",
-    genericError: "We couldn’t complete that request. Please try again.",
-    consent: "By joining, you agree to receive UrgeZero launch emails.",
-    privacyPolicy: "Privacy Policy",
-  },
-} as const;
+function getPresentation(locale: UrgeZeroStaticLocale) {
+  const messages = getUrgeZeroMessages(locale);
+  return {
+    waitlist: getLocalizedUrgeZeroConfig(locale).waitlist,
+    availability: messages.acquisition.availability,
+    submitting: messages.acquisition.submitting,
+    done: messages.acquisition.done,
+    close: messages.acquisition.close,
+    notConfigured: messages.acquisition.notConfigured,
+    genericError: messages.acquisition.genericError,
+    consent: messages.acquisition.consent,
+    privacyPolicy: messages.acquisition.privacyPolicy,
+  };
+}
+
+const presentations = Object.fromEntries(
+  urgeZeroStaticLocales.map((locale) => [locale, getPresentation(locale)]),
+);
 
 export async function UrgeZeroAcquisitionBoundary({
   children,

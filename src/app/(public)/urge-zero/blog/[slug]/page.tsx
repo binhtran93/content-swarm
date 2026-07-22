@@ -19,5 +19,10 @@ export async function generateMetadata({ params }: RouteProps) {
 }
 
 export default async function UrgeZeroBlogArticleRoute({ params }: RouteProps) {
-  return <UrgeZeroBlogArticlePage slug={(await params).slug} />;
+  return (
+    <UrgeZeroBlogArticlePage
+      locale={defaultLocale}
+      slug={(await params).slug}
+    />
+  );
 }

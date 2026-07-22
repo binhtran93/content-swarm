@@ -4,12 +4,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("next/font/google", () => ({
   Bebas_Neue: () => ({ variable: "font-urge-zero-display" }),
   Inter: () => ({ variable: "font-urge-zero-body" }),
+  Oswald: () => ({ variable: "font-urge-zero-display-vietnamese" }),
+  Noto_Sans_Arabic: () => ({ variable: "font-urge-zero-arabic" }),
+  Noto_Sans_Devanagari: () => ({ variable: "font-urge-zero-devanagari" }),
+  Noto_Sans_Thai: () => ({ variable: "font-urge-zero-thai" }),
+  Noto_Sans_JP: () => ({ variable: "font-urge-zero-japanese" }),
+  Noto_Sans_KR: () => ({ variable: "font-urge-zero-korean" }),
+  Noto_Sans_TC: () => ({ variable: "font-urge-zero-traditional-chinese" }),
 }));
 const mocks = vi.hoisted(() => ({
   listPublicArticles: vi.fn(),
+  getPublicTranslation: vi.fn(),
 }));
 vi.mock("@/features/articles/public/list-public-articles.server", () => ({
   listPublicArticles: mocks.listPublicArticles,
+}));
+vi.mock("@/features/articles/public/get-public-translation.server", () => ({
+  getPublicTranslation: mocks.getPublicTranslation,
 }));
 
 import sitemap from "@/app/(public)/urge-zero/sitemap";
@@ -58,6 +69,7 @@ afterEach(() => {
 
 beforeEach(() => {
   mocks.listPublicArticles.mockResolvedValue([]);
+  mocks.getPublicTranslation.mockResolvedValue(null);
 });
 
 describe("UrgeZero landing page", () => {
@@ -153,20 +165,24 @@ describe("UrgeZero landing page", () => {
       ],
     });
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
-    expect((await sitemap()).map((entry) => entry.url)).toEqual([
-      "https://urgezero.com/",
-      "https://urgezero.com/blog",
-      "https://urgezero.com/support",
-      "https://urgezero.com/privacy",
-      "https://urgezero.com/terms",
-    ]);
+    expect((await sitemap()).map((entry) => entry.url)).toEqual(
+      expect.arrayContaining([
+        "https://urgezero.com/",
+        "https://urgezero.com/blog",
+        "https://urgezero.com/support",
+        "https://urgezero.com/privacy",
+        "https://urgezero.com/terms",
+        "https://urgezero.com/vi-VN/",
+        "https://urgezero.com/vi-VN/support",
+      ]),
+    );
     expect(mocks.listPublicArticles).toHaveBeenCalledWith("urge-zero", "en-US");
   });
 
   it("adds published UrgeZero articles when Firestore has them", async () => {
     const updatedAt = new Date("2026-07-22T00:00:00.000Z");
     mocks.listPublicArticles.mockResolvedValue([
-      { slug: "how-to-ride-out-an-urge", updatedAt },
+      { articleId: "article-1", slug: "how-to-ride-out-an-urge", updatedAt },
     ]);
 
     expect(await sitemap()).toContainEqual({

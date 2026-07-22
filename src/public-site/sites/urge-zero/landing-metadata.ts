@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 
+import {
+  defaultLocale,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
 import { getCanonicalUrl } from "@/public-site/config/public-url";
 import { getPublicSiteIcons } from "@/public-site/config/site-icons";
+import { getUrgeZeroStaticLanguageAlternates } from "@/public-site/seo/urge-zero-static-localization";
+import { getUrgeZeroTranslator } from "@/public-site/sites/urge-zero/i18n/get-urge-zero-translator";
 import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
 
 export const urgeZeroLandingTitle =
@@ -9,29 +15,34 @@ export const urgeZeroLandingTitle =
 export const urgeZeroLandingDescription =
   "UrgeZero gives you practical tools to handle porn urges, track streaks, block distractions, reset with breathing and focus games, and find support.";
 
-export function createUrgeZeroLandingMetadata(): Metadata {
-  const canonical = getCanonicalUrl(
-    urgeZeroSiteConfig,
-    urgeZeroSiteConfig.defaultLocale,
-    "/",
-  );
+export function createUrgeZeroLandingMetadata(
+  locale: SupportedLocaleCode = defaultLocale,
+): Metadata {
+  const t = getUrgeZeroTranslator(locale);
+  const title = t("seo.landingTitle");
+  const description = t("seo.landingDescription");
+  const canonical = getCanonicalUrl(urgeZeroSiteConfig, locale, "/");
   const socialImage = `${urgeZeroSiteConfig.canonicalOrigin}/og.png`;
 
   return {
-    title: urgeZeroLandingTitle,
-    description: urgeZeroLandingDescription,
+    title,
+    description,
     metadataBase: new URL(urgeZeroSiteConfig.canonicalOrigin),
     icons: getPublicSiteIcons(urgeZeroSiteConfig),
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: getUrgeZeroStaticLanguageAlternates("/", true),
+    },
     openGraph: {
-      title: urgeZeroLandingTitle,
-      description: urgeZeroLandingDescription,
+      title,
+      description,
+      locale,
       images: [
         {
           url: socialImage,
           width: 1200,
           height: 630,
-          alt: "UrgeZero emergency plan for handling an urge in the moment",
+          alt: t("seo.socialImageAlt"),
         },
       ],
       siteName: urgeZeroSiteConfig.brand.name,
@@ -40,8 +51,8 @@ export function createUrgeZeroLandingMetadata(): Metadata {
     },
     twitter: {
       card: "summary_large_image",
-      title: urgeZeroLandingTitle,
-      description: urgeZeroLandingDescription,
+      title,
+      description,
       images: [socialImage],
     },
   };

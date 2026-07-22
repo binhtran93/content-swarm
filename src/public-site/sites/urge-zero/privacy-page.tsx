@@ -1,22 +1,30 @@
 import Link from "next/link";
 
+import type { Metadata } from "next";
+import {
+  defaultLocale,
+  type SupportedLocaleCode,
+} from "@/config/supported-locales";
 import { withPublicRoute } from "@/public-site/config/public-url";
 import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
 import { createUrgeZeroStaticPageMetadata } from "@/public-site/sites/urge-zero/static-page-seo";
 
-export const metadata = createUrgeZeroStaticPageMetadata("privacy");
+export const metadata: Metadata = createUrgeZeroStaticPageMetadata(
+  "privacy",
+  defaultLocale,
+);
 
 const sectionClassName = "mb-8";
 const headingClassName = "mb-3 text-2xl font-semibold";
 const copyClassName = "leading-8 text-zinc-700";
 const listClassName = "list-disc space-y-2 pl-6 leading-8 text-zinc-700";
 
-export default function UrgeZeroPrivacyPage() {
-  const supportHref = withPublicRoute(
-    urgeZeroSiteConfig,
-    urgeZeroSiteConfig.defaultLocale,
-    "/support",
-  );
+export default function UrgeZeroPrivacyPage({
+  locale = defaultLocale,
+}: {
+  locale?: SupportedLocaleCode;
+}) {
+  const supportHref = withPublicRoute(urgeZeroSiteConfig, locale, "/support");
 
   return (
     <main className="legal-document flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">

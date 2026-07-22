@@ -1,50 +1,56 @@
-import { defaultLocale } from "@/config/supported-locales";
+import type { SupportedLocaleCode } from "@/config/supported-locales";
 import { loadBlogPage } from "@/public-site/blog/load-blog-page.server";
 import { BlogIndex } from "@/public-site/components/blog/blog-index";
 import { BlogSiteLayout } from "@/public-site/components/blog/blog-site-layout";
 import { getProjectRoutePrefix } from "@/public-site/config/public-url";
-import { urgeZeroBlogConfig } from "@/public-site/sites/urge-zero/blog-config";
+import {
+  getLocalizedUrgeZeroBlogConfig,
+  urgeZeroBlogConfig,
+} from "@/public-site/sites/urge-zero/blog-config";
+import { getUrgeZeroMessages } from "@/public-site/sites/urge-zero/i18n/get-urge-zero-translator";
+import { urgeZeroFontVariables } from "@/public-site/sites/urge-zero/site-layout";
 
 import "./theme.css";
 
 export async function UrgeZeroBlogIndexPage({
+  locale,
   topic,
   cursor,
 }: {
+  locale: SupportedLocaleCode;
   topic?: string;
   cursor?: string;
 }) {
-  const routePrefix = getProjectRoutePrefix(urgeZeroBlogConfig);
+  const config = getLocalizedUrgeZeroBlogConfig(locale);
+  const messages = getUrgeZeroMessages(locale);
+  const routePrefix = getProjectRoutePrefix(config);
   const result = await loadBlogPage({
     config: urgeZeroBlogConfig,
-    locale: defaultLocale,
+    locale,
     topic,
     cursor,
   });
-
   return (
-    <BlogSiteLayout
-      config={urgeZeroBlogConfig}
-      locale={defaultLocale}
-      routePrefix={routePrefix}
-    >
-      <BlogIndex
-        activeTopic={topic}
-        config={urgeZeroBlogConfig}
-        copy={{
-          articlesLabel: "UrgeZero guides",
-          browseByTopic: "Browse by topic",
-          allTopics: "All topics",
-          englishOnlyShort: "Available in English",
-          emptyTitle: "No guides yet",
-          emptyDescription: "Check back soon.",
-          paginationLabel: "Blog pagination",
-          nextPage: "Next page",
-        }}
-        locale={defaultLocale}
-        result={result}
-        routePrefix={routePrefix}
-      />
-    </BlogSiteLayout>
+    <div className={urgeZeroFontVariables}>
+      <BlogSiteLayout config={config} routePrefix={routePrefix} locale={locale}>
+        <BlogIndex
+          config={config}
+          routePrefix={routePrefix}
+          locale={locale}
+          result={result}
+          activeTopic={topic}
+          copy={{
+            articlesLabel: messages.blog.articlesLabel,
+            browseByTopic: messages.blog.browseByTopic,
+            allTopics: messages.blog.allTopics,
+            englishOnlyShort: messages.blog.englishOnlyShort,
+            emptyTitle: messages.blog.emptyTitle,
+            emptyDescription: messages.blog.emptyDescription,
+            paginationLabel: messages.blog.paginationLabel,
+            nextPage: messages.blog.nextPage,
+          }}
+        />
+      </BlogSiteLayout>
+    </div>
   );
 }

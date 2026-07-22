@@ -29,7 +29,7 @@ export function generateMetadata() {
     case "subiq":
       return createSubiqLandingMetadata("en-US");
     case "urge-zero":
-      return createUrgeZeroLandingMetadata();
+      return createUrgeZeroLandingMetadata(defaultLocale);
     default:
       return assertNever(projectId);
   }
@@ -54,7 +54,7 @@ export default function HomePage() {
       case "urge-zero":
         return (
           <UrgeZeroAcquisitionBoundary>
-            <UrgeZeroLandingPage />
+            <UrgeZeroLandingPage locale={defaultLocale} />
           </UrgeZeroAcquisitionBoundary>
         );
       default:
