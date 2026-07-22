@@ -199,7 +199,7 @@ function JlensCareSection() {
         </div>
 
         <div className={styles.careVisual}>
-          <div className={styles.carePhone}>
+          <ResponsivePhoneComposition className={styles.carePhone}>
             <PhoneFrame>
               <div className={styles.careScreen}>
                 <div className={styles.careComparison}>
@@ -243,7 +243,7 @@ function JlensCareSection() {
                 </article>
               </div>
             </PhoneFrame>
-          </div>
+          </ResponsivePhoneComposition>
         </div>
       </ContentShell>
     </LandingSection>

@@ -334,10 +334,8 @@
 }
 
 .carePhone {
-  aspect-ratio: 393 / 852;
-  filter: drop-shadow(0 28px 28px rgb(45 39 31 / 13%))
-    drop-shadow(0 8px 12px rgb(45 39 31 / 7%));
-  width: min(100%, 410px);
+  filter: drop-shadow(0 6.83cqw 6.83cqw rgb(45 39 31 / 13%))
+    drop-shadow(0 1.95cqw 2.93cqw rgb(45 39 31 / 7%));
 }
 
 .careScreen {
@@ -368,38 +366,38 @@
   backdrop-filter: blur(12px);
   background: rgb(255 252 246 / 82%);
   border: 1px solid rgb(115 87 36 / 16%);
-  border-radius: 999px;
-  box-shadow: 0 6px 18px rgb(54 40 25 / 10%);
+  border-radius: 100cqw;
+  box-shadow: 0 1.46cqw 4.39cqw rgb(54 40 25 / 10%);
   color: #3d382f;
-  font-size: 20px;
+  font-size: 4.88cqw;
   font-weight: 700;
   letter-spacing: 0.01em;
-  padding: 12px 20px;
+  padding: 2.93cqw 4.88cqw;
   position: absolute;
-  top: 72px;
+  top: 17.56cqw;
   z-index: 2;
 }
 
 .beforeLabel {
   color: #d52c1c;
-  left: 18px;
+  left: 4.39cqw;
 }
 
 .afterLabel {
   color: #249b5c;
-  right: 18px;
-  top: 92px;
+  right: 4.39cqw;
+  top: 22.44cqw;
 }
 
 .careCard {
   background: #f8f2e8;
   border: 0;
-  border-radius: 34px 34px 0 0;
+  border-radius: 8.29cqw 8.29cqw 0 0;
   bottom: 0;
-  box-shadow: 0 -12px 28px rgb(58 47 32 / 10%);
+  box-shadow: 0 -2.93cqw 6.83cqw rgb(58 47 32 / 10%);
   left: 0;
   margin: 0;
-  padding: 26px clamp(16px, 3.25vw, 24px) 28px;
+  padding: 6.34cqw 5.85cqw 6.83cqw;
   position: absolute;
   right: 0;
   z-index: 3;
@@ -407,16 +405,16 @@
 
 .careCard h3 {
   color: #37342e;
-  font-size: 13px;
+  font-size: 3.17cqw;
   font-weight: 750;
   letter-spacing: 0.11em;
-  margin: 0 0 12px;
+  margin: 0 0 2.93cqw;
   text-transform: uppercase;
 }
 
 .careGroups {
   display: grid;
-  gap: 12px;
+  gap: 2.93cqw;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -424,27 +422,27 @@
 
 .careGroup {
   display: grid;
-  gap: 7px;
+  gap: 1.71cqw;
 }
 
 .careGroupHeading {
   align-items: flex-start;
   display: grid;
-  gap: 10px;
-  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 2.44cqw;
+  grid-template-columns: 4.88cqw minmax(0, 1fr);
 }
 
 .careGroupHeading svg {
   color: #8a6724;
-  height: 18px;
-  margin-top: -1px;
+  height: 4.39cqw;
+  margin-top: -0.24cqw;
   stroke-width: 1.8;
-  width: 18px;
+  width: 4.39cqw;
 }
 
 .careGroupHeading strong {
   color: #615b50;
-  font-size: 11px;
+  font-size: 2.68cqw;
   font-weight: 750;
   letter-spacing: 0.09em;
   line-height: 1.45;
@@ -454,17 +452,17 @@
 .careBullets {
   color: #48443d;
   display: grid;
-  gap: 6px;
+  gap: 1.46cqw;
   list-style: disc outside;
   margin: 0;
-  padding-left: 30px;
+  padding-left: 7.32cqw;
 }
 
 .careBullets li {
   color: #48443d;
-  font-size: 14px;
+  font-size: 3.41cqw;
   line-height: 1.38;
-  padding-left: 1px;
+  padding-left: 0.24cqw;
 }
 
 .careBullets li::marker {
@@ -491,10 +489,6 @@
   .careLayout {
     gap: clamp(48px, 6vw, 80px);
     grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  }
-
-  .carePhone {
-    width: min(100%, 380px);
   }
 }
 
@@ -545,10 +539,6 @@
   .careLayout {
     gap: 44px;
     grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
-  }
-
-  .carePhone {
-    width: min(100%, 340px);
   }
 }
 
@@ -677,10 +667,6 @@
     gap: 54px;
     grid-template-areas: "copy" "visual";
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .carePhone {
-    width: min(100%, 360px);
   }
 }
 

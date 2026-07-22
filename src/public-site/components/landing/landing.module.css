@@ -429,7 +429,7 @@
 .downloadSection {
   background: var(--site-download-background, #f1f5ef);
   border-top: 1px solid var(--site-download-border, #dfe6dc);
-  padding-block: clamp(88px, 8vw, 124px);
+  padding-block: clamp(56px, 5vw, 80px);
 }
 
 .downloadPanel {
