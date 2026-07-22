@@ -1,7 +1,7 @@
 export type AdminNavigationItem = {
   label: string;
   href: string;
-  icon: "projects" | "keywords" | "articles" | "videos";
+  icon: "projects" | "keywords" | "articles";
 };
 
 export function getAdminNavigation(projectId?: string): AdminNavigationItem[] {
@@ -20,11 +20,6 @@ export function getAdminNavigation(projectId?: string): AdminNavigationItem[] {
         label: "Articles",
         href: `/admin/projects/${projectId}/articles`,
         icon: "articles",
-      },
-      {
-        label: "Videos",
-        href: `/admin/projects/${projectId}/videos`,
-        icon: "videos",
       },
     );
   }

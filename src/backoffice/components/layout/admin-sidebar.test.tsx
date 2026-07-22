@@ -37,10 +37,6 @@ describe("AdminSidebar", () => {
       "aria-current",
       "page",
     );
-    expect(screen.getByRole("link", { name: "Videos" })).toHaveAttribute(
-      "href",
-      "/admin/projects/subiq/videos",
-    );
   });
 
   it("closes the mobile drawer with Escape", () => {

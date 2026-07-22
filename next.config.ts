@@ -3,12 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
-  serverExternalPackages: ["@remotion/bundler", "@remotion/renderer"],
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "20mb",
-    },
-  },
   async redirects() {
     return [
       {
