@@ -26,6 +26,15 @@ describe("robots metadata", () => {
     });
   });
 
+  it("publishes the UrgeZero sitemap on its dedicated deployment", () => {
+    process.env.PUBLIC_ROUTE_MODE = "root";
+    process.env.PUBLIC_PROJECT_ID = "urge-zero";
+
+    expect(robots()).toMatchObject({
+      sitemap: "https://urgezero.com/sitemap.xml",
+    });
+  });
+
   it("does not publish the SubIQ sitemap on the main deployment", () => {
     process.env.PUBLIC_ROUTE_MODE = "project";
 

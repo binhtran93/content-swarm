@@ -1,7 +1,14 @@
-.hero {
-  background: var(--site-background, #fff);
+.viewportHero {
   min-height: calc(100svh - 80px);
   position: relative;
+}
+
+.viewportHeroInner {
+  min-height: calc(100svh - 80px);
+}
+
+.hero {
+  background: var(--site-background, #fff);
 }
 
 .heroInner,
@@ -16,7 +23,6 @@
   display: grid;
   gap: clamp(20px, 2vw, 40px);
   grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
-  min-height: calc(100svh - 80px);
   padding: 26px clamp(24px, 4vw, 64px) 58px;
   position: relative;
   z-index: 1;
@@ -182,9 +188,18 @@
 
 .phoneFrame {
   aspect-ratio: 393 / 852;
+  container-type: inline-size;
   height: 100%;
   position: relative;
   width: 100%;
+}
+
+.responsivePhoneComposition {
+  --phone-frame-max-width: 410px;
+
+  aspect-ratio: 393 / 852;
+  position: relative;
+  width: min(100%, clamp(210px, 35.5svh, var(--phone-frame-max-width, 410px)));
 }
 
 .phoneBody {
@@ -199,19 +214,19 @@
     #4e5155 100%
   );
   border: 1px solid #33363a;
-  border-radius: 58px;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.72);
+  border-radius: 14.15cqw;
+  box-shadow: inset 0 0 0 0.49cqw rgba(255, 255, 255, 0.72);
   height: 100%;
-  padding: 8px;
+  padding: 1.95cqw;
   position: relative;
   width: 100%;
 }
 
 .phoneBody::before {
   border: 2px solid rgba(0, 0, 0, 0.78);
-  border-radius: 54px;
+  border-radius: 13.17cqw;
   content: "";
-  inset: 5px;
+  inset: 1.22cqw;
   pointer-events: none;
   position: absolute;
   z-index: 5;
@@ -221,29 +236,29 @@
 .phoneButtonMiddle,
 .phoneButtonRight {
   background: linear-gradient(90deg, #33363a, #b8bbc0 55%, #383b3e);
-  border-radius: 3px;
+  border-radius: 0.73cqw;
   position: absolute;
 }
 
 .phoneButtonTop {
-  height: 48px;
-  left: -4px;
-  top: 160px;
-  width: 5px;
+  height: 11.71cqw;
+  left: -0.98cqw;
+  top: 39.02cqw;
+  width: 1.22cqw;
 }
 
 .phoneButtonMiddle {
-  height: 48px;
-  left: -4px;
-  top: 220px;
-  width: 5px;
+  height: 11.71cqw;
+  left: -0.98cqw;
+  top: 53.66cqw;
+  width: 1.22cqw;
 }
 
 .phoneButtonRight {
-  height: 70px;
-  right: -4px;
-  top: 180px;
-  width: 5px;
+  height: 17.07cqw;
+  right: -0.98cqw;
+  top: 43.9cqw;
+  width: 1.22cqw;
 }
 
 .phoneScreen {
@@ -254,7 +269,7 @@
       transparent 26%
     ),
     linear-gradient(180deg, #fafafb 0%, #f5f5f7 100%);
-  border-radius: 50px;
+  border-radius: 12.2cqw;
   height: 100%;
   overflow: hidden;
   position: relative;
@@ -264,12 +279,12 @@
 .dynamicIsland {
   background: #050505;
   border-radius: 999px;
-  height: 30px;
+  height: 7.32cqw;
   left: 50%;
   position: absolute;
-  top: 18px;
+  top: 4.39cqw;
   transform: translateX(-50%);
-  width: 98px;
+  width: 23.9cqw;
   z-index: 3;
 }
 
@@ -282,19 +297,21 @@
   );
   border-radius: 50%;
   content: "";
-  height: 8px;
+  height: 1.95cqw;
   position: absolute;
-  right: 8px;
-  top: 11px;
-  width: 8px;
+  right: 1.95cqw;
+  top: 2.68cqw;
+  width: 1.95cqw;
 }
 
 .screenshotPhoneFrame {
+  --phone-frame-max-width: 410px;
+
   aspect-ratio: 393 / 852;
   filter: drop-shadow(0 28px 28px rgba(30, 36, 45, 0.13))
     drop-shadow(0 8px 12px rgba(30, 36, 45, 0.07));
   position: relative;
-  width: min(100%, 410px);
+  width: min(100%, clamp(210px, 35.5svh, var(--phone-frame-max-width)));
 }
 
 .screenshotPhoneImage {
@@ -462,14 +479,28 @@
     grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
   }
 
+  .responsivePhoneComposition,
   .screenshotPhoneFrame {
-    width: min(100%, 380px);
+    --phone-frame-max-width: 380px;
+  }
+}
+
+@media (min-width: 981px) {
+  .viewportHero,
+  .viewportHeroInner {
+    height: calc(100svh - 80px);
+    min-height: 0;
+  }
+
+  .visualStage {
+    height: 100%;
+    min-height: 0;
   }
 }
 
 @media (max-width: 980px) {
-  .hero,
-  .heroInner {
+  .viewportHero,
+  .viewportHeroInner {
     min-height: 0;
   }
 
@@ -511,6 +542,7 @@
     grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
   }
 
+  .responsivePhoneComposition,
   .screenshotPhoneFrame {
     width: min(100%, 340px);
   }
@@ -545,7 +577,7 @@
   }
 
   .visualStage {
-    min-height: 660px;
+    min-height: 800px;
     width: 100%;
   }
 
@@ -569,6 +601,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .responsivePhoneComposition,
   .screenshotPhoneFrame {
     width: min(100%, 360px);
   }
@@ -580,7 +613,7 @@
 
 @media (max-width: 430px) {
   .visualStage {
-    min-height: 590px;
+    min-height: 800px;
   }
 
   .faqItem summary {

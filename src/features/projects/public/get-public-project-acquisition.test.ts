@@ -70,6 +70,21 @@ describe("readPublicProjectAcquisition", () => {
     );
   });
 
+  it("allows UrgeZero to read both official store destinations", async () => {
+    mock.value = {
+      acquisition: {
+        mode: "stores",
+        appStoreUrl:
+          "https://apps.apple.com/us/app/urgezero-quit-addiction/id6774419388",
+        googlePlayUrl:
+          "https://play.google.com/store/apps/details?id=com.anmisoft.urgezero",
+      },
+    };
+    await expect(readPublicProjectAcquisition("urge-zero")).resolves.toEqual(
+      mock.value.acquisition,
+    );
+  });
+
   it("rejects missing and unknown public projects", async () => {
     mock.exists = false;
     await expect(readPublicProjectAcquisition("subiq")).rejects.toThrow(

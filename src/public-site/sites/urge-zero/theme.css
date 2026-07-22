@@ -1,14 +1,62 @@
 .urge-zero-site {
-  --legal-accent: #d8ad72;
-  --legal-background: #0e1319;
-  --legal-border: #2a3139;
-  --legal-focus-ring: rgba(190, 144, 80, 0.5);
-  --legal-footer: #11171e;
-  --legal-header: #151b22;
-  --legal-shadow: rgba(0, 0, 0, 0.45);
-  --legal-surface: #1a2028;
-  --legal-surface-muted: #151b22;
-  --legal-text: #f4f1ea;
-  --legal-text-secondary: #b3bcc4;
-  --site-on-accent: #0e1319;
+  color-scheme: light;
+  font-family: var(--font-urge-zero-body), Inter, Arial, sans-serif;
+  --site-accent: #a87433;
+  --site-accent-bright: #8f5f27;
+  --site-accent-soft: #f1e5d3;
+  --site-background: #fffdf9;
+  --site-border: #ddd4c7;
+  --site-download-background: #eee7da;
+  --site-download-border: #d8cec0;
+  --site-download-heading: #24231f;
+  --site-download-text: #68635b;
+  --site-faq-surface: #f6f1e7;
+  --site-focus-ring: rgb(168 116 51 / 48%);
+  --site-footer-background: #fffdf9;
+  --site-footer-border: #ddd4c7;
+  --site-footer-text: #24231f;
+  --site-footer-text-secondary: #68635b;
+  --site-header-background: rgb(246 241 231 / 94%);
+  --site-header-border: #ddd4c7;
+  --site-heading: #24231f;
+  --site-nav-text: #4d4943;
+  --site-on-accent: #fff;
+  --site-surface-muted: #eee7da;
+  --site-text: #24231f;
+  --site-text-muted: #7b756c;
+  --site-text-secondary: #68635b;
+  --legal-accent: #9a692c;
+  --legal-background: #f6f1e7;
+  --legal-border: #ddd4c7;
+  --legal-focus-ring: rgb(168 116 51 / 48%);
+  --legal-footer: #eee7da;
+  --legal-header: #fffdf9;
+  --legal-shadow: rgb(65 51 34 / 12%);
+  --legal-surface: #fffdf9;
+  --legal-surface-muted: #eee7da;
+  --legal-text: #24231f;
+  --legal-text-secondary: #68635b;
+}
+
+.urge-zero-site :where(h1, h2) {
+  font-family: var(--font-urge-zero-display), Impact, sans-serif;
+  font-weight: 400 !important;
+  letter-spacing: 0.012em !important;
+  text-transform: uppercase;
+}
+
+.urge-zero-site :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.urge-zero-site header {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.urge-zero-site section[id="download"] {
+  background:
+    radial-gradient(circle at 50% 0%, rgb(190 144 80 / 18%), transparent 44%),
+    var(--site-download-background);
+  border-color: var(--site-download-border);
 }

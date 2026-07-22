@@ -42,7 +42,7 @@ export default async function ProjectSettingsPage({
     ? null
     : await getArticleAutomationSettings(project.projectId);
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageTitle
         action={
           <Link className="btn btn-ghost btn-sm" href="/admin/projects">
@@ -61,62 +61,65 @@ export default async function ProjectSettingsPage({
         </div>
       ) : null}
 
-      <section className="card bg-base-100 border-base-300 border shadow-sm">
-        <div className="card-body gap-0 p-5 sm:p-6">
-          <h2 className="card-title">Project settings</h2>
-          {archived ? (
-            <dl className="mt-3 grid gap-5">
-              <div>
-                <dt className="text-base-content/55 text-sm">Project ID</dt>
-                <dd className="mt-1 font-mono">{project.projectId}</dd>
-              </div>
-              <div>
-                <dt className="text-base-content/55 text-sm">Description</dt>
-                <dd className="mt-1 whitespace-pre-wrap">
-                  {project.description}
-                </dd>
-              </div>
-            </dl>
-          ) : (
-            <ProjectSettingsForm project={project} />
-          )}
-        </div>
-      </section>
-
-      {automation ? (
+      <div className={`grid gap-6 ${archived ? "" : "lg:grid-cols-2"}`}>
         <section className="card bg-base-100 border-base-300 border shadow-sm">
-          <div className="card-body gap-5 p-5 sm:p-6">
-            <div>
-              <h2 className="card-title">Article automation</h2>
-              <p className="text-base-content/60 mt-1 text-sm">
-                Enabling this authorizes scheduled AI generation and automatic
-                publication for this project.
-              </p>
-            </div>
-            <ArticleAutomationSettingsForm
-              projectId={project.projectId}
-              settings={automation}
-            />
+          <div className="card-body gap-0 p-5 sm:p-6">
+            <h2 className="card-title">Project settings</h2>
+            {archived ? (
+              <dl className="mt-3 grid gap-5">
+                <div>
+                  <dt className="text-base-content/55 text-sm">Project ID</dt>
+                  <dd className="mt-1 font-mono">{project.projectId}</dd>
+                </div>
+                <div>
+                  <dt className="text-base-content/55 text-sm">Description</dt>
+                  <dd className="mt-1 whitespace-pre-wrap">
+                    {project.description}
+                  </dd>
+                </div>
+              </dl>
+            ) : (
+              <ProjectSettingsForm project={project} />
+            )}
           </div>
         </section>
-      ) : null}
 
-      {!archived ? (
-        <section className="card border-error/30 bg-base-100 border shadow-sm">
-          <div className="card-body sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-semibold">Archive project</h2>
-              <p className="text-base-content/60 mt-1 text-sm">
-                Stop future commands without removing existing published pages.
-              </p>
-            </div>
-            <ArchiveProjectControl
-              projectId={project.projectId}
-              projectName={project.name}
-            />
+        {automation ? (
+          <div className="space-y-6">
+            <section className="card bg-base-100 border-base-300 border shadow-sm">
+              <div className="card-body gap-5 p-5 sm:p-6">
+                <div>
+                  <h2 className="card-title">Article automation</h2>
+                  <p className="text-base-content/60 mt-1 text-sm">
+                    Enabling this authorizes scheduled AI generation and
+                    automatic publication for this project.
+                  </p>
+                </div>
+                <ArticleAutomationSettingsForm
+                  projectId={project.projectId}
+                  settings={automation}
+                />
+              </div>
+            </section>
+
+            <section className="card border-error/30 bg-base-100 border shadow-sm">
+              <div className="card-body sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="font-semibold">Archive project</h2>
+                  <p className="text-base-content/60 mt-1 text-sm">
+                    Stop future commands without removing existing published
+                    pages.
+                  </p>
+                </div>
+                <ArchiveProjectControl
+                  projectId={project.projectId}
+                  projectName={project.name}
+                />
+              </div>
+            </section>
           </div>
-        </section>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }

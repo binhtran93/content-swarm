@@ -1,6 +1,14 @@
 import UrgeZeroTermsPage, {
   metadata as termsMetadata,
 } from "@/public-site/sites/urge-zero/terms-page";
+import { UrgeZeroStaticPageLayout } from "@/public-site/sites/urge-zero/static-page-layout";
 
 export const metadata = termsMetadata;
-export default UrgeZeroTermsPage;
+
+export default function TermsRoute() {
+  return (
+    <UrgeZeroStaticPageLayout>
+      <UrgeZeroTermsPage />
+    </UrgeZeroStaticPageLayout>
+  );
+}

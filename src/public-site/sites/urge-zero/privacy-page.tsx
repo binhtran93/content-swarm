@@ -1,261 +1,200 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | Urge Zero",
-  description: "Privacy policy for the Urge Zero app.",
-};
+import { withPublicRoute } from "@/public-site/config/public-url";
+import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
+import { createUrgeZeroStaticPageMetadata } from "@/public-site/sites/urge-zero/static-page-seo";
+
+export const metadata = createUrgeZeroStaticPageMetadata("privacy");
+
+const sectionClassName = "mb-8";
+const headingClassName = "mb-3 text-2xl font-semibold";
+const copyClassName = "leading-8 text-zinc-700";
+const listClassName = "list-disc space-y-2 pl-6 leading-8 text-zinc-700";
 
 export default function UrgeZeroPrivacyPage() {
+  const supportHref = withPublicRoute(
+    urgeZeroSiteConfig,
+    urgeZeroSiteConfig.defaultLocale,
+    "/support",
+  );
+
   return (
     <main className="legal-document flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">
       <article className="legal-document__article w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10">
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Privacy Policy
         </h1>
-        <p className="mb-8 text-sm text-zinc-600">Effective Date: 10.02.2026</p>
+        <p className="mb-8 text-sm text-zinc-600">Last updated: 22 July 2026</p>
 
-        <p className="mb-6 leading-8 text-zinc-700">
-          At Urge Zero (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), we
-          prioritize your privacy and are committed to safeguarding your
-          personal information. This privacy policy explains how we collect,
-          use, and share your information when you interact with our mobile apps
-          and website. By using our services, you agree to the terms outlined
-          below.
+        <p className={`mb-6 ${copyClassName}`}>
+          This Privacy Policy explains how UrgeZero handles information when you
+          use the UrgeZero mobile app, visit urgezero.com, or contact support.
+          UrgeZero is designed to work without asking you to create a public
+          profile or provide an email address during onboarding.
         </p>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Information We Collect
-          </h2>
-
-          <h3 className="mb-2 text-xl font-medium">Email Addresses</h3>
-          <p className="mb-4 leading-8 text-zinc-700">
-            We collect email addresses directly from users of our mobile apps
-            during the onboarding process. This information is provided by users
-            voluntarily through a text input field within the apps. We do not
-            collect email addresses from visitors to our website. The email
-            addresses we collect are used solely to provide personalized
-            services, communicate with users, and enhance their experience with
-            our apps.
-          </p>
-
-          <h3 className="mb-2 text-xl font-medium">Cookies and Analytics</h3>
-          <ul className="mb-4 list-disc space-y-2 pl-6 leading-8 text-zinc-700">
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Information the app handles</h2>
+          <ul className={listClassName}>
             <li>
-              Cookies: Our website uses cookies to improve your browsing
-              experience, remember your preferences, and track website traffic.
-              Cookies are small data files stored on your device that help us
-              understand how you interact with our site.
+              <strong>Anonymous account data:</strong> the app uses an anonymous
+              account identifier so it can associate your app data with your
+              installation and session.
             </li>
             <li>
-              Google Analytics: Both our website and mobile apps use Google
-              Analytics to analyze user behavior and gather insights into how
-              our services are used. This information helps us improve the
-              functionality and performance of our services.
+              <strong>Your progress and choices:</strong> this can include your
+              onboarding answers, personal reasons and promise, streak and
+              battle records, relapse check-ins, app-protection selections,
+              activity history, and focus-game scores.
+            </li>
+            <li>
+              <strong>Coach and generated content:</strong> prompts you send to
+              Coach and the recent conversation needed to answer them are
+              processed to generate a response. Requests for facts, stories, or
+              Bible verses are also processed to provide the selected content.
+            </li>
+            <li>
+              <strong>Community content:</strong> if you choose to post, the
+              message and information displayed with it, such as a streak, can
+              be visible to other UrgeZero users. Likes and moderation-related
+              information may also be recorded.
+            </li>
+            <li>
+              <strong>Purchases and app operation:</strong> subscription
+              entitlement information, app version, device or platform details,
+              diagnostics, and similar technical events may be processed to
+              deliver purchases, troubleshoot issues, and improve reliability.
+            </li>
+            <li>
+              <strong>Support messages:</strong> if you email us, we receive the
+              email address and any information you choose to include.
             </li>
           </ul>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Photos, Images, and Visual Data
-          </h2>
-
-          <h3 className="mb-2 text-xl font-medium">What We Collect</h3>
-          <p className="mb-4 leading-8 text-zinc-700">
-            Some of our apps allow you to capture photos using your
-            device&apos;s camera or select images from your photo library. These
-            images may contain faces or other personal visual information. We
-            only access your camera or photo library when you explicitly choose
-            to use these features within the app.
-          </p>
-
-          <h3 className="mb-2 text-xl font-medium">How We Use Visual Data</h3>
-          <p className="mb-4 leading-8 text-zinc-700">
-            Photos and images you provide are used solely for the core
-            functionality of the app, such as generating AI-powered content
-            (e.g., text, images, or other creative outputs) based on the visual
-            content you submit. We do not perform facial recognition, create
-            biometric identifiers, or build facial feature maps from your
-            photos. Images are sent to third-party AI services (such as Google
-            Gemini) exclusively for the purpose of generating content within the
-            app.
-          </p>
-
-          <h3 className="mb-2 text-xl font-medium">Storage and Retention</h3>
-          <p className="mb-4 leading-8 text-zinc-700">
-            Images you submit may be stored on our servers to provide core app
-            features, such as viewing past results and improving analysis
-            quality. These images are securely stored and may be accessed by our
-            systems to operate and improve the service. When an image is
-            processed by a third-party AI service, it is transmitted securely
-            and used only for the purpose of generating results. We do not use
-            your images for advertising or sell your data. You can delete your
-            images at any time.
-          </p>
-
-          <h3 className="mb-2 text-xl font-medium">Sharing of Visual Data</h3>
-          <p className="leading-8 text-zinc-700">
-            We do not sell, rent, or share your photos or images with any third
-            parties for advertising, marketing, or any purpose unrelated to the
-            app&apos;s core functionality. Images are shared only with
-            third-party AI processing services (such as Google Gemini) solely to
-            generate the content you request. These services process the data
-            according to their own privacy policies and data processing terms.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Camera and app protection</h2>
+          <p className={copyClassName}>
+            Urge Emergency can show a live front-camera preview while a battle
+            is active. UrgeZero does not capture, store, or upload a photo from
+            that preview. If you enable app protection, your device&apos;s
+            operating-system controls are used to select and shield supported
+            apps or activity categories. The available controls differ by
+            platform and require the permissions you choose to grant.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            How We Use Your Information
-          </h2>
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>How information is used</h2>
           <p className="mb-3 leading-8 text-zinc-700">
-            We use the information we collect to:
+            We use the information described above to:
           </p>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
+          <ul className={listClassName}>
+            <li>provide streaks, Urge Emergency, activities, and community;</li>
+            <li>personalize reminders with the reasons you chose to save;</li>
+            <li>generate Coach and other requested content;</li>
+            <li>manage subscription access and restore purchases;</li>
+            <li>protect the service, moderate content, and prevent misuse;</li>
             <li>
-              Provide, maintain, and improve our mobile apps and website
-              functionality.
+              diagnose problems and improve app and website performance; and
+            </li>
+            <li>respond when you contact support.</li>
+          </ul>
+        </section>
+
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Service providers</h2>
+          <p className={`mb-3 ${copyClassName}`}>
+            UrgeZero relies on service providers to operate specific features.
+            Information is shared only as needed for those services, including:
+          </p>
+          <ul className={listClassName}>
+            <li>
+              Google Firebase for anonymous authentication, cloud data storage,
+              backend functions, and app diagnostics;
             </li>
             <li>
-              Analyze usage patterns to better understand user needs and
-              preferences.
+              Google Gemini for Coach and other content you ask the app to
+              generate;
             </li>
+            <li>RevenueCat for subscription status and entitlements; and</li>
             <li>
-              Communicate with users about updates, support, and feedback.
-            </li>
-            <li>
-              Enhance user experience by offering personalized features based on
-              collected data.
+              Apple and Google for app distribution, purchases, device
+              permissions, and platform services.
             </li>
           </ul>
-          <p className="mt-4 leading-8 text-zinc-700">
-            All data collected is handled with care and used strictly for the
-            purposes outlined in this policy.
+          <p className={`mt-4 ${copyClassName}`}>
+            These providers process information under their own terms and
+            privacy practices. We do not sell personal information and the app
+            does not use advertising SDKs to show targeted ads.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Sharing Your Information
-          </h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            We do not sell or rent your personal information to any third
-            parties. However, we do share certain data with trusted third-party
-            providers to enable core functionality:
-          </p>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>
-              Google Analytics: To gather insights into user behavior and app
-              performance.
-            </li>
-            <li>
-              AI Processing Services (e.g., Google Gemini): To process
-              user-submitted content, including photos and images, for the
-              purpose of generating AI-powered features within our apps. Data is
-              processed in real time and is not permanently stored by these
-              services.
-            </li>
-          </ul>
-          <p className="mt-4 leading-8 text-zinc-700">
-            These third-party providers may collect and process data in
-            accordance with their own privacy policies. We recommend reviewing
-            their policies for additional details on how they handle your data.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Website analytics and cookies</h2>
+          <p className={copyClassName}>
+            The production website at urgezero.com uses Google Analytics 4 to
+            understand visits and improve the site. Google Analytics can use
+            cookies or similar browser storage and can process information such
+            as pages viewed, approximate location, device and browser details,
+            and referral information. UrgeZero website analytics is configured
+            only for the production dedicated domain; it is not enabled on the
+            UrgeZero pages hosted under anmisoft.com, previews, or local
+            development. You can limit cookies through your browser settings.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Your Rights and Choices
-          </h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            We are committed to giving you control over your information.
-            Here&apos;s how you can manage your data:
-          </p>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>
-              Edit Your Information: You can update your account details
-              directly within the mobile apps at any time.
-            </li>
-            <li>
-              Delete Your Account: Users can delete their accounts and all
-              associated data either through the mobile apps or by submitting a
-              request by sending email to support@anmisoft.com. We will process
-              account deletion requests promptly.
-            </li>
-            <li>
-              Opt-Out of Ads: You can opt out of targeted advertising by
-              adjusting your device settings, such as resetting your advertising
-              ID or enabling ad personalization preferences.
-            </li>
-          </ul>
-          <p className="mt-4 leading-8 text-zinc-700">
-            If you need assistance with any of these options, please contact us
-            using the details provided below.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Retention and deletion</h2>
+          <p className={copyClassName}>
+            Information is kept for as long as needed to provide the relevant
+            feature, maintain security and records, resolve disputes, and meet
+            legal obligations. Community content can remain visible until it is
+            removed or the associated data is deleted. You can use deletion
+            controls available in the app or contact support to request deletion
+            of data connected to your anonymous account. We may need information
+            from the app to identify the correct record.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">Data Security</h2>
-          <p className="leading-8 text-zinc-700">
-            We take reasonable precautions to protect your information from
-            unauthorized access, loss, or misuse. However, no method of
-            electronic storage or transmission is 100% secure, and we cannot
-            guarantee absolute security. We encourage users to take precautions
-            to protect their accounts, such as using strong passwords and
-            keeping login credentials confidential.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Security</h2>
+          <p className={copyClassName}>
+            We use reasonable administrative and technical measures to protect
+            information. No internet transmission or storage system is
+            completely secure, so absolute security cannot be guaranteed.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Children&apos;s Privacy
-          </h2>
-          <p className="leading-8 text-zinc-700">
-            Our services are intended for general audiences and are not directed
-            toward children under 13 years of age. We do not knowingly collect
-            personal information from children. If we become aware that a child
-            under 13 has provided us with personal data, we will take steps to
-            delete such information promptly. Parents or guardians who believe
-            their child has provided us with data may contact us to request its
-            removal.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Children</h2>
+          <p className={copyClassName}>
+            UrgeZero is not directed to children under 13, and we do not
+            knowingly collect personal information from children under 13. If
+            you believe a child has provided information, contact us so we can
+            review and remove it as appropriate.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Changes to This Policy
-          </h2>
-          <p className="leading-8 text-zinc-700">
-            We reserve the right to update this privacy policy as necessary to
-            reflect changes in our services, legal requirements, or industry
-            standards. Updates will be posted on this page with an updated
-            &quot;Effective Date.&quot; We encourage you to review this policy
-            periodically to stay informed about how we are protecting your data.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Changes to this policy</h2>
+          <p className={copyClassName}>
+            We may update this policy when the service or applicable
+            requirements change. The date at the top identifies the latest
+            published version.
           </p>
         </section>
 
         <section>
-          <h2 className="mb-3 text-2xl font-semibold">Contact Us</h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            If you have any questions, concerns, or requests related to this
-            privacy policy, please don&apos;t hesitate to reach out to us:
-          </p>
-          <ul className="mb-4 list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>Email: support@anmisoft.com</li>
-          </ul>
-          <p className="leading-8 text-zinc-700">
-            We are committed to addressing your concerns and providing
-            transparency about how we handle your information.
-          </p>
-          <p className="mt-4 leading-8 text-zinc-700">
-            Need help with the app? Visit our{" "}
+          <h2 className={headingClassName}>Contact</h2>
+          <p className={copyClassName}>
+            For privacy questions or requests, email support@anmisoft.com or
+            visit the{" "}
             <Link
-              href="/urge-zero/support"
               className="font-medium text-zinc-900 underline-offset-4 hover:underline"
+              href={supportHref}
             >
-              support page
+              UrgeZero support page
             </Link>
             .
           </p>

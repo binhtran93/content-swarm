@@ -90,6 +90,9 @@ describe("public project route guard", () => {
     ["jlens", "/og.png", "/jlens/og.png"],
     ["subiq", "/blog/article", "/subiq/blog/article"],
     ["subiq", "/vi-VN/support", "/subiq/vi-VN/support"],
+    ["urge-zero", "/support", "/urge-zero/support"],
+    ["urge-zero", "/privacy", "/urge-zero/privacy"],
+    ["urge-zero", "/og.png", "/urge-zero/og.png"],
   ])("maps %s dedicated route %s to %s", (projectId, pathname, destination) => {
     process.env.PUBLIC_ROUTE_MODE = "root";
     process.env.PUBLIC_PROJECT_ID = projectId;

@@ -7,7 +7,7 @@ export function getPublicSiteIcons(
   config: PublicSiteConfig,
 ): Metadata["icons"] {
   const routePrefix = getProjectRoutePrefix(config);
-  const favicon = `${routePrefix}/favicon.png`;
+  const favicon = `${routePrefix}/${config.brand.faviconFilename ?? "favicon.png"}`;
 
   return {
     icon: [{ url: favicon, type: "image/png" }],

@@ -10,29 +10,55 @@ import { JlensLandingPage } from "@/public-site/sites/jlens/landing-page";
 import { SubiqAcquisitionBoundary } from "@/public-site/sites/subiq/acquisition-boundary";
 import { createSubiqLandingMetadata } from "@/public-site/sites/subiq/landing-metadata";
 import { SubiqLandingPage } from "@/public-site/sites/subiq/landing-page";
+import { UrgeZeroAcquisitionBoundary } from "@/public-site/sites/urge-zero/acquisition-boundary";
+import { createUrgeZeroLandingMetadata } from "@/public-site/sites/urge-zero/landing-metadata";
+import { UrgeZeroLandingPage } from "@/public-site/sites/urge-zero/landing-page";
+
+function assertNever(value: never): never {
+  throw new Error(`Unsupported dedicated public project: ${value}`);
+}
 
 export function generateMetadata() {
   if (getPublicRouteMode() !== "root") return undefined;
-  return getDedicatedPublicProjectId() === "jlens"
-    ? createJlensLandingMetadata()
-    : createSubiqLandingMetadata("en-US");
+
+  const projectId = getDedicatedPublicProjectId();
+  switch (projectId) {
+    case "jlens":
+      return createJlensLandingMetadata();
+    case "subiq":
+      return createSubiqLandingMetadata("en-US");
+    case "urge-zero":
+      return createUrgeZeroLandingMetadata();
+    default:
+      return assertNever(projectId);
+  }
 }
 
 export default function HomePage() {
   if (getPublicRouteMode() === "root") {
-    if (getDedicatedPublicProjectId() === "jlens") {
-      return (
-        <JlensAcquisitionBoundary>
-          <JlensLandingPage />
-        </JlensAcquisitionBoundary>
-      );
+    const projectId = getDedicatedPublicProjectId();
+    switch (projectId) {
+      case "jlens":
+        return (
+          <JlensAcquisitionBoundary>
+            <JlensLandingPage />
+          </JlensAcquisitionBoundary>
+        );
+      case "subiq":
+        return (
+          <SubiqAcquisitionBoundary>
+            <SubiqLandingPage locale="en-US" />
+          </SubiqAcquisitionBoundary>
+        );
+      case "urge-zero":
+        return (
+          <UrgeZeroAcquisitionBoundary>
+            <UrgeZeroLandingPage />
+          </UrgeZeroAcquisitionBoundary>
+        );
+      default:
+        return assertNever(projectId);
     }
-
-    return (
-      <SubiqAcquisitionBoundary>
-        <SubiqLandingPage locale="en-US" />
-      </SubiqAcquisitionBoundary>
-    );
   }
 
   return (

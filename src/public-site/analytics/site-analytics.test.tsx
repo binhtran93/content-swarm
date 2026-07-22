@@ -79,4 +79,16 @@ describe("isCanonicalAnalyticsHostname", () => {
       isCanonicalAnalyticsHostname("https://jlensapp.com", "anmisoft.com"),
     ).toBe(false);
   });
+
+  it("recognizes only the canonical UrgeZero apex hostname", () => {
+    expect(
+      isCanonicalAnalyticsHostname("https://urgezero.com", "urgezero.com"),
+    ).toBe(true);
+    expect(
+      isCanonicalAnalyticsHostname("https://urgezero.com", "www.urgezero.com"),
+    ).toBe(false);
+    expect(
+      isCanonicalAnalyticsHostname("https://urgezero.com", "anmisoft.com"),
+    ).toBe(false);
+  });
 });

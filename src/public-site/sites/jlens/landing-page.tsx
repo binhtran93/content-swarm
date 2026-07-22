@@ -17,7 +17,9 @@ import {
   FeatureShowcaseSection,
   LandingSection,
   PhoneFrame,
+  ResponsivePhoneComposition,
   SectionHeading,
+  ViewportHero,
 } from "@/public-site/components/landing";
 import { withPublicRoute } from "@/public-site/config/public-url";
 import { jlensLandingDescription } from "@/public-site/sites/jlens/landing-metadata";
@@ -61,74 +63,76 @@ const faqs = [
 
 function JlensHero({ privacyHref }: { privacyHref: string }) {
   return (
-    <section className={styles.hero} aria-labelledby="jlens-hero-title">
-      <ContentShell className={styles.heroInner}>
-        <div className={styles.heroCopy}>
-          <h1 id="jlens-hero-title">
-            Jewelry <span className={styles.heroTitleAccent}>Identifier</span>
-          </h1>
-          <p className={styles.heroDescription}>
-            Snap a photo to uncover clues about a piece, save what you find, and
-            ask questions along the way
-          </p>
-          <AcquisitionActions
-            ariaLabel="Download JLens"
-            badges={jlensSiteConfig.storeBadges}
-            className={styles.heroActions}
-            locale={jlensSiteConfig.defaultLocale}
-            privacyHref={privacyHref}
-            source="hero"
-          />
-        </div>
+    <ViewportHero
+      className={styles.hero}
+      innerClassName={styles.heroInner}
+      labelledBy="jlens-hero-title"
+    >
+      <div className={styles.heroCopy}>
+        <h1 id="jlens-hero-title">
+          Jewelry <span className={styles.heroTitleAccent}>Identifier</span>
+        </h1>
+        <p className={styles.heroDescription}>
+          Snap a photo to uncover clues about a piece, save what you find, and
+          ask questions along the way
+        </p>
+        <AcquisitionActions
+          ariaLabel="Download JLens"
+          badges={jlensSiteConfig.storeBadges}
+          className={styles.heroActions}
+          locale={jlensSiteConfig.defaultLocale}
+          privacyHref={privacyHref}
+          source="hero"
+        />
+      </div>
 
-        <div className={styles.heroVisual} aria-hidden="true">
-          <div className={styles.phoneComposition}>
-            <PhoneFrame>
-              <div className={styles.scannerInterface}>
-                <div className={styles.scannerDock}>
-                  <span className={styles.galleryControl}>
-                    <Images />
-                  </span>
-                  <span className={styles.scanControl}>
-                    <ScanSearch />
-                  </span>
-                  <span className={styles.historyControl}>
-                    <History />
-                  </span>
-                </div>
+      <div className={styles.heroVisual} aria-hidden="true">
+        <ResponsivePhoneComposition className={styles.phoneComposition}>
+          <PhoneFrame>
+            <div className={styles.scannerInterface}>
+              <div className={styles.scannerDock}>
+                <span className={styles.galleryControl}>
+                  <Images />
+                </span>
+                <span className={styles.scanControl}>
+                  <ScanSearch />
+                </span>
+                <span className={styles.historyControl}>
+                  <History />
+                </span>
               </div>
-            </PhoneFrame>
-            <Image
-              alt=""
-              className={styles.heroRing}
-              height={722}
-              priority
-              sizes="(max-width: 700px) 118vw, (max-width: 1100px) 610px, 720px"
-              src="/jlens/ring.png"
-              width={722}
-            />
-            <span className={`${styles.callout} ${styles.calloutMetal}`}>
-              Possible 14K gold
-              <span className={styles.calloutConnector}>
-                <span className={styles.calloutPoint} />
-              </span>
+            </div>
+          </PhoneFrame>
+          <Image
+            alt=""
+            className={styles.heroRing}
+            height={722}
+            priority
+            sizes="(max-width: 700px) 118vw, (max-width: 1100px) 610px, 720px"
+            src="/jlens/ring.png"
+            width={722}
+          />
+          <span className={`${styles.callout} ${styles.calloutMetal}`}>
+            Possible 14K gold
+            <span className={styles.calloutConnector}>
+              <span className={styles.calloutPoint} />
             </span>
-            <span className={`${styles.callout} ${styles.calloutStone}`}>
-              Cushion-cut stone
-              <span className={styles.calloutConnector}>
-                <span className={styles.calloutPoint} />
-              </span>
+          </span>
+          <span className={`${styles.callout} ${styles.calloutStone}`}>
+            Cushion-cut stone
+            <span className={styles.calloutConnector}>
+              <span className={styles.calloutPoint} />
             </span>
-            <span className={`${styles.callout} ${styles.calloutValue}`}>
-              Est. value $2,400–$2,800
-              <span className={styles.calloutConnector}>
-                <span className={styles.calloutPoint} />
-              </span>
+          </span>
+          <span className={`${styles.callout} ${styles.calloutValue}`}>
+            Est. value $2,400–$2,800
+            <span className={styles.calloutConnector}>
+              <span className={styles.calloutPoint} />
             </span>
-          </div>
-        </div>
-      </ContentShell>
-    </section>
+          </span>
+        </ResponsivePhoneComposition>
+      </div>
+    </ViewportHero>
   );
 }
 

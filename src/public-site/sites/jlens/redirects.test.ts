@@ -7,8 +7,8 @@ afterEach(() => {
   delete process.env.PUBLIC_ROUTE_MODE;
 });
 
-describe("JLens dedicated routing", () => {
-  it("keeps JLENS project routes local and redirects only historical aliases", async () => {
+describe("public-site redirects", () => {
+  it("keeps full public Project routes local", async () => {
     const redirects = await nextConfig.redirects?.();
     expect(redirects).toEqual(
       expect.arrayContaining([
@@ -30,6 +30,12 @@ describe("JLens dedicated routing", () => {
       ]),
     );
     expect(redirects).toHaveLength(4);
+    expect(redirects).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "/urge-zero" }),
+        expect.objectContaining({ source: "/urge-zero/support" }),
+      ]),
+    );
     expect(redirects).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({ source: "/jlens" }),

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -12,11 +12,17 @@ import JewelryIdentifierSupportPage from "@/public-site/sites/jlens/support-page
 import { skylensSiteConfig } from "@/public-site/sites/skylens/site-config";
 import SkylensSupportPage from "@/public-site/sites/skylens/support-page";
 import { metadata as skylensTermsMetadata } from "@/public-site/sites/skylens/terms-page";
-import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
-import UrgeZeroPrivacyPage from "@/public-site/sites/urge-zero/privacy-page";
-import UrgeZeroSupportPage from "@/public-site/sites/urge-zero/support-page";
+import UrgeZeroPrivacyPage, {
+  metadata as urgeZeroPrivacyMetadata,
+} from "@/public-site/sites/urge-zero/privacy-page";
+import UrgeZeroSupportPage, {
+  metadata as urgeZeroSupportMetadata,
+} from "@/public-site/sites/urge-zero/support-page";
+import UrgeZeroTermsPage, {
+  metadata as urgeZeroTermsMetadata,
+} from "@/public-site/sites/urge-zero/terms-page";
 
-const configs = [skylensSiteConfig, urgeZeroSiteConfig] as const;
+const configs = [skylensSiteConfig] as const;
 
 describe("legal-only public sites", () => {
   it.each(configs)("builds scoped navigation and icons for $name", (config) => {
@@ -86,12 +92,36 @@ describe("legal-only public sites", () => {
       0,
     );
     expect(
-      screen.getByText("Urge Zero version", { exact: false }),
+      screen.getByText("UrgeZero version", { exact: false }),
     ).toBeInTheDocument();
   });
 
-  it("preserves the Urge Zero privacy effective date", () => {
+  it("publishes source-backed UrgeZero privacy and terms without stale claims", () => {
     render(<UrgeZeroPrivacyPage />);
-    expect(screen.getByText("Effective Date: 10.02.2026")).toBeInTheDocument();
+    expect(screen.getByText("Last updated: 22 July 2026")).toBeInTheDocument();
+    expect(screen.getByText("Camera and app protection")).toBeInTheDocument();
+    expect(
+      screen.getByText("Website analytics and cookies"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/AdMob/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/photo library/i)).not.toBeInTheDocument();
+
+    cleanup();
+    render(<UrgeZeroTermsPage />);
+    expect(
+      screen.getByText("Self-improvement, not treatment"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Coach and generated content")).toBeInTheDocument();
+    expect(screen.queryByText(/Your Jurisdiction/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/AdMob/i)).not.toBeInTheDocument();
+    expect(urgeZeroSupportMetadata.alternates?.canonical).toBe(
+      "https://urgezero.com/support",
+    );
+    expect(urgeZeroPrivacyMetadata.alternates?.canonical).toBe(
+      "https://urgezero.com/privacy",
+    );
+    expect(urgeZeroTermsMetadata.alternates?.canonical).toBe(
+      "https://urgezero.com/terms",
+    );
   });
 });

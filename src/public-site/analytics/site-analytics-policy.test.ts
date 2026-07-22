@@ -19,6 +19,38 @@ describe("site analytics deployment policy", () => {
         PUBLIC_PROJECT_ID: "jlens",
       }),
     ).toBe(true);
+
+    expect(
+      isDedicatedSiteAnalyticsDeployment("urge-zero", {
+        NODE_ENV: "production",
+        PUBLIC_ROUTE_MODE: "root",
+        PUBLIC_PROJECT_ID: "urge-zero",
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps UrgeZero analytics off every non-production or mismatched build", () => {
+    expect(
+      isDedicatedSiteAnalyticsDeployment("urge-zero", {
+        NODE_ENV: "development",
+        PUBLIC_ROUTE_MODE: "root",
+        PUBLIC_PROJECT_ID: "urge-zero",
+      }),
+    ).toBe(false);
+    expect(
+      isDedicatedSiteAnalyticsDeployment("urge-zero", {
+        NODE_ENV: "production",
+        PUBLIC_ROUTE_MODE: "project",
+        PUBLIC_PROJECT_ID: "urge-zero",
+      }),
+    ).toBe(false);
+    expect(
+      isDedicatedSiteAnalyticsDeployment("urge-zero", {
+        NODE_ENV: "production",
+        PUBLIC_ROUTE_MODE: "root",
+        PUBLIC_PROJECT_ID: "subiq",
+      }),
+    ).toBe(false);
   });
 
   it("keeps JLENS analytics disabled outside its dedicated production build", () => {

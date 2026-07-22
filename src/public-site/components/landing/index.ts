@@ -7,6 +7,8 @@ export {
   LandingSection,
   PhoneFrame,
   PhoneScreenshot,
+  ResponsivePhoneComposition,
   SectionHeading,
+  ViewportHero,
 } from "./landing";
 export type { FeatureRow, LandingFaq } from "./landing";

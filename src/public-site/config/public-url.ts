@@ -3,7 +3,7 @@ import type { PublicSiteConfig } from "@/public-site/config/site-config";
 
 export type PublicRouteMode = "project" | "root";
 
-const fullPublicProjectIds = ["jlens", "subiq"] as const;
+const fullPublicProjectIds = ["jlens", "subiq", "urge-zero"] as const;
 
 export type FullPublicProjectId = (typeof fullPublicProjectIds)[number];
 

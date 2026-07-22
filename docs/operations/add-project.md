@@ -138,6 +138,13 @@ be promoted later through the dedicated-domain transition below.
    footer, acquisition presentation, assets, and theme settings from the
    manifest.
 4. Add the landing page, metadata, scoped theme, and required assets.
+   Build standard heroes with `LandingHero`, or use `ViewportHero` when the
+   visual composition needs custom markup. Both keep the first section within
+   the available desktop viewport. Render app screens with `PhoneScreenshot`,
+   or combine `ResponsivePhoneComposition` with `PhoneFrame` for custom phone
+   UI, so phone size and shell geometry scale consistently across viewport
+   heights. Phone-size overrides are intentionally unsupported; do not copy
+   sizing rules into a Project stylesheet.
 5. Add localization and Blog files only when the manifest enables them.
 6. Update Privacy and Terms for website Analytics, waitlist collection,
    Turnstile, cookies, and other third parties actually enabled in Phase 2.

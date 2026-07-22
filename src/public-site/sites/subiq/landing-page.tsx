@@ -10,6 +10,7 @@ import {
   LandingSection,
   PhoneFrame,
   PhoneScreenshot,
+  ResponsivePhoneComposition,
   SectionHeading,
 } from "@/public-site/components/landing";
 import { AcquisitionActions } from "@/public-site/components/acquisition";
@@ -231,7 +232,7 @@ function PhoneMockup({
   };
 }) {
   return (
-    <div className={styles.phoneComposition}>
+    <ResponsivePhoneComposition className={styles.phoneComposition}>
       <div className={styles.phoneFade}>
         <div className={styles.phoneMask}>
           <PhoneFrame>
@@ -323,7 +324,7 @@ function PhoneMockup({
         </div>
       </div>
       <SubscriptionCluster />
-    </div>
+    </ResponsivePhoneComposition>
   );
 }
 

@@ -37,6 +37,31 @@ export function ContentShell({
   );
 }
 
+export function ViewportHero({
+  labelledBy,
+  className,
+  innerClassName,
+  children,
+}: {
+  labelledBy: string;
+  className?: string;
+  innerClassName?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section
+      className={classes(styles.viewportHero, className)}
+      aria-labelledby={labelledBy}
+    >
+      <ContentShell
+        className={classes(styles.viewportHeroInner, innerClassName)}
+      >
+        {children}
+      </ContentShell>
+    </section>
+  );
+}
+
 export function LandingHero({
   title,
   description,
@@ -49,18 +74,20 @@ export function LandingHero({
   visual: ReactNode;
 }) {
   return (
-    <section className={styles.hero} aria-labelledby="hero-title">
-      <div className={styles.heroInner}>
-        <div className={styles.heroCopy}>
-          <h1 id="hero-title">{title}</h1>
-          <p className={styles.heroDescription}>{description}</p>
-          {actions ? <div className={styles.heroActions}>{actions}</div> : null}
-        </div>
-        <div className={styles.visualStage} aria-hidden="true">
-          {visual}
-        </div>
+    <ViewportHero
+      className={styles.hero}
+      innerClassName={styles.heroInner}
+      labelledBy="hero-title"
+    >
+      <div className={styles.heroCopy}>
+        <h1 id="hero-title">{title}</h1>
+        <p className={styles.heroDescription}>{description}</p>
+        {actions ? <div className={styles.heroActions}>{actions}</div> : null}
       </div>
-    </section>
+      <div className={styles.visualStage} aria-hidden="true">
+        {visual}
+      </div>
+    </ViewportHero>
   );
 }
 
@@ -131,6 +158,20 @@ export function PhoneFrame({
   );
 }
 
+export function ResponsivePhoneComposition({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={classes(styles.responsivePhoneComposition, className)}>
+      {children}
+    </div>
+  );
+}
+
 export function PhoneScreenshot({
   src,
   alt,
@@ -160,6 +201,28 @@ export function PhoneScreenshot({
   );
 }
 
+type FeatureShowcaseSectionProps = {
+  id?: string;
+  tone?: "default" | "muted";
+  visualSide?: "start" | "end";
+  eyebrow: string;
+  title: ReactNode;
+  description: string;
+  rows: FeatureRow[];
+  className?: string;
+} & (
+  | {
+      visual: ReactNode;
+      screenshot?: never;
+      screenshotAlt?: never;
+    }
+  | {
+      visual?: never;
+      screenshot: string;
+      screenshotAlt: string;
+    }
+);
+
 export function FeatureShowcaseSection({
   id,
   tone = "default",
@@ -170,19 +233,16 @@ export function FeatureShowcaseSection({
   rows,
   screenshot,
   screenshotAlt,
+  visual,
   className,
-}: {
-  id?: string;
-  tone?: "default" | "muted";
-  visualSide?: "start" | "end";
-  eyebrow: string;
-  title: ReactNode;
-  description: string;
-  rows: FeatureRow[];
-  screenshot: string;
-  screenshotAlt: string;
-  className?: string;
-}) {
+}: FeatureShowcaseSectionProps) {
+  const visualContent =
+    visual !== undefined ? (
+      visual
+    ) : screenshot !== undefined && screenshotAlt !== undefined ? (
+      <PhoneScreenshot src={screenshot} alt={screenshotAlt} />
+    ) : null;
+
   return (
     <LandingSection id={id} tone={tone} className={className}>
       <ContentShell
@@ -209,9 +269,7 @@ export function FeatureShowcaseSection({
             ))}
           </div>
         </div>
-        <div className={styles.featureVisual}>
-          <PhoneScreenshot src={screenshot} alt={screenshotAlt} />
-        </div>
+        <div className={styles.featureVisual}>{visualContent}</div>
       </ContentShell>
     </LandingSection>
   );

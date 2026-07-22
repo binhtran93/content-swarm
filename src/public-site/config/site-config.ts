@@ -55,6 +55,7 @@ export type PublicSiteConfig = {
     wordmarkAccent?: string;
     logoSrc: string;
     logoAlt: string;
+    faviconFilename?: string;
   };
   navigation: readonly SiteNavigationItem[];
   headerCta: SiteHeaderCta;

@@ -1,267 +1,202 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Terms and Conditions | Urge Zero",
-  description: "Terms and conditions for the Urge Zero app.",
-};
+import { withPublicRoute } from "@/public-site/config/public-url";
+import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
+import { createUrgeZeroStaticPageMetadata } from "@/public-site/sites/urge-zero/static-page-seo";
+
+export const metadata = createUrgeZeroStaticPageMetadata("terms");
+
+const sectionClassName = "mb-8";
+const headingClassName = "mb-3 text-2xl font-semibold";
+const copyClassName = "leading-8 text-zinc-700";
+const listClassName = "list-disc space-y-2 pl-6 leading-8 text-zinc-700";
 
 export default function UrgeZeroTermsPage() {
+  const privacyHref = withPublicRoute(
+    urgeZeroSiteConfig,
+    urgeZeroSiteConfig.defaultLocale,
+    "/privacy",
+  );
+  const supportHref = withPublicRoute(
+    urgeZeroSiteConfig,
+    urgeZeroSiteConfig.defaultLocale,
+    "/support",
+  );
+
   return (
     <main className="legal-document flex flex-1 justify-center bg-zinc-50 px-4 py-12 text-zinc-900">
       <article className="legal-document__article w-full max-w-3xl rounded-xl bg-white p-6 shadow-sm sm:p-10">
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Terms and Conditions
         </h1>
-        <p className="mb-8 text-sm text-zinc-600">Effective Date: 25.12.2024</p>
+        <p className="mb-8 text-sm text-zinc-600">Last updated: 22 July 2026</p>
 
-        <p className="mb-6 leading-8 text-zinc-700">
-          Welcome to Urge Zero (&quot;we,&quot; &quot;our,&quot; or
-          &quot;us&quot;). By using our website and mobile apps, you agree to
-          comply with and be bound by these Terms and Conditions
-          (&quot;Terms&quot;). Please read them carefully before accessing or
-          using our services. If you do not agree to these Terms, you may not
-          use our services.
+        <p className={`mb-6 ${copyClassName}`}>
+          These Terms and Conditions apply when you use the UrgeZero mobile app
+          or website. By using UrgeZero, you agree to these terms and the{" "}
+          <Link
+            className="font-medium text-zinc-900 underline-offset-4 hover:underline"
+            href={privacyHref}
+          >
+            Privacy Policy
+          </Link>
+          . If you do not agree, do not use the service.
         </p>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">Acceptance of Terms</h2>
-          <p className="leading-8 text-zinc-700">
-            By accessing our website or mobile apps, you agree to these Terms
-            and our Privacy Policy. These Terms apply to all users, including
-            visitors to our website and users of our mobile apps.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Eligibility and acceptable use</h2>
+          <p className={`mb-3 ${copyClassName}`}>
+            You must be at least 13 years old to use UrgeZero. The app may
+            create an anonymous account identifier for you without requiring a
+            public profile. You agree not to:
           </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">Use of Our Services</h2>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
+          <ul className={listClassName}>
+            <li>break the law or violate another person&apos;s rights;</li>
             <li>
-              Eligibility: You must be at least 13 years old to use our
-              services. By accessing or using our website or mobile apps, you
-              confirm that you meet this age requirement.
+              access the service or another user&apos;s data without permission;
             </li>
+            <li>upload malicious code or disrupt the service;</li>
             <li>
-              Account Creation: Some features of our mobile apps may require you
-              to create an account. You agree to provide accurate and complete
-              information when creating an account and to keep this information
-              up-to-date.
+              harass others or post sexual, hateful, violent, or abusive
+              content;
             </li>
+            <li>impersonate another person or misrepresent your content; or</li>
             <li>
-              Prohibited Activities: You agree not to misuse our services,
-              including but not limited to:
-            </li>
-          </ul>
-          <ul className="mt-2 list-disc space-y-2 pl-10 leading-8 text-zinc-700">
-            <li>Engaging in unauthorized access or use of our systems.</li>
-            <li>
-              Transmitting malicious code or engaging in activities that disrupt
-              our services.
-            </li>
-            <li>Violating any applicable laws or regulations.</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            User-Generated Content
-          </h2>
-          <p className="mb-4 leading-8 text-zinc-700">
-            If our mobile apps allow you to submit content (such as comments or
-            feedback), you retain ownership of any intellectual property rights
-            in your content. However, by submitting content, you grant us a
-            worldwide, royalty-free, non-exclusive license to use, reproduce,
-            and display your content as necessary to provide our services.
-          </p>
-          <p className="leading-8 text-zinc-700">
-            You are solely responsible for the content you submit and must
-            ensure that it does not violate any third-party rights or applicable
-            laws.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Privacy and Data Collection
-          </h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            We collect and process your personal information in accordance with
-            our Privacy Policy. By using our services, you consent to such
-            collection and processing.
-          </p>
-          <p className="mb-3 leading-8 text-zinc-700">Key points include:</p>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>
-              Email Addresses: We collect email addresses from users via our
-              mobile apps during onboarding.
-            </li>
-            <li>
-              Cookies and Analytics: Our website uses cookies, and both the
-              website and mobile apps utilize Google Analytics to gather
-              insights.
-            </li>
-            <li>
-              Advertisements: Our mobile apps use Google AdMob to display
-              personalized ads, which may involve sharing certain device
-              information with third-party advertisers.
-            </li>
-          </ul>
-          <p className="mt-4 leading-8 text-zinc-700">
-            For more details, please refer to our Privacy Policy.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">Account Management</h2>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>
-              Editing Your Information: You can edit your account information
-              through our mobile apps.
-            </li>
-            <li>
-              Deleting Your Account: Users may delete their accounts via the
-              mobile apps or by submitting a request through the contact form on
-              our website.
-            </li>
-            <li>
-              Responsibility for Your Account: You are responsible for
-              maintaining the confidentiality of your account credentials and
-              for all activities that occur under your account.
-            </li>
-            <li>
-              Note: Some of our apps do not require you to create an account and
-              do not collect any personal data. For these apps, account deletion
-              or subscription cancellation requests are not applicable, as no
-              user account or data is stored.
+              copy, scrape, reverse engineer, or exploit the service unlawfully.
             </li>
           </ul>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">Refund Policy</h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            Google Play Store Apps: For apps distributed through the Google Play
-            Store, subscriptions and in-app purchases are handled exclusively
-            through Google Play.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Self-improvement, not treatment</h2>
+          <p className={copyClassName}>
+            UrgeZero provides self-improvement and educational tools. It does
+            not provide medical or mental-health advice, diagnosis, treatment,
+            therapy, or emergency services. It is not a substitute for a
+            qualified professional. If you may harm yourself or someone else,
+            contact local emergency services or a crisis service available in
+            your location immediately.
           </p>
-          <p className="mb-3 leading-8 text-zinc-700">
-            Refund eligibility for Google Play Store apps is limited to:
+        </section>
+
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Coach and generated content</h2>
+          <p className={copyClassName}>
+            Coach, facts, stories, and verses can be generated or selected using
+            automated systems. Results can be incomplete, inaccurate, or
+            unsuitable for your situation. You are responsible for deciding how
+            to use them and should not rely on them for medical, legal,
+            financial, safety-critical, or emergency decisions.
           </p>
-          <ul className="mb-4 list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>Accidental charges, and</li>
+        </section>
+
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Community content</h2>
+          <p className={`mb-3 ${copyClassName}`}>
+            You keep ownership of content you submit. By posting content, you
+            grant us a worldwide, non-exclusive, royalty-free license to host,
+            reproduce, display, and distribute it only as needed to operate,
+            secure, moderate, and improve the UrgeZero community.
+          </p>
+          <p className={copyClassName}>
+            You are responsible for your posts. Do not share information you do
+            not want other users to see. We may review, limit, or remove content
+            and restrict access when reasonably necessary to enforce these
+            terms, protect users, or comply with law. Community availability
+            does not mean we endorse a post or can prevent every harmful post.
+          </p>
+        </section>
+
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>App protection and permissions</h2>
+          <p className={copyClassName}>
+            App-protection features depend on device permissions and operating
+            system capabilities. You control which permissions and supported
+            apps or categories to select. Platform restrictions, configuration,
+            or technical limits may prevent protection from working in every
+            situation, so you should not treat it as a guaranteed block.
+          </p>
+        </section>
+
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Subscriptions and purchases</h2>
+          <p className={`mb-3 ${copyClassName}`}>
+            Some features may require a paid subscription or in-app purchase.
+            Prices, trial terms, billing intervals, and renewal information are
+            shown before purchase. Purchases are processed by Apple or Google
+            and subscription status is managed with RevenueCat.
+          </p>
+          <ul className={listClassName}>
             <li>
-              The most recent billing period, if the subscription was not used
-              intentionally.
+              Subscriptions renew automatically unless cancelled through the
+              relevant store before renewal.
+            </li>
+            <li>
+              Manage or cancel a subscription in your Apple App Store or Google
+              Play account settings.
+            </li>
+            <li>
+              Refund requests are handled by the store and are subject to that
+              store&apos;s current rules and decision.
             </li>
           </ul>
-          <p className="mb-4 leading-8 text-zinc-700">
-            Past subscription periods or previously used services are not
-            eligible for refunds, as access to the full app features has already
-            been provided. All refund requests for Google Play Store apps are
-            reviewed individually and processed only for transactions still
-            refundable through Google Play&apos;s &quot;Order Management&quot;
-            system.
-          </p>
-          <p className="leading-8 text-zinc-700">
-            Apple App Store Apps: For apps distributed through the Apple App
-            Store, refunds are handled exclusively through Apple&apos;s refund
-            system and are subject to Apple&apos;s refund policies and
-            procedures.
+        </section>
+
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Ownership</h2>
+          <p className={copyClassName}>
+            Except for user content and third-party materials, the UrgeZero
+            software, design, text, graphics, branding, and related service
+            content are protected by intellectual-property laws. These terms
+            give you a limited, personal, non-transferable right to use the
+            service; they do not transfer ownership to you.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Intellectual Property Rights
-          </h2>
-          <p className="leading-8 text-zinc-700">
-            All content, design elements, and trademarks on our website and
-            within our mobile apps are the intellectual property of Urge Zero
-            unless otherwise specified. You may not copy, distribute, or use any
-            content without our prior written consent.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Service changes and termination</h2>
+          <p className={copyClassName}>
+            We may update, suspend, or discontinue features and may restrict or
+            terminate access for misuse, security risk, legal requirements, or a
+            material violation of these terms. You may stop using UrgeZero at
+            any time and can use available in-app controls or contact support
+            regarding deletion of associated data.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Consent to Share Consumption Data with Apple
-          </h2>
-          <p className="mb-4 leading-8 text-zinc-700">
-            By using our app and making in-app purchases, you consent to our
-            sharing of data regarding your usage and consumption of purchased
-            content with Apple, as part of our efforts to resolve refund
-            requests. This information may include details about how you have
-            accessed and interacted with the purchased content. The purpose of
-            sharing this data is to help Apple make an informed decision
-            regarding refund requests.
-          </p>
-          <p className="leading-8 text-zinc-700">
-            We ensure that such data sharing is done in compliance with
-            Apple&apos;s policies and only as necessary to process your
-            requests.
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Disclaimers and liability</h2>
+          <p className={copyClassName}>
+            To the extent permitted by applicable law, UrgeZero is provided
+            &quot;as is&quot; and &quot;as available&quot; without warranties
+            that it will be uninterrupted, error-free, or achieve a particular
+            outcome. To the extent permitted by law, we are not liable for
+            indirect, incidental, special, consequential, or punitive damages
+            arising from use of the service. Nothing in these terms excludes
+            rights or liability that cannot legally be excluded.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Limitation of Liability
-          </h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            To the fullest extent permitted by law, Urge Zero will not be liable
-            for any direct, indirect, incidental, consequential, or punitive
-            damages arising from:
-          </p>
-          <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>Your use or inability to use our website or mobile apps.</li>
-            <li>Unauthorized access to or alteration of your data.</li>
-            <li>
-              Actions or content provided by third-party services, including
-              Google AdMob and Google Analytics.
-            </li>
-          </ul>
-          <p className="mt-4 leading-8 text-zinc-700">
-            Our services are provided on an &quot;as is&quot; and &quot;as
-            available&quot; basis without any warranties of any kind.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Modifications to Terms
-          </h2>
-          <p className="leading-8 text-zinc-700">
-            We reserve the right to modify these Terms at any time. Any changes
-            will be posted on this page with an updated &quot;Effective
-            Date.&quot; Your continued use of our services after changes are
-            posted constitutes your acceptance of the revised Terms.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-3 text-2xl font-semibold">Governing Law</h2>
-          <p className="leading-8 text-zinc-700">
-            These Terms and any disputes arising from your use of our services
-            will be governed by and construed in accordance with the laws of
-            [Your Jurisdiction].
+        <section className={sectionClassName}>
+          <h2 className={headingClassName}>Changes to these terms</h2>
+          <p className={copyClassName}>
+            We may update these terms when the service or applicable
+            requirements change. The date at the top identifies the latest
+            published version. If a change is material, we may also provide
+            notice in the app or through another reasonable channel.
           </p>
         </section>
 
         <section>
-          <h2 className="mb-3 text-2xl font-semibold">Contact Us</h2>
-          <p className="mb-3 leading-8 text-zinc-700">
-            If you have any questions or concerns about these Terms, please
-            contact us:
-          </p>
-          <ul className="mb-4 list-disc space-y-2 pl-6 leading-8 text-zinc-700">
-            <li>Email: support@anmisoft.com</li>
-          </ul>
-          <p className="leading-8 text-zinc-700">
-            Need help with the app? Visit our{" "}
+          <h2 className={headingClassName}>Contact</h2>
+          <p className={copyClassName}>
+            Questions about these terms can be sent to support@anmisoft.com or
+            through the{" "}
             <Link
-              href="/urge-zero/support"
               className="font-medium text-zinc-900 underline-offset-4 hover:underline"
+              href={supportHref}
             >
-              support page
+              UrgeZero support page
             </Link>
             .
           </p>

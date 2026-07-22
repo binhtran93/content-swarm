@@ -1,7 +1,6 @@
 .hero {
   background: #faf7f1;
   color: #24231f;
-  min-height: calc(100svh - 80px);
   overflow: hidden;
   position: relative;
 }
@@ -15,7 +14,6 @@
   display: grid;
   gap: clamp(28px, 4vw, 70px);
   grid-template-columns: minmax(0, 0.9fr) minmax(430px, 1.1fr);
-  min-height: calc(100svh - 80px);
   position: relative;
   z-index: 1;
 }
@@ -83,16 +81,14 @@
 }
 
 .phoneComposition {
-  height: 738px;
   left: 58%;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 340px;
 }
 
 .scannerInterface {
-  background: #5C4C3D;
+  background: #5c4c3d;
   height: 100%;
   position: relative;
   width: 100%;
@@ -491,11 +487,6 @@
     font-size: clamp(64px, 6.4vw, 80px);
   }
 
-  .phoneComposition {
-    height: 694px;
-    width: 320px;
-  }
-
   .calloutStone {
     right: -102px;
   }
@@ -507,6 +498,13 @@
 
   .carePhone {
     width: min(100%, 380px);
+  }
+}
+
+@media (min-width: 981px) {
+  .heroVisual {
+    height: 100%;
+    min-height: 0;
   }
 }
 
@@ -539,7 +537,7 @@
 
   .heroVisual {
     margin-inline: auto;
-    min-height: 660px;
+    min-height: 780px;
     width: min(100%, 720px);
   }
 
@@ -559,13 +557,8 @@
 
 @media (min-width: 701px) and (max-width: 980px) {
   .heroVisual {
-    min-height: 660px;
+    min-height: 780px;
     width: min(100%, 620px);
-  }
-
-  .phoneComposition {
-    height: 620px;
-    width: 286px;
   }
 
   .scannerModeLabel {
@@ -658,13 +651,7 @@
   }
 
   .heroVisual {
-    min-height: 610px;
-  }
-
-  .phoneComposition {
-    height: 585px;
-    max-width: 88vw;
-    width: 270px;
+    min-height: 820px;
   }
 
   .scannerModeLabel {
@@ -733,12 +720,7 @@
 
 @media (max-width: 420px) {
   .heroVisual {
-    min-height: 560px;
-  }
-
-  .phoneComposition {
-    height: 538px;
-    width: 248px;
+    min-height: 780px;
   }
 
   .calloutStone {

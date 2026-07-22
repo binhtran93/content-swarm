@@ -10,6 +10,7 @@ import {
 } from "@/public-site/config/public-url";
 import { jlensSiteConfig } from "@/public-site/sites/jlens/site-config";
 import { subiqSiteConfig } from "@/public-site/sites/subiq/site-config";
+import { urgeZeroSiteConfig } from "@/public-site/sites/urge-zero/site-config";
 
 describe("public URL contract", () => {
   it("supports shared and dedicated SubIQ route shapes", () => {
@@ -55,6 +56,9 @@ describe("public URL contract", () => {
     expect(getCanonicalUrl(jlensSiteConfig, "en-US", "/support")).toBe(
       "https://jlensapp.com/support",
     );
+    expect(getCanonicalUrl(urgeZeroSiteConfig, "en-US", "/privacy")).toBe(
+      "https://urgezero.com/privacy",
+    );
     expect(() => assertPublicProject("skylens")).toThrow(
       "Unknown public project",
     );
@@ -71,6 +75,8 @@ describe("public URL contract", () => {
     process.env.PUBLIC_ROUTE_MODE = "root";
     process.env.PUBLIC_PROJECT_ID = "jlens";
     expect(getDedicatedPublicProjectId()).toBe("jlens");
+    process.env.PUBLIC_PROJECT_ID = "urge-zero";
+    expect(getDedicatedPublicProjectId()).toBe("urge-zero");
     process.env.PUBLIC_PROJECT_ID = "skylens";
     expect(() => getDedicatedPublicProjectId()).toThrow(
       "Unknown public project",
