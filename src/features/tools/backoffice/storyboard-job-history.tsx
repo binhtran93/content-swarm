@@ -54,9 +54,11 @@ export function StoryboardJobHistory({
                   className={`badge badge-sm ${
                     job.status === "ready"
                       ? "badge-success"
-                      : job.status === "failed"
-                        ? "badge-error"
-                        : "badge-warning"
+                      : job.status === "review"
+                        ? "badge-info"
+                        : job.status === "failed"
+                          ? "badge-error"
+                          : "badge-warning"
                   }`}
                 >
                   {job.status}

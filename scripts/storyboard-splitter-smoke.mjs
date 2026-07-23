@@ -1,8 +1,10 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
+import { mkdir, mkdtemp, rm, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
+import { ZipArchive } from "archiver";
 import sharp from "sharp";
 
 import { detectStoryboardPanels } from "../src/features/tools/service/detect-storyboard-panels.ts";
@@ -12,6 +14,7 @@ const workspace = await mkdtemp(path.join(os.tmpdir(), "storyboard-smoke-"));
 const input = path.join(workspace, "input.png");
 const rawDirectory = path.join(workspace, "raw");
 const outputDirectory = path.join(workspace, "enhanced");
+const zipPath = path.join(workspace, "panels.zip");
 const installation = path.resolve(".media-tools/realesrgan");
 
 try {
@@ -44,15 +47,26 @@ try {
   if (panels.length !== 4) {
     throw new Error(`Expected 4 panels, detected ${panels.length}.`);
   }
+  const cropBounds = panels.map((panel) => ({
+    x: panel.x + panel.inset,
+    y: panel.y + panel.inset,
+    width: panel.width - panel.inset * 2,
+    height: panel.height - panel.inset * 2,
+  }));
+  cropBounds[0] = {
+    ...cropBounds[0],
+    x: cropBounds[0].x + 5,
+    width: cropBounds[0].width - 5,
+  };
 
   await Promise.all(
-    panels.map((panel, index) =>
+    cropBounds.map((panel, index) =>
       sharp(input)
         .extract({
-          left: panel.x + panel.inset,
-          top: panel.y + panel.inset,
-          width: panel.width - panel.inset * 2,
-          height: panel.height - panel.inset * 2,
+          left: panel.x,
+          top: panel.y,
+          width: panel.width,
+          height: panel.height,
         })
         .png()
         .toFile(
@@ -86,11 +100,27 @@ try {
   const metadata = await sharp(
     path.join(outputDirectory, "panel-01.png"),
   ).metadata();
-  if (!metadata.width || metadata.width < 1000) {
+  if (metadata.width !== cropBounds[0].width * 4) {
     throw new Error("Real-ESRGAN did not produce a 4× output.");
   }
+  await new Promise((resolve, reject) => {
+    const output = createWriteStream(zipPath);
+    const archive = new ZipArchive({ zlib: { level: 9 } });
+    output.on("close", resolve);
+    output.on("error", reject);
+    archive.on("error", reject);
+    archive.pipe(output);
+    for (let index = 0; index < cropBounds.length; index += 1) {
+      const fileName = `panel-${String(index + 1).padStart(2, "0")}.png`;
+      archive.file(path.join(outputDirectory, fileName), { name: fileName });
+    }
+    void archive.finalize();
+  });
+  if ((await stat(zipPath)).size <= 0) {
+    throw new Error("ZIP output was not created.");
+  }
   console.log(
-    `Storyboard Splitter smoke test passed: ${panels.length} panels, first output ${metadata.width}×${metadata.height}.`,
+    `Storyboard Splitter smoke test passed: ${panels.length} reviewed panels, first output ${metadata.width}×${metadata.height}, ZIP created.`,
   );
 } finally {
   await rm(workspace, { recursive: true, force: true });

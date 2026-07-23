@@ -5,7 +5,9 @@ import { basename, extname } from "node:path";
 import sharp from "sharp";
 
 import {
+  storyboardCropBoundsSchema,
   storyboardJobNameSchema,
+  type PanelBounds,
   type StoryboardJobManifest,
 } from "@/features/tools/model/storyboard-splitter-job";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
@@ -18,7 +20,10 @@ import {
   storyboardJobPath,
   writeStoryboardJobManifest,
 } from "@/features/tools/service/local-tool-workspace.server";
-import { processStoryboard } from "@/features/tools/service/process-storyboard.server";
+import {
+  detectStoryboard,
+  processStoryboard,
+} from "@/features/tools/service/process-storyboard.server";
 import { ToolServiceError } from "@/features/tools/service/tool-service-error";
 
 const maximumUploadBytes = 25 * 1024 * 1024;
@@ -85,7 +90,7 @@ export async function createStoryboardJob(projectId: string, file: File) {
       basename(file.name, extname(file.name)).trim().slice(0, 100) ||
       "Storyboard";
     const manifest: StoryboardJobManifest = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       projectId,
       jobId,
       name: defaultName,
@@ -97,6 +102,8 @@ export async function createStoryboardJob(projectId: string, file: File) {
         height: metadata.height,
       },
       panels: [],
+      detectedBounds: [],
+      cropBounds: [],
       panelCount: 0,
       hasOverlay: false,
       hasZip: false,
@@ -105,7 +112,7 @@ export async function createStoryboardJob(projectId: string, file: File) {
       updatedAt: now,
     };
     await writeStoryboardJobManifest(manifest);
-    return processStoryboard(manifest);
+    return detectStoryboard(manifest);
   } catch (error) {
     if (error instanceof ToolServiceError) {
       await removeLocalStoryboardJob(projectId, jobId).catch(() => undefined);
@@ -144,6 +151,52 @@ export async function renameStoryboardJob(
   return updated;
 }
 
+export async function saveStoryboardCrops(
+  projectId: string,
+  jobId: string,
+  rectangles: PanelBounds[],
+) {
+  const manifest = await getStoryboardJob(projectId, jobId);
+  if (
+    !manifest.detectedBounds.length ||
+    !["review", "failed", "ready"].includes(manifest.status)
+  ) {
+    throw new ToolServiceError(
+      "invalid",
+      "Crop rectangles cannot be edited for this job.",
+    );
+  }
+  const cropBounds = validateCropBounds(manifest, rectangles);
+  const updated: StoryboardJobManifest = {
+    ...manifest,
+    status: manifest.status === "ready" ? "ready" : "review",
+    cropBounds,
+    panelCount: cropBounds.length,
+    error: null,
+    updatedAt: new Date().toISOString(),
+  };
+  await writeStoryboardJobManifest(updated);
+  return updated;
+}
+
+export async function processStoryboardJob(
+  projectId: string,
+  jobId: string,
+  rectangles: PanelBounds[],
+) {
+  const manifest = await getStoryboardJob(projectId, jobId);
+  if (
+    !manifest.detectedBounds.length ||
+    !["review", "failed", "ready"].includes(manifest.status)
+  ) {
+    throw new ToolServiceError(
+      "invalid",
+      "This storyboard cannot be processed from its current state.",
+    );
+  }
+  return processStoryboard(manifest, validateCropBounds(manifest, rectangles));
+}
+
 export async function deleteStoryboardJob(projectId: string, jobId: string) {
   await getStoryboardJob(projectId, jobId);
   try {
@@ -154,4 +207,23 @@ export async function deleteStoryboardJob(projectId: string, jobId: string) {
       "The local storyboard job could not be deleted.",
     );
   }
+}
+
+function validateCropBounds(
+  manifest: StoryboardJobManifest,
+  rectangles: PanelBounds[],
+) {
+  const parsed = storyboardCropBoundsSchema.parse(rectangles);
+  for (const rectangle of parsed) {
+    if (
+      rectangle.x + rectangle.width > manifest.source.width ||
+      rectangle.y + rectangle.height > manifest.source.height
+    ) {
+      throw new ToolServiceError(
+        "invalid",
+        "Every crop rectangle must stay inside the source image.",
+      );
+    }
+  }
+  return parsed;
 }

@@ -5,6 +5,13 @@ workflow. It detects bordered panels in a PNG or JPEG contact sheet, crops them
 with Sharp, enhances them with Real-ESRGAN, and provides individual PNG and ZIP
 downloads.
 
+After upload, the job pauses in **review**. Move a red rectangle by dragging
+inside it or resize it with the white edge or corner handles. The red rectangle
+is the exact final crop. Changes save automatically; **Cut and enhance** starts
+the native enhancement step.
+Completed jobs keep the editor enabled. Adjusting a completed job and choosing
+**Cut and enhance again** replaces its enhanced panels and ZIP.
+
 ## Setup
 
 Install the native enhancer once on each Mac that runs the tool:

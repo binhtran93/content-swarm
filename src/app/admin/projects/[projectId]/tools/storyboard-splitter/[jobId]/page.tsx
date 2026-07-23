@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { PageTitle } from "@/backoffice/components/ui/page-title";
+import { StoryboardCropEditor } from "@/features/tools/backoffice/storyboard-crop-editor";
 import { StoryboardJobDeleteButton } from "@/features/tools/backoffice/storyboard-job-delete-button";
 import { StoryboardJobNameForm } from "@/features/tools/backoffice/storyboard-job-name-form";
 import { getStoryboardJob } from "@/features/tools/service/storyboard-jobs.server";
@@ -85,23 +86,44 @@ export default async function StoryboardJobPage({
         </div>
       ) : null}
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Detection</h2>
-        <div className="border-base-300 bg-base-100 overflow-hidden rounded-2xl border p-3">
-          <Image
-            alt={
-              job.hasOverlay
-                ? "Storyboard with detected panel rectangles"
-                : "Uploaded storyboard"
-            }
-            className="h-auto w-full rounded-xl object-contain"
-            height={job.source.height}
-            src={`${artifactBase}/${job.hasOverlay ? "overlay" : "source"}`}
-            unoptimized
-            width={job.source.width}
+      {job.status !== "processing" && job.cropBounds.length ? (
+        <section className="space-y-3">
+          <div>
+            <h2 className="text-lg font-semibold">Review crop rectangles</h2>
+            <p className="text-base-content/60 mt-1 text-sm">
+              Drag a rectangle to move it, or select it and drag a white handle
+              to resize it. The red boundary is the exact final crop.
+            </p>
+          </div>
+          <StoryboardCropEditor
+            cropBounds={job.cropBounds}
+            hasExistingResults={job.status === "ready"}
+            jobId={jobId}
+            projectId={projectId}
+            sourceHeight={job.source.height}
+            sourceUrl={`${artifactBase}/source`}
+            sourceWidth={job.source.width}
           />
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">Detection</h2>
+          <div className="border-base-300 bg-base-100 overflow-hidden rounded-2xl border p-3">
+            <Image
+              alt={
+                job.hasOverlay
+                  ? "Storyboard with detected panel rectangles"
+                  : "Uploaded storyboard"
+              }
+              className="h-auto w-full rounded-xl object-contain"
+              height={job.source.height}
+              src={`${artifactBase}/${job.hasOverlay ? "overlay" : "source"}`}
+              unoptimized
+              width={job.source.width}
+            />
+          </div>
+        </section>
+      )}
 
       {job.status === "ready" ? (
         <section className="space-y-4">

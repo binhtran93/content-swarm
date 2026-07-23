@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -54,11 +54,34 @@ describe("local storyboard workspace", () => {
       storyboardJobPath("urge-zero", jobId, "..", "..", "outside.png"),
     ).toThrow(ToolServiceError);
   });
+
+  it("normalizes legacy version-one manifests when reading them", async () => {
+    await createStoryboardJobDirectory("urge-zero", jobId);
+    const legacy = {
+      ...readyManifest(),
+      schemaVersion: 1,
+    };
+    const versionOne: Record<string, unknown> = { ...legacy };
+    delete versionOne.detectedBounds;
+    delete versionOne.cropBounds;
+    await writeFile(
+      storyboardJobPath("urge-zero", jobId, "manifest.json"),
+      JSON.stringify(versionOne),
+      "utf8",
+    );
+
+    const normalized = await readStoryboardJobManifest("urge-zero", jobId);
+    expect(normalized.schemaVersion).toBe(2);
+    expect(normalized.detectedBounds).toEqual([
+      { x: 10, y: 10, width: 280, height: 210 },
+    ]);
+    expect(normalized.cropBounds).toEqual(normalized.detectedBounds);
+  });
 });
 
 function readyManifest(): StoryboardJobManifest {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     projectId: "urge-zero",
     jobId,
     name: "Urge storyboard",
@@ -78,6 +101,8 @@ function readyManifest(): StoryboardJobManifest {
         height: 824,
       },
     ],
+    detectedBounds: [{ x: 10, y: 10, width: 280, height: 210 }],
+    cropBounds: [{ x: 10, y: 10, width: 280, height: 210 }],
     panelCount: 1,
     hasOverlay: true,
     hasZip: true,
