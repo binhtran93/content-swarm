@@ -77,6 +77,26 @@ export function ProjectFormFields({
       </fieldset>
 
       {project ? (
+        <fieldset className="fieldset gap-1.5">
+          <legend className="fieldset-legend">
+            Content voice and tone
+            <span className="font-normal opacity-60">(optional)</span>
+          </legend>
+          <textarea
+            aria-label="Content voice and tone"
+            className="textarea min-h-32 w-full"
+            defaultValue={project.voiceTone}
+            maxLength={5_000}
+            name="voiceTone"
+            placeholder="Describe the writing voice to preserve for this project."
+          />
+          <p className="label">
+            Saved for this Project only. It is not used by any tool yet.
+          </p>
+        </fieldset>
+      ) : null}
+
+      {project ? (
         <>
           <fieldset className="fieldset gap-1.5">
             <legend className="fieldset-legend">App availability</legend>

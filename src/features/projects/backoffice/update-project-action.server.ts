@@ -25,6 +25,7 @@ export async function updateProjectAction(
     await updateProject(projectId, {
       name: String(formData.get("name") ?? ""),
       description: String(formData.get("description") ?? ""),
+      voiceTone: String(formData.get("voiceTone") ?? ""),
       acquisition,
       topics: String(formData.get("topics") ?? "")
         .split(/[\n,]/)

@@ -19,6 +19,7 @@ const project = {
   projectId: "subiq",
   name: "SubIQ",
   description: "Private product context",
+  voiceTone: "Direct, practical, and supportive.",
   topics: ["SaaS"],
   competitorDomains: ["competitor.com"],
   acquisition: {
@@ -45,6 +46,9 @@ describe("Project backoffice forms", () => {
 
     expect(screen.getByDisplayValue("subiq")).toBeDisabled();
     expect(screen.getByDisplayValue("SubIQ")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("Direct, practical, and supportive."),
+    ).toBeInTheDocument();
     expect(screen.getByDisplayValue("SaaS")).toBeInTheDocument();
     expect(screen.getByDisplayValue("competitor.com")).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Waitlist" })).toBeChecked();

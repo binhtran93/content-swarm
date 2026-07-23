@@ -21,6 +21,7 @@ export const projectDocumentSchema = z.object({
   ownerId: z.string().min(1),
   name: z.string().min(1).max(100),
   description: z.string().max(5_000),
+  voiceTone: z.string().max(5_000).default(""),
   topics,
   competitorDomains: competitorDomainsSchema.default([]),
   acquisition: projectAcquisitionSchema.default(defaultProjectAcquisition),

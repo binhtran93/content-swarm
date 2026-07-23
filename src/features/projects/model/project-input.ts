@@ -32,6 +32,7 @@ const topics = z
 const fields = {
   name: z.string().trim().min(1, "Name is required.").max(100),
   description: z.string().trim().max(5_000),
+  voiceTone: z.string().trim().max(5_000),
 };
 
 export const projectInputSchemas = {
@@ -39,12 +40,14 @@ export const projectInputSchemas = {
   create: z.object({
     projectId,
     ...fields,
+    voiceTone: fields.voiceTone.default(""),
     topics: topics.default([]),
     competitorDomains: competitorDomainsSchema.default([]),
     acquisition: projectAcquisitionSchema.default(defaultProjectAcquisition),
   }),
   update: z.object({
     ...fields,
+    voiceTone: fields.voiceTone.default(""),
     topics,
     competitorDomains: competitorDomainsSchema,
     acquisition: projectAcquisitionSchema,

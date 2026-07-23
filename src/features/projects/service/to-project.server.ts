@@ -13,6 +13,7 @@ export function toProject(
     projectId,
     name: document.name,
     description: document.description,
+    voiceTone: document.voiceTone,
     topics: document.topics,
     competitorDomains: document.competitorDomains,
     acquisition: document.acquisition,

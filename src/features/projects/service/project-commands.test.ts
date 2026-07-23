@@ -126,6 +126,7 @@ describe("Project commands and queries", () => {
       updateProject("subiq", {
         name: "Stolen",
         description: baseInput.description,
+        voiceTone: "",
         topics: [],
         competitorDomains: [],
         acquisition: defaultProjectAcquisition,
@@ -139,6 +140,7 @@ describe("Project commands and queries", () => {
     const updated = await updateProject("subiq", {
       name: "SubIQ Pro",
       description: "Updated private product context.",
+      voiceTone: "Direct and practical.",
       topics: ["SaaS", "Retention"],
       competitorDomains: ["https://Competitor.com/pricing"],
       acquisition: defaultProjectAcquisition,
@@ -147,6 +149,7 @@ describe("Project commands and queries", () => {
     expect(updated).toMatchObject({
       projectId: "subiq",
       name: "SubIQ Pro",
+      voiceTone: "Direct and practical.",
       topics: ["SaaS", "Retention"],
       competitorDomains: ["competitor.com"],
       acquisition: defaultProjectAcquisition,
@@ -211,6 +214,7 @@ describe("Project commands and queries", () => {
       updateProject("subiq", {
         name: "No change",
         description: baseInput.description,
+        voiceTone: "",
         topics: [],
         competitorDomains: [],
         acquisition: defaultProjectAcquisition,

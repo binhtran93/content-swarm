@@ -41,6 +41,7 @@ export async function updateProject(
         ...current,
         name: validated.name,
         description: validated.description,
+        voiceTone: validated.voiceTone,
         topics: validated.topics,
         competitorDomains: validated.competitorDomains,
         acquisition: validated.acquisition,

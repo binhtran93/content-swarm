@@ -26,6 +26,7 @@ describe("Prompt Studio page", () => {
       projectId: "urge-zero",
       name: "UrgeZero",
       description: "Private context",
+      voiceTone: "",
       topics: ["recovery"],
       competitorDomains: [],
       acquisition: {
