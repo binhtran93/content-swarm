@@ -47,7 +47,9 @@ describe("Prompt Studio page", () => {
 
     expect(getProjectContextMock).toHaveBeenCalledWith("urge-zero");
     expect(screen.getByText("Studio for UrgeZero")).toBeVisible();
-    expect(screen.queryByRole("link", { name: "← Tools" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "← Tools" }),
+    ).not.toBeInTheDocument();
   });
 
   it("uses the non-disclosing unavailable state", async () => {
