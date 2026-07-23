@@ -37,8 +37,8 @@ function storyboardLayout(script: string) {
   else columns = Math.ceil(Math.sqrt(sceneCount));
 
   const rows = Math.ceil(sceneCount / columns);
-  const widthUnits = columns * 3;
-  const heightUnits = rows * 4;
+  const widthUnits = columns * 9;
+  const heightUnits = rows * 16;
   const divisor = greatestCommonDivisor(widthUnits, heightUnits);
 
   return {
@@ -94,8 +94,13 @@ SHORT-VIDEO DIRECTION
 - Act as a highly creative director: use varied framing, visual metaphors, reaction shots, symbolic details, pattern interrupts, and purposeful transitions while staying completely faithful to the source.
 - Give each scene one clear story beat and one visually distinct action. Avoid repetitive compositions, poses, props, camera angles, and backgrounds.
 - Keep individual VOICEOVER lines concise so at least 10 scenes still feel natural within the short-video runtime.
-- The final scene must land on the source's own realization, takeaway, unresolved conflict, or question.
-- A short reflective question is allowed only when it follows naturally from the source. Do not add a generic engagement question.
+- The final scene is mandatory: make it a direct question card, not another illustrated story beat.
+- Use the source author's own direct question as the factual basis whenever one exists, but distill it into a broad audience-facing question about the central subject.
+- Write the final question to the viewer using “you,” not “I,” “he,” “she,” or “they.” It must make sense beyond this one story.
+- Do not include incidental dates, streak counts, day numbers, money amounts, names, or other one-off examples in the final question unless that specific detail is the source's central issue.
+- If the source has no direct question, write one short audience-facing question anchored to the source's central subject, conflict, or decision. Name the subject plainly; never use a vague narrative question such as “Where does he go now?”
+- The final VOICEOVER and ON_IMAGE_CAPTION must be that exact question. Keep it to 10 words or fewer.
+- The final VISUAL must be exactly: QUESTION CARD ONLY — solid black background, large white handwritten question, one thin red underline, no character, scenery, prop, icon, or extra text.
 
 CAPTION AND VISUAL RULES
 - ON_IMAGE_CAPTION is the exact text that will be drawn into that scene's image.
@@ -118,7 +123,7 @@ VISUAL: <one specific, drawable, non-explicit composition>
 
 Number later scenes sequentially as SCENE 02, SCENE 03, and so on.
 
-Before answering, silently verify every statement against the source, confirm the central subject is named plainly near the beginning, confirm there are at least 10 scenes, count the spoken words, estimate the timing, confirm the ending belongs to the source, and confirm every scene follows the required four-line format.`;
+Before answering, silently verify every statement against the source, confirm the central subject is named plainly near the beginning, confirm there are at least 10 scenes, count the spoken words, estimate the timing, confirm the final scene is a broad direct question card rather than a vague narrative question or a one-off milestone question, and confirm every scene follows the required four-line format.`;
 }
 
 export function buildStickmanStoryboardPrompt({
@@ -132,10 +137,10 @@ export function buildStickmanStoryboardPrompt({
   const layoutContract = layout
     ? `- Detected scene count: ${layout.sceneCount}.
 - Required grid: exactly ${layout.columns} columns × ${layout.rows} rows.
-- Required overall contact-sheet canvas ratio: ${layout.canvasRatio}. This ratio comes from ${layout.columns} columns of 3-unit-wide panels × ${layout.rows} rows of 4-unit-high panels.
+- Required overall contact-sheet canvas ratio: ${layout.canvasRatio}. This ratio comes from ${layout.columns} columns of 9-unit-wide panels × ${layout.rows} rows of 16-unit-high panels.
 - Draw exactly ${layout.sceneCount} bordered panels.${layout.unusedCells ? ` Leave the final ${layout.unusedCells} unused grid ${layout.unusedCells === 1 ? "cell" : "cells"} plain white and completely unbordered.` : ""}`
     : `- Count the SCENE blocks before drawing.
-- Choose a compact grid of equal 3:4 portrait panels. Calculate the overall contact-sheet ratio as (columns × 3):(rows × 4).`;
+- Choose a compact grid of equal 9:16 portrait panels. Calculate the overall contact-sheet ratio as (columns × 9):(rows × 16).`;
 
   return `You are a professional short-form video storyboard director and illustrator.
 
@@ -159,21 +164,22 @@ SCENE MAPPING
 - Do not add a cover, title card, logo card, duplicate panel, transition panel, call-to-action panel, or extra ending panel.
 - Each panel must illustrate only its matching VISUAL and emotional beat.
 - Use the matching ON_IMAGE_CAPTION exactly as written. Do not paraphrase, shorten, expand, correct, or invent captions.
+- The highest-numbered scene is the final panel and must be a question card, not an illustrated character scene.
+- For that final panel only: use a solid black background, render the exact ON_IMAGE_CAPTION as a large centered white handwritten question, add one thin red underline, and include no character, scenery, prop, icon, logo, panel number, or other text.
 
 CONTACT-SHEET GEOMETRY — STRICT
-- Every individual bordered panel must be a 3:4 portrait rectangle: for every 3 units of panel width, use exactly 4 units of panel height.
-- The overall contact sheet has its own ratio and is not necessarily 3:4. Its canvas ratio must follow the required grid calculation below.
+- Every individual bordered panel must be a 9:16 portrait rectangle: for every 9 units of panel width, use exactly 16 units of panel height.
+- The overall contact sheet has its own ratio and is not necessarily 9:16. Its canvas ratio must follow the required grid calculation below.
 ${layoutContract}
-- Every bordered panel must have exactly the same 3:4 portrait dimensions.
+- Every bordered panel must have exactly the same 9:16 portrait dimensions.
 - Arrange the panels in the required grid in left-to-right, top-to-bottom reading order.
-- Do not stretch panels into squares, landscape rectangles, 9:16 strips, tall narrow strips, or uneven sizes.
+- Do not stretch panels into squares, landscape rectangles, 3:4 rectangles, or uneven sizes.
 - Keep incomplete final-row space plain white and unbordered; never create empty or decorative panels.
 - Give every real panel its own fully closed, straight, dark rectangular border of consistent thickness.
 - Put a clear white gutter between every panel on all four sides.
 - Panel borders must not touch or share edges. Do not interrupt, round away, decorate, or hide any border.
 - Do not overlap panels. Do not let captions, characters, props, shadows, backgrounds, or effects cross a panel border or enter a gutter.
-- Keep captions, faces, characters, and essential action inside the central 75% of each panel's width. Leave the outer 12.5% on both sides free of essential details so the 3:4 panel can be cropped safely to 9:16.
-- Compose backgrounds so they can also be extended vertically when the panel is placed on a 9:16 short-video canvas.
+- Keep captions, faces, characters, and essential action inside the central 75% of each panel's width. Leave the outer 12.5% on both sides free of essential details.
 
 CAPTIONS AND TEXT
 - Reserve a clean caption area near the top of every panel.
@@ -202,7 +208,7 @@ CONTENT SAFETY
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
 FINAL QUALITY CHECK
-Silently verify that the sheet contains exactly one equal-size bordered 3:4 portrait panel per scene, the reading order matches the script, every caption is exact, all essential details stay inside the central 75% width, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
+Silently verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all essential details stay inside the central 75% width, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
 
 Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
 }

@@ -33,6 +33,17 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain("Act as a highly creative director");
     expect(prompt).toContain("Avoid repetitive compositions");
     expect(prompt).toContain(
+      "The final scene is mandatory: make it a direct question card",
+    );
+    expect(prompt).toContain(
+      "distill it into a broad audience-facing question",
+    );
+    expect(prompt).toContain("Do not include incidental dates, streak counts");
+    expect(prompt).toContain("such as “Where does he go now?”");
+    expect(prompt).toContain(
+      "solid black background, large white handwritten question",
+    );
+    expect(prompt).toContain(
       'use the word "porn" or "pornography" naturally in an early VOICEOVER',
     );
     expect(prompt).toContain("Do not sanitize, censor, euphemize");
@@ -58,7 +69,10 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain('"name": "UrgeZero"');
     expect(prompt).toContain('"script": "SCENE 01\\nVOICEOVER: This happened.');
     expect(prompt).toContain("exactly one panel for every scene");
-    expect(prompt).toContain("3:4 portrait rectangle");
+    expect(prompt).toContain("highest-numbered scene is the final panel");
+    expect(prompt).toContain("solid black background");
+    expect(prompt).toContain("one thin red underline");
+    expect(prompt).toContain("9:16 portrait rectangle");
     expect(prompt).toContain("fully closed, straight, dark rectangular border");
     expect(prompt).toContain("clear white gutter");
     expect(prompt).toContain("central 75% of each panel's width");
@@ -74,7 +88,7 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain("Output only the finished contact-sheet image");
   });
 
-  it("calculates a square 4 by 3 contact sheet for ten 3:4 scenes", () => {
+  it("calculates a 4 by 3 contact sheet for ten 9:16 scenes", () => {
     const script = Array.from(
       { length: 10 },
       (_, index) =>
@@ -85,13 +99,13 @@ describe("short-video storyboard prompt contracts", () => {
 
     expect(prompt).toContain("Detected scene count: 10");
     expect(prompt).toContain("exactly 4 columns × 3 rows");
-    expect(prompt).toContain("canvas ratio: 1:1");
+    expect(prompt).toContain("canvas ratio: 3:4");
     expect(prompt).toContain("Draw exactly 10 bordered panels");
     expect(prompt).toContain(
       "final 2 unused grid cells plain white and completely unbordered",
     );
     expect(prompt).toContain(
-      "Every bordered panel must have exactly the same 3:4",
+      "Every bordered panel must have exactly the same 9:16",
     );
     expect(prompt).toContain("Do not stretch panels into squares");
     expect(prompt).toContain("outer 12.5% on both sides");
