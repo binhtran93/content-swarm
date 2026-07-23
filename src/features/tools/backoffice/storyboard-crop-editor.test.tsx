@@ -86,6 +86,9 @@ describe("StoryboardCropEditor", () => {
       expect.stringMatching(/\/process$/),
       expect.objectContaining({ method: "POST" }),
     );
+    expect(
+      screen.getByRole("button", { name: "Cut and enhance" }),
+    ).toBeEnabled();
   });
 
   it("keeps editing and replacement processing enabled for ready jobs", () => {

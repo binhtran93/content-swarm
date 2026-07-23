@@ -211,6 +211,7 @@ export function StoryboardCropEditor({
       if (!response.ok || body.status === "failed") {
         throw new Error(body.error || "The storyboard could not be processed.");
       }
+      setProcessing(false);
       router.refresh();
     } catch (caught) {
       setError(

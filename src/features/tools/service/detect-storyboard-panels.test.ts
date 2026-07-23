@@ -41,7 +41,24 @@ function canvas(width: number, height: number) {
       }
     }
   };
-  return { pixels, rectangle };
+  const filledRectangle = (
+    x: number,
+    y: number,
+    rectangleWidth: number,
+    rectangleHeight: number,
+    shade = 40,
+  ) => {
+    for (let vertical = y; vertical < y + rectangleHeight; vertical += 1) {
+      for (
+        let horizontal = x;
+        horizontal < x + rectangleWidth;
+        horizontal += 1
+      ) {
+        pixels[vertical * width + horizontal] = shade;
+      }
+    }
+  };
+  return { pixels, rectangle, filledRectangle };
 }
 
 describe("detectStoryboardPanels", () => {
@@ -79,6 +96,7 @@ describe("detectStoryboardPanels", () => {
 
     expect(panels).toHaveLength(1);
     expect(panels[0]).toMatchObject({ x: 20, y: 22, width: 560, height: 436 });
+    expect(panels[0]?.inset).toBe(7);
   });
 
   it("bridges tiny gaps in otherwise clear panel borders", () => {
@@ -91,6 +109,24 @@ describe("detectStoryboardPanels", () => {
     expect(
       detectStoryboardPanels({ pixels, width: 500, height: 400 }),
     ).toHaveLength(1);
+  });
+
+  it("recovers a dark panel from a regular grid without adding blank cells", () => {
+    const { pixels, rectangle, filledRectangle } = canvas(600, 500);
+    rectangle(10, 10, 280, 210);
+    rectangle(310, 10, 280, 210);
+    rectangle(10, 240, 280, 210);
+    filledRectangle(310, 240, 280, 210);
+
+    const panels = detectStoryboardPanels({ pixels, width: 600, height: 500 });
+
+    expect(panels).toHaveLength(4);
+    expect(panels.at(-1)).toMatchObject({
+      x: 310,
+      y: 241,
+      width: 280,
+      height: 208,
+    });
   });
 
   it("returns no panels for an unbordered image", () => {
