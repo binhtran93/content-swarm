@@ -37,6 +37,10 @@ describe("AdminSidebar", () => {
       "aria-current",
       "page",
     );
+    expect(screen.getByRole("link", { name: "Tools" })).toHaveAttribute(
+      "href",
+      "/admin/projects/subiq/tools",
+    );
   });
 
   it("closes the mobile drawer with Escape", () => {
