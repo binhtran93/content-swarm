@@ -34,25 +34,17 @@ export default async function StoryboardJobPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <div>
-        <Link
-          className="link link-hover text-base-content/60 text-sm"
-          href={`/admin/projects/${projectId}/tools/storyboard-splitter`}
-        >
-          ← Storyboard Splitter
-        </Link>
-        <PageTitle
-          action={
-            <StoryboardJobDeleteButton
-              jobId={jobId}
-              jobName={job.name}
-              projectId={projectId}
-              redirectAfterDelete
-            />
-          }
-          title={job.name}
-        />
-      </div>
+      <PageTitle
+        action={
+          <StoryboardJobDeleteButton
+            jobId={jobId}
+            jobName={job.name}
+            projectId={projectId}
+            redirectAfterDelete
+          />
+        }
+        title={job.name}
+      />
 
       <div className="border-base-300 bg-base-100 rounded-2xl border p-5 shadow-sm">
         <StoryboardJobNameForm

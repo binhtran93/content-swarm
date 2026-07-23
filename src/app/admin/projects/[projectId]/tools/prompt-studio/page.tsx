@@ -31,15 +31,7 @@ export default async function PromptStudioPage({
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <Link
-          className="link link-hover text-base-content/60 text-sm"
-          href={`/admin/projects/${projectId}/tools`}
-        >
-          ← Tools
-        </Link>
-        <PageTitle title="Prompt Studio" />
-      </div>
+      <PageTitle title="Prompt Studio" />
       <PromptStudio project={project} />
     </div>
   );

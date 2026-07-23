@@ -47,14 +47,6 @@ export function PromptStudio({
 
   return (
     <div className="space-y-6">
-      <div className="alert alert-info">
-        <span>
-          This tool does not call AI or save your work. A copied prompt includes
-          {` ${project.name}'s `}private Project context and the text you enter;
-          review it before sharing it with another AI service.
-        </span>
-      </div>
-
       {copyError ? (
         <div className="alert alert-error" role="alert">
           <span>{copyError}</span>

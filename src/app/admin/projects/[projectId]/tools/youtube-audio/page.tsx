@@ -27,15 +27,7 @@ export default async function YoutubeAudioPage({
   const capability = await getYoutubeAudioCapability();
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div>
-        <Link
-          className="link link-hover text-base-content/60 text-sm"
-          href={`/admin/projects/${projectId}/tools`}
-        >
-          ← Tools
-        </Link>
-        <PageTitle title="YouTube Audio Extractor" />
-      </div>
+      <PageTitle title="YouTube Audio Extractor" />
       <YoutubeAudioExtractor
         available={capability.available}
         projectId={projectId}

@@ -35,15 +35,7 @@ export default async function StoryboardSplitterPage({
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div>
-        <Link
-          className="link link-hover text-base-content/60 text-sm"
-          href={`/admin/projects/${projectId}/tools`}
-        >
-          ← Tools
-        </Link>
-        <PageTitle title="Storyboard Splitter" />
-      </div>
+      <PageTitle title="Storyboard Splitter" />
       <StoryboardUploader
         available={capability.available}
         projectId={projectId}
