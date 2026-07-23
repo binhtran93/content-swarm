@@ -1,8 +1,8 @@
 import "server-only";
 
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
+import sharp, { type OverlayOptions } from "sharp";
 
 import type {
   PanelBounds,
@@ -20,6 +20,12 @@ import { runRealEsrgan } from "@/features/tools/service/run-real-esrgan.server";
 import { ToolServiceError } from "@/features/tools/service/tool-service-error";
 
 const maximumInputPixels = 40_000_000;
+
+export type StoryboardEndCardBranding = {
+  projectId: string;
+  name: string;
+  description: string;
+};
 
 export async function detectStoryboard(
   manifest: StoryboardJobManifest,
@@ -96,6 +102,7 @@ export async function detectStoryboard(
 export async function processStoryboard(
   manifest: StoryboardJobManifest,
   rectangles: PanelBounds[],
+  branding?: StoryboardEndCardBranding,
 ): Promise<StoryboardJobManifest> {
   const { projectId, jobId } = manifest;
   const sourcePath = storyboardJobPath(projectId, jobId, "source.png");
@@ -148,6 +155,15 @@ export async function processStoryboard(
       inputDirectory: rawDirectory,
       outputDirectory: enhancedDirectory,
     });
+    if (branding) {
+      await brandFinalQuestionCard({
+        panelPath: path.join(
+          enhancedDirectory,
+          `panel-${String(rawPanels.length).padStart(2, "0")}.png`,
+        ),
+        branding,
+      });
+    }
 
     const panels: StoryboardPanel[] = await Promise.all(
       rawPanels.map(async (panel) => {
@@ -204,6 +220,183 @@ export async function processStoryboard(
     await writeStoryboardJobManifest(failed);
     return failed;
   }
+}
+
+export async function brandFinalQuestionCard({
+  panelPath,
+  branding,
+}: {
+  panelPath: string;
+  branding: StoryboardEndCardBranding;
+}) {
+  if (!(await isBlackEndCard(panelPath))) return;
+
+  const metadata = await sharp(panelPath).metadata();
+  if (!metadata.width || !metadata.height) return;
+
+  const logo =
+    (await readProjectAsset(branding.projectId, "logo-full.png")) ??
+    (await readProjectAsset(branding.projectId, "logo.png"));
+  if (!logo) return;
+  const appStoreIcon = await readSharedAsset("appstore.png");
+  const googlePlayIcon = await readSharedAsset("google-play.png");
+
+  const { width, height } = metadata;
+  const margin = Math.max(28, Math.round(width * 0.07));
+  const logoSize = Math.max(
+    48,
+    Math.round(Math.min(width * 0.1, height * 0.11)),
+  );
+  const titleSize = Math.max(
+    24,
+    Math.round(Math.min(width * 0.042, height * 0.06)),
+  );
+  const descriptionSize = Math.max(
+    16,
+    Math.round(Math.min(width * 0.027, height * 0.032)),
+  );
+  const storeIconSize = Math.max(
+    32,
+    Math.round(Math.min(width * 0.048, height * 0.04)),
+  );
+  const storeIconGap = Math.max(10, Math.round(width * 0.018));
+  const storeIconTop = height - margin - storeIconSize;
+  const descriptionLines = wrapEndCardDescription(branding.description);
+  const descriptionGap = Math.max(14, Math.round(titleSize * 0.42));
+  const descriptionLineHeight = descriptionSize + 8;
+  const descriptionHeight =
+    descriptionGap + descriptionLines.length * descriptionLineHeight;
+  const titleY =
+    storeIconTop - Math.max(16, Math.round(height * 0.018)) - descriptionHeight;
+  const logoTop = Math.max(
+    margin,
+    titleY - titleSize - logoSize - Math.max(14, Math.round(width * 0.018)),
+  );
+  const brandText = Buffer.from(`
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <text x="${Math.round(width / 2)}" y="${titleY}" fill="#ffffff" font-family="Arial, sans-serif" font-size="${titleSize}" font-weight="700" text-anchor="middle">${escapeXml(branding.name)}</text>
+      ${descriptionLines
+        .map(
+          (line, index) =>
+            `<text x="${Math.round(width / 2)}" y="${titleY + descriptionGap + descriptionSize + descriptionLineHeight * index}" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="${descriptionSize}" text-anchor="middle">${escapeXml(line)}</text>`,
+        )
+        .join("")}
+    </svg>`);
+  const composites: OverlayOptions[] = [
+    {
+      input: brandText,
+      top: 0,
+      left: 0,
+    },
+  ];
+
+  if (logo) {
+    composites.push({
+      input: await roundedBrandThumbnail(logo, logoSize),
+      top: logoTop,
+      left: Math.round((width - logoSize) / 2),
+    });
+  }
+
+  const storeIcons: Array<NonNullable<typeof appStoreIcon>> = [];
+  if (appStoreIcon) storeIcons.push(appStoreIcon);
+  if (googlePlayIcon) storeIcons.push(googlePlayIcon);
+  const storeRowWidth =
+    storeIcons.length * storeIconSize +
+    Math.max(0, storeIcons.length - 1) * storeIconGap;
+  let storeIconLeft = Math.round((width - storeRowWidth) / 2);
+  for (const storeIcon of storeIcons) {
+    composites.push({
+      input: await sharp(storeIcon)
+        .resize({ width: storeIconSize, height: storeIconSize, fit: "contain" })
+        .png()
+        .toBuffer(),
+      top: storeIconTop,
+      left: storeIconLeft,
+    });
+    storeIconLeft += storeIconSize + storeIconGap;
+  }
+
+  const branded = await sharp(panelPath)
+    .composite(composites)
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  await sharp(branded).png({ compressionLevel: 9 }).toFile(panelPath);
+}
+
+async function roundedBrandThumbnail(input: Buffer, size: number) {
+  const radius = Math.max(12, Math.round(size * 0.18));
+  const mask = Buffer.from(
+    `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg"><rect width="${size}" height="${size}" rx="${radius}" fill="#ffffff" /></svg>`,
+  );
+  return sharp(input)
+    .resize({ width: size, height: size, fit: "cover" })
+    .composite([{ input: mask, blend: "dest-in" }])
+    .png()
+    .toBuffer();
+}
+
+async function isBlackEndCard(panelPath: string) {
+  const { data } = await sharp(panelPath)
+    .resize({ width: 100, withoutEnlargement: true })
+    .flatten({ background: "#000000" })
+    .greyscale()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const darkPixels = [...data].filter((pixel) => pixel < 48).length;
+  return darkPixels / data.length >= 0.6;
+}
+
+async function readProjectAsset(projectId: string, filename: string) {
+  try {
+    return await readFile(
+      path.join(process.cwd(), "public", projectId, filename),
+    );
+  } catch {
+    return null;
+  }
+}
+
+async function readSharedAsset(filename: string) {
+  try {
+    return await readFile(
+      path.join(process.cwd(), "public", "shared", filename),
+    );
+  } catch {
+    return null;
+  }
+}
+
+function wrapEndCardDescription(description: string) {
+  const words = description.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let line = "";
+  for (const word of words) {
+    const next = line ? `${line} ${word}` : word;
+    if (next.length > 42 && line) {
+      lines.push(line);
+      line = word;
+      if (lines.length === 2) break;
+    } else {
+      line = next;
+    }
+  }
+  if (line && lines.length < 2) lines.push(line);
+  return lines;
+}
+
+function escapeXml(value: string) {
+  return value.replace(/[<>&"']/g, (character) => {
+    return (
+      {
+        "<": "&lt;",
+        ">": "&gt;",
+        "&": "&amp;",
+        '"': "&quot;",
+        "'": "&apos;",
+      }[character] ?? character
+    );
+  });
 }
 
 export async function extractRawPanels({

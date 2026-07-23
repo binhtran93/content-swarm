@@ -184,7 +184,10 @@ export async function processStoryboardJob(
   jobId: string,
   rectangles: PanelBounds[],
 ) {
-  const manifest = await getStoryboardJob(projectId, jobId);
+  const [manifest, project] = await Promise.all([
+    getStoryboardJob(projectId, jobId),
+    getProjectContext(projectId),
+  ]);
   if (
     !manifest.detectedBounds.length ||
     !["review", "failed", "ready"].includes(manifest.status)
@@ -194,7 +197,11 @@ export async function processStoryboardJob(
       "This storyboard cannot be processed from its current state.",
     );
   }
-  return processStoryboard(manifest, validateCropBounds(manifest, rectangles));
+  return processStoryboard(manifest, validateCropBounds(manifest, rectangles), {
+    projectId: project.projectId,
+    name: project.name,
+    description: project.description,
+  });
 }
 
 export async function deleteStoryboardJob(projectId: string, jobId: string) {

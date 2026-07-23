@@ -11,6 +11,7 @@ import {
   writeStoryboardJobManifest,
 } from "@/features/tools/service/local-tool-workspace.server";
 import {
+  brandFinalQuestionCard,
   detectStoryboard,
   extractRawPanels,
 } from "@/features/tools/service/process-storyboard.server";
@@ -76,6 +77,36 @@ describe("storyboard processing stages", () => {
     await expect(
       sharp(path.join(rawDirectory, "panel-01.png")).metadata(),
     ).resolves.toMatchObject({ width: 80, height: 60, format: "png" });
+  });
+
+  it("adds real Project branding to a final black question card", async () => {
+    const panelPath = path.join(workspace, "end-card.png");
+    await sharp({
+      create: {
+        width: 360,
+        height: 640,
+        channels: 3,
+        background: "#000000",
+      },
+    })
+      .png()
+      .toFile(panelPath);
+
+    await brandFinalQuestionCard({
+      panelPath,
+      branding: {
+        projectId: "urge-zero",
+        name: "UrgeZero",
+        description: "Build healthier habits and take back control.",
+      },
+    });
+
+    const { data } = await sharp(panelPath)
+      .resize({ width: 80 })
+      .greyscale()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    expect([...data].some((pixel) => pixel > 200)).toBe(true);
   });
 });
 
