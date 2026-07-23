@@ -15,7 +15,7 @@ const input = path.join(workspace, "input.png");
 const rawDirectory = path.join(workspace, "raw");
 const outputDirectory = path.join(workspace, "enhanced");
 const zipPath = path.join(workspace, "panels.zip");
-const installation = path.resolve(".media-tools/realesrgan");
+const installation = path.resolve("vendor/media-tools/realesrgan/darwin-arm64");
 
 try {
   await Promise.all([

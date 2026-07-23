@@ -12,13 +12,11 @@ the native enhancement step.
 Completed jobs keep the editor enabled. Adjusting a completed job and choosing
 **Cut and enhance again** replaces its enhanced panels and ZIP.
 
-## Setup
+## Bundled native tool
 
-Install the native enhancer once on each Mac that runs the tool:
-
-```bash
-npm run tools:setup
-```
+The required Apple silicon macOS Real-ESRGAN executable and x4 animation model
+are committed under `vendor/media-tools/realesrgan/darwin-arm64`. No separate
+tool installation is required.
 
 Generated jobs default to `.local-tools`. Override the location when the
 repository disk is unsuitable:
@@ -27,8 +25,7 @@ repository disk is unsuitable:
 MEDIA_TOOLS_WORKSPACE_DIR=/absolute/path/to/local-tool-workspace
 ```
 
-Both the generated workspace and downloaded native executable are ignored by
-Git. They are not uploaded to Firebase or available on another deployment.
+Generated workspaces are ignored by Git and are not uploaded to Firebase.
 
 ## Verification
 

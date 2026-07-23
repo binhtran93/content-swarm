@@ -10,7 +10,6 @@
     "dev": "next dev",
     "build": "next build && node scripts/prepare-standalone.mjs",
     "start": "node scripts/start-standalone.mjs",
-    "tools:setup": "node scripts/setup-media-tools.mjs",
     "tools:smoke": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/storyboard-splitter-smoke.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

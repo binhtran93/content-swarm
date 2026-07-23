@@ -32,7 +32,7 @@ export function mediaToolsWorkspaceRoot() {
 export function mediaToolsInstallationRoot() {
   return path.join(
     /*turbopackIgnore: true*/ process.cwd(),
-    ".media-tools/realesrgan",
+    "vendor/media-tools/realesrgan/darwin-arm64",
   );
 }
 
@@ -48,7 +48,10 @@ export async function getLocalMediaToolsCapability() {
   } catch {
     return {
       available: false,
-      message: "Run npm run tools:setup to install the local image enhancer.",
+      message:
+        process.platform === "darwin" && process.arch === "arm64"
+          ? "The bundled local image enhancer is unavailable."
+          : "Storyboard Splitter requires an Apple silicon Mac.",
     } as const;
   }
 }
