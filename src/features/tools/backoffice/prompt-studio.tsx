@@ -127,7 +127,7 @@ export function PromptStudio({
               </h2>
               <p className="text-base-content/60 mt-1 text-sm leading-6">
                 Paste the AI response from Step 1. The generated prompt locks
-                the art style and produces splitter-friendly 9:16 panels.
+                the art style and produces splitter-friendly square panels.
               </p>
             </div>
 

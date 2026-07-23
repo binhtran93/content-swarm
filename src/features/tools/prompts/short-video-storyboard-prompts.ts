@@ -29,23 +29,22 @@ function storyboardLayout(script: string) {
   if (!sceneCount) return null;
 
   let columns: number;
-  if (sceneCount <= 4) columns = 2;
+  if (sceneCount === 1) columns = 1;
+  else if (sceneCount <= 4) columns = 2;
   else if (sceneCount <= 9) columns = 3;
   else if (sceneCount <= 16) columns = 4;
   else if (sceneCount <= 25) columns = 5;
   else columns = Math.ceil(Math.sqrt(sceneCount));
 
   const rows = Math.ceil(sceneCount / columns);
-  const widthUnits = columns * 9;
-  const heightUnits = rows * 16;
-  const divisor = greatestCommonDivisor(widthUnits, heightUnits);
+  const divisor = greatestCommonDivisor(columns, rows);
 
   return {
     sceneCount,
     columns,
     rows,
     unusedCells: columns * rows - sceneCount,
-    canvasRatio: `${widthUnits / divisor}:${heightUnits / divisor}`,
+    canvasRatio: `${columns / divisor}:${rows / divisor}`,
   };
 }
 
@@ -77,6 +76,9 @@ STORY AND FACTUAL RULES
 - The source may come from Reddit or any other platform. Do not mention the platform or say you found or read a post unless the platform is essential to understanding the story.
 - Preserve only facts, emotions, events, conflicts, memorable wording, realizations, and questions supported by the source.
 - Do not infer demographic details, motives, diagnoses, consequences, or outcomes that the source does not establish.
+- Identify the source's central subject and name it plainly near the beginning. Do not hide the main issue behind vague words such as "it," "this," "the problem," or "a bad habit."
+- Preserve direct, non-graphic subject words used by the source. If the source is about porn or pornography, use the word "porn" or "pornography" naturally in an early VOICEOVER and an early ON_IMAGE_CAPTION so the topic is unmistakable.
+- Keep that central subject anchored at important turns and in the ending when it remains relevant. Do not sanitize, censor, euphemize, or write "p*rn."
 - Keep the story primary. Include advice only when the source contains advice.
 - Preserve the source author's own realization, unresolved conflict, or question. Never manufacture a resolution or replace it with your own lesson.
 - Do not exaggerate, add drama, cite studies, over-explain psychology, use a generic motivational quote, or add a promotional call to action.
@@ -99,6 +101,7 @@ CAPTION AND VISUAL RULES
 - Captions should reinforce the beat without copying a long VOICEOVER sentence.
 - Every VISUAL must describe one concrete, drawable composition synchronized with that scene's VOICEOVER.
 - Keep visuals suitable for a minimalist stick-figure illustration.
+- Text may name a sensitive subject directly when the source does. Visual safety applies to the depicted imagery, not to accurate non-graphic words such as "porn" or "pornography."
 - Depict sexual, violent, self-harm, or otherwise sensitive material only through safe, non-explicit symbols such as blurred screens, silhouettes, icons, environmental details, or character reactions.
 
 REQUIRED OUTPUT FORMAT
@@ -113,7 +116,7 @@ VISUAL: <one specific, drawable, non-explicit composition>
 
 Number later scenes sequentially as SCENE 02, SCENE 03, and so on.
 
-Before answering, silently verify every statement against the source, confirm there are at least 10 scenes, count the spoken words, estimate the timing, confirm the ending belongs to the source, and confirm every scene follows the required four-line format.`;
+Before answering, silently verify every statement against the source, confirm the central subject is named plainly near the beginning, confirm there are at least 10 scenes, count the spoken words, estimate the timing, confirm the ending belongs to the source, and confirm every scene follows the required four-line format.`;
 }
 
 export function buildStickmanStoryboardPrompt({
@@ -127,10 +130,10 @@ export function buildStickmanStoryboardPrompt({
   const layoutContract = layout
     ? `- Detected scene count: ${layout.sceneCount}.
 - Required grid: exactly ${layout.columns} columns × ${layout.rows} rows.
-- Required overall contact-sheet canvas ratio: ${layout.canvasRatio}. This ratio comes from ${layout.columns} columns of 9-unit-wide panels and ${layout.rows} rows of 16-unit-high panels.
+- Required overall contact-sheet canvas ratio: ${layout.canvasRatio}. This ratio comes directly from ${layout.columns} columns × ${layout.rows} rows of equal square panels.
 - Draw exactly ${layout.sceneCount} bordered panels.${layout.unusedCells ? ` Leave the final ${layout.unusedCells} unused grid ${layout.unusedCells === 1 ? "cell" : "cells"} plain white and completely unbordered.` : ""}`
     : `- Count the SCENE blocks before drawing.
-- Choose columns and rows so every panel remains exactly 9:16. Calculate the overall contact-sheet ratio as (columns × 9):(rows × 16).`;
+- Choose a compact grid of equal square panels. Calculate the overall contact-sheet ratio as columns:rows.`;
 
   return `You are a professional short-form video storyboard director and illustrator.
 
@@ -156,23 +159,24 @@ SCENE MAPPING
 - Use the matching ON_IMAGE_CAPTION exactly as written. Do not paraphrase, shorten, expand, correct, or invent captions.
 
 CONTACT-SHEET GEOMETRY — STRICT
-- IMPORTANT: 9:16 applies to EACH INDIVIDUAL PANEL. It does not apply to the overall contact-sheet image.
-- Never make the whole contact sheet 9:16 unless the required grid calculation below explicitly produces 9:16.
+- Every individual bordered panel must be a 1:1 square with exactly equal width and height.
+- The overall contact sheet is not required to be square. Its canvas ratio must follow the required square-panel grid calculation below.
 ${layoutContract}
-- Every bordered panel must be an equal-size 9:16 portrait frame: for every 9 units of panel width, use exactly 16 units of panel height.
+- Every bordered panel must have exactly the same square dimensions.
 - Arrange the panels in the required grid in left-to-right, top-to-bottom reading order.
-- Do not squeeze extra columns into a portrait canvas. Do not stretch tall narrow strips to fill the overall image.
+- Do not stretch panels into portrait rectangles, landscape rectangles, tall narrow strips, or uneven sizes.
 - Keep incomplete final-row space plain white and unbordered; never create empty or decorative panels.
 - Give every real panel its own fully closed, straight, dark rectangular border of consistent thickness.
 - Put a clear white gutter between every panel on all four sides.
 - Panel borders must not touch or share edges. Do not interrupt, round away, decorate, or hide any border.
 - Do not overlap panels. Do not let captions, characters, props, shadows, backgrounds, or effects cross a panel border or enter a gutter.
-- Keep each panel's important action inside the central safe area. Avoid placing essential details in the bottom 18% or rightmost 12%, where short-video interface controls may cover them.
+- Keep each panel's important action centered with comfortable space around it so the square crop can be placed cleanly in a vertical short-video composition.
 
 CAPTIONS AND TEXT
 - Reserve a clean caption area near the top of every panel.
 - Render the exact ON_IMAGE_CAPTION clearly, with high contrast, on no more than two lines.
 - Use a consistent friendly hand-lettered marker style that remains easy to read at phone size.
+- Render direct non-graphic subject words exactly as supplied, including "porn" or "pornography." Do not censor them, replace them with vague wording, or remove them because the accompanying imagery is non-explicit.
 - Apart from the supplied caption, include text only when a short source-supported number or prop label is essential to the VISUAL, such as "$15,000" on a banking screen.
 - Never add speech bubbles, thought text, watermarks, panel numbers, logos, hashtags, subtitles, or decorative words unless the scene explicitly requires them.
 
@@ -190,11 +194,12 @@ LOCKED ART STYLE
 
 CONTENT SAFETY
 - Keep every image safe for a general social-media audience.
+- Apply these safety restrictions to imagery only. They do not prohibit accurate written references to a sensitive subject.
 - Represent sexual or otherwise sensitive material only symbolically and non-explicitly through blurred generic screens, silhouettes, icons, environmental cues, or character reactions.
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
 FINAL QUALITY CHECK
-Silently verify that the sheet contains exactly one bordered 9:16 panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
+Silently verify that the sheet contains exactly one equal-size bordered 1:1 square panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
 
 Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
 }
