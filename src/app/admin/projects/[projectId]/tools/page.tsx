@@ -28,7 +28,7 @@ export default async function ToolsPage({
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <Link
           className="card border-base-300 bg-base-100 group border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-          href={`/admin/projects/${projectId}/tools/prompt-studio`}
+          href={`/admin/projects/${projectId}/tools/chat-story-studio`}
         >
           <div className="card-body">
             <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-xl">
@@ -44,10 +44,38 @@ export default async function ToolsPage({
                 <path d="M8 8h8M8 12h5" />
               </svg>
             </div>
-            <h2 className="card-title mt-3">Prompt Studio</h2>
+            <h2 className="card-title mt-3">Chat Story Studio</h2>
             <p className="text-base-content/65 text-sm leading-6">
-              Build Project-aware prompts for short-video scripts and consistent
-              stickman storyboards.
+              Turn one story seed into a strict chat script, animated 9:16
+              preview, and downloadable MP4.
+            </p>
+            <div className="card-actions mt-3 justify-end">
+              <span className="btn btn-primary btn-sm">Open tool</span>
+            </div>
+          </div>
+        </Link>
+        <Link
+          className="card border-base-300 bg-base-100 group border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          href={`/admin/projects/${projectId}/tools/stickman-studio`}
+        >
+          <div className="card-body">
+            <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-xl">
+              <svg
+                aria-hidden="true"
+                className="size-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="5" r="2.5" />
+                <path d="M12 8v6m0-3-4-2m4 2 4-2m-4 5-3 5m3-5 3 5" />
+              </svg>
+            </div>
+            <h2 className="card-title mt-3">Stickman Studio</h2>
+            <p className="text-base-content/65 text-sm leading-6">
+              Build Project-aware short-video scripts and consistent stickman
+              storyboard prompts.
             </p>
             <div className="card-actions mt-3 justify-end">
               <span className="btn btn-primary btn-sm">Open tool</span>

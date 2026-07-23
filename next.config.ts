@@ -3,7 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
-  serverExternalPackages: ["archiver", "sharp"],
+  serverExternalPackages: [
+    "@remotion/bundler",
+    "@remotion/renderer",
+    "archiver",
+    "sharp",
+  ],
   async redirects() {
     return [
       {

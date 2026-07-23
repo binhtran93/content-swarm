@@ -8,15 +8,23 @@ vi.mock("@/features/projects/service/get-project-context.server", () => ({
 }));
 
 describe("Project tools page", () => {
-  it("links to the Project-aware Prompt Studio", async () => {
+  it("links to both Project-aware story studios", async () => {
     render(
       await ToolsPage({
         params: Promise.resolve({ projectId: "urge-zero" }),
       }),
     );
-    expect(screen.getByRole("link", { name: /Prompt Studio/ })).toHaveAttribute(
+    expect(
+      screen.getByRole("link", { name: /Chat Story Studio/ }),
+    ).toHaveAttribute(
       "href",
-      "/admin/projects/urge-zero/tools/prompt-studio",
+      "/admin/projects/urge-zero/tools/chat-story-studio",
+    );
+    expect(
+      screen.getByRole("link", { name: /Stickman Studio/ }),
+    ).toHaveAttribute(
+      "href",
+      "/admin/projects/urge-zero/tools/stickman-studio",
     );
   });
 

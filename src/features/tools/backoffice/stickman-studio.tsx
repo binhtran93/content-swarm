@@ -10,7 +10,7 @@ import {
 
 type CopyTarget = "script" | "storyboard";
 
-export function PromptStudio({
+export function StickmanStudio({
   project,
 }: {
   project: Pick<Project, "name" | "description" | "topics">;

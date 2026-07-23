@@ -1,15 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import PromptStudioPage from "@/app/admin/projects/[projectId]/tools/prompt-studio/page";
+import StickmanStudioPage from "@/app/admin/projects/[projectId]/tools/stickman-studio/page";
 import { getProjectContext } from "@/features/projects/service/get-project-context.server";
 
 vi.mock("@/features/projects/service/get-project-context.server", () => ({
   getProjectContext: vi.fn(),
 }));
 
-vi.mock("@/features/tools/backoffice/prompt-studio", () => ({
-  PromptStudio: ({ project }: { project: { name: string } }) => (
+vi.mock("@/features/tools/backoffice/stickman-studio", () => ({
+  StickmanStudio: ({ project }: { project: { name: string } }) => (
     <div>Studio for {project.name}</div>
   ),
 }));
@@ -20,7 +20,7 @@ vi.mock("@/backoffice/components/ui/page-title", () => ({
 
 const getProjectContextMock = vi.mocked(getProjectContext);
 
-describe("Prompt Studio page", () => {
+describe("Stickman Studio page", () => {
   it("loads the active Project context", async () => {
     getProjectContextMock.mockResolvedValueOnce({
       projectId: "urge-zero",
@@ -41,7 +41,7 @@ describe("Prompt Studio page", () => {
     });
 
     render(
-      await PromptStudioPage({
+      await StickmanStudioPage({
         params: Promise.resolve({ projectId: "urge-zero" }),
       }),
     );
@@ -57,7 +57,7 @@ describe("Prompt Studio page", () => {
     getProjectContextMock.mockRejectedValueOnce(new Error("Unavailable"));
 
     render(
-      await PromptStudioPage({
+      await StickmanStudioPage({
         params: Promise.resolve({ projectId: "unknown" }),
       }),
     );

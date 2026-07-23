@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PromptStudio } from "@/features/tools/backoffice/prompt-studio";
+import { StickmanStudio } from "@/features/tools/backoffice/stickman-studio";
 
 const project = {
   name: "UrgeZero",
@@ -9,7 +9,7 @@ const project = {
   topics: ["recovery"],
 };
 
-describe("PromptStudio", () => {
+describe("StickmanStudio", () => {
   const writeText = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe("PromptStudio", () => {
   });
 
   it("builds and copies a Project-aware script prompt", async () => {
-    render(<PromptStudio project={project} />);
+    render(<StickmanStudio project={project} />);
 
     expect(
       screen.getByRole("button", { name: "Copy script prompt" }),
@@ -48,7 +48,7 @@ describe("PromptStudio", () => {
   });
 
   it("rebuilds the storyboard prompt when the pasted AI response changes", () => {
-    render(<PromptStudio project={project} />);
+    render(<StickmanStudio project={project} />);
     const response = screen.getByLabelText("AI scene-script response");
 
     fireEvent.change(response, {
@@ -77,7 +77,7 @@ describe("PromptStudio", () => {
       configurable: true,
       value: undefined,
     });
-    render(<PromptStudio project={project} />);
+    render(<StickmanStudio project={project} />);
     fireEvent.change(screen.getByLabelText("Source story or post"), {
       target: { value: "Source" },
     });
