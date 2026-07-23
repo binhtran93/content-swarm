@@ -8,6 +8,18 @@ vi.mock("@/features/projects/service/get-project-context.server", () => ({
 }));
 
 describe("Project tools page", () => {
+  it("links to the Project-aware Prompt Studio", async () => {
+    render(
+      await ToolsPage({
+        params: Promise.resolve({ projectId: "urge-zero" }),
+      }),
+    );
+    expect(screen.getByRole("link", { name: /Prompt Studio/ })).toHaveAttribute(
+      "href",
+      "/admin/projects/urge-zero/tools/prompt-studio",
+    );
+  });
+
   it("links to the YouTube Audio Extractor", async () => {
     render(
       await ToolsPage({
