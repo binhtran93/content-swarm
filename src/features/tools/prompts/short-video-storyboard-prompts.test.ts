@@ -58,10 +58,10 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain('"name": "UrgeZero"');
     expect(prompt).toContain('"script": "SCENE 01\\nVOICEOVER: This happened.');
     expect(prompt).toContain("exactly one panel for every scene");
-    expect(prompt).toContain("1:1 square with exactly equal width and height");
+    expect(prompt).toContain("3:4 portrait rectangle");
     expect(prompt).toContain("fully closed, straight, dark rectangular border");
     expect(prompt).toContain("clear white gutter");
-    expect(prompt).toContain("important action centered");
+    expect(prompt).toContain("central 75% of each panel's width");
     expect(prompt).toContain("round white heads");
     expect(prompt).toContain(
       'Render direct non-graphic subject words exactly as supplied, including "porn"',
@@ -74,7 +74,7 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain("Output only the finished contact-sheet image");
   });
 
-  it("calculates a 4 by 3 contact sheet for ten square scenes", () => {
+  it("calculates a square 4 by 3 contact sheet for ten 3:4 scenes", () => {
     const script = Array.from(
       { length: 10 },
       (_, index) =>
@@ -85,12 +85,15 @@ describe("short-video storyboard prompt contracts", () => {
 
     expect(prompt).toContain("Detected scene count: 10");
     expect(prompt).toContain("exactly 4 columns × 3 rows");
-    expect(prompt).toContain("canvas ratio: 4:3");
+    expect(prompt).toContain("canvas ratio: 1:1");
     expect(prompt).toContain("Draw exactly 10 bordered panels");
     expect(prompt).toContain(
       "final 2 unused grid cells plain white and completely unbordered",
     );
-    expect(prompt).toContain("Every bordered panel must have exactly the same");
-    expect(prompt).toContain("Do not stretch panels into portrait rectangles");
+    expect(prompt).toContain(
+      "Every bordered panel must have exactly the same 3:4",
+    );
+    expect(prompt).toContain("Do not stretch panels into squares");
+    expect(prompt).toContain("outer 12.5% on both sides");
   });
 });

@@ -37,14 +37,16 @@ function storyboardLayout(script: string) {
   else columns = Math.ceil(Math.sqrt(sceneCount));
 
   const rows = Math.ceil(sceneCount / columns);
-  const divisor = greatestCommonDivisor(columns, rows);
+  const widthUnits = columns * 3;
+  const heightUnits = rows * 4;
+  const divisor = greatestCommonDivisor(widthUnits, heightUnits);
 
   return {
     sceneCount,
     columns,
     rows,
     unusedCells: columns * rows - sceneCount,
-    canvasRatio: `${columns / divisor}:${rows / divisor}`,
+    canvasRatio: `${widthUnits / divisor}:${heightUnits / divisor}`,
   };
 }
 
@@ -130,10 +132,10 @@ export function buildStickmanStoryboardPrompt({
   const layoutContract = layout
     ? `- Detected scene count: ${layout.sceneCount}.
 - Required grid: exactly ${layout.columns} columns × ${layout.rows} rows.
-- Required overall contact-sheet canvas ratio: ${layout.canvasRatio}. This ratio comes directly from ${layout.columns} columns × ${layout.rows} rows of equal square panels.
+- Required overall contact-sheet canvas ratio: ${layout.canvasRatio}. This ratio comes from ${layout.columns} columns of 3-unit-wide panels × ${layout.rows} rows of 4-unit-high panels.
 - Draw exactly ${layout.sceneCount} bordered panels.${layout.unusedCells ? ` Leave the final ${layout.unusedCells} unused grid ${layout.unusedCells === 1 ? "cell" : "cells"} plain white and completely unbordered.` : ""}`
     : `- Count the SCENE blocks before drawing.
-- Choose a compact grid of equal square panels. Calculate the overall contact-sheet ratio as columns:rows.`;
+- Choose a compact grid of equal 3:4 portrait panels. Calculate the overall contact-sheet ratio as (columns × 3):(rows × 4).`;
 
   return `You are a professional short-form video storyboard director and illustrator.
 
@@ -159,18 +161,19 @@ SCENE MAPPING
 - Use the matching ON_IMAGE_CAPTION exactly as written. Do not paraphrase, shorten, expand, correct, or invent captions.
 
 CONTACT-SHEET GEOMETRY — STRICT
-- Every individual bordered panel must be a 1:1 square with exactly equal width and height.
-- The overall contact sheet is not required to be square. Its canvas ratio must follow the required square-panel grid calculation below.
+- Every individual bordered panel must be a 3:4 portrait rectangle: for every 3 units of panel width, use exactly 4 units of panel height.
+- The overall contact sheet has its own ratio and is not necessarily 3:4. Its canvas ratio must follow the required grid calculation below.
 ${layoutContract}
-- Every bordered panel must have exactly the same square dimensions.
+- Every bordered panel must have exactly the same 3:4 portrait dimensions.
 - Arrange the panels in the required grid in left-to-right, top-to-bottom reading order.
-- Do not stretch panels into portrait rectangles, landscape rectangles, tall narrow strips, or uneven sizes.
+- Do not stretch panels into squares, landscape rectangles, 9:16 strips, tall narrow strips, or uneven sizes.
 - Keep incomplete final-row space plain white and unbordered; never create empty or decorative panels.
 - Give every real panel its own fully closed, straight, dark rectangular border of consistent thickness.
 - Put a clear white gutter between every panel on all four sides.
 - Panel borders must not touch or share edges. Do not interrupt, round away, decorate, or hide any border.
 - Do not overlap panels. Do not let captions, characters, props, shadows, backgrounds, or effects cross a panel border or enter a gutter.
-- Keep each panel's important action centered with comfortable space around it so the square crop can be placed cleanly in a vertical short-video composition.
+- Keep captions, faces, characters, and essential action inside the central 75% of each panel's width. Leave the outer 12.5% on both sides free of essential details so the 3:4 panel can be cropped safely to 9:16.
+- Compose backgrounds so they can also be extended vertically when the panel is placed on a 9:16 short-video canvas.
 
 CAPTIONS AND TEXT
 - Reserve a clean caption area near the top of every panel.
@@ -199,7 +202,7 @@ CONTENT SAFETY
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
 FINAL QUALITY CHECK
-Silently verify that the sheet contains exactly one equal-size bordered 1:1 square panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
+Silently verify that the sheet contains exactly one equal-size bordered 3:4 portrait panel per scene, the reading order matches the script, every caption is exact, all essential details stay inside the central 75% width, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
 
 Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
 }
