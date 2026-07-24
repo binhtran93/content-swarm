@@ -13,7 +13,7 @@ type CopyTarget = "script" | "storyboard";
 export function StickmanStudio({
   project,
 }: {
-  project: Pick<Project, "name" | "description" | "topics">;
+  project: Pick<Project, "name" | "description" | "voiceTone" | "topics">;
 }) {
   const [source, setSource] = useState("");
   const [scriptResponse, setScriptResponse] = useState("");
@@ -74,8 +74,8 @@ export function StickmanStudio({
               </h2>
               <p className="text-base-content/60 mt-1 text-sm leading-6">
                 Paste a post or story from any source. The generated prompt asks
-                a creative AI director for a faithful script with at least 10
-                visually distinct scenes.
+                a creative AI director for a faithful script using only the
+                essential, visually distinct story beats.
               </p>
             </div>
 

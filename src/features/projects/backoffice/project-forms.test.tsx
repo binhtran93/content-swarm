@@ -49,6 +49,11 @@ describe("Project backoffice forms", () => {
     expect(
       screen.getByDisplayValue("Direct, practical, and supportive."),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Used by Stickman Studio for hooks, narration, and captions.",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByDisplayValue("SaaS")).toBeInTheDocument();
     expect(screen.getByDisplayValue("competitor.com")).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Waitlist" })).toBeChecked();

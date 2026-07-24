@@ -91,7 +91,7 @@ export function ProjectFormFields({
             placeholder="Describe the writing voice to preserve for this project."
           />
           <p className="label">
-            Saved for this Project only. It is not used by any tool yet.
+            Used by Stickman Studio for hooks, narration, and captions.
           </p>
         </fieldset>
       ) : null}

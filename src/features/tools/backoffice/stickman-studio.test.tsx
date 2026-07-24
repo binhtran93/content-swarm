@@ -6,6 +6,7 @@ import { StickmanStudio } from "@/features/tools/backoffice/stickman-studio";
 const project = {
   name: "UrgeZero",
   description: "Private recovery product context.",
+  voiceTone: "Direct, compassionate, and candid.",
   topics: ["recovery"],
 };
 
@@ -24,6 +25,11 @@ describe("StickmanStudio", () => {
     render(<StickmanStudio project={project} />);
 
     expect(
+      screen.getByText(
+        /faithful script using only the essential, visually distinct story beats/i,
+      ),
+    ).toBeVisible();
+    expect(
       screen.getByRole("button", { name: "Copy script prompt" }),
     ).toBeDisabled();
     expect(
@@ -37,6 +43,9 @@ describe("StickmanStudio", () => {
     const prompt = screen.getByLabelText("Full script prompt");
     const promptValue = (prompt as HTMLTextAreaElement).value;
     expect(promptValue).toContain('"name": "UrgeZero"');
+    expect(promptValue).toContain(
+      '"voiceTone": "Direct, compassionate, and candid."',
+    );
     expect(promptValue).toContain(
       '"source": "A multiline story.\\nIt has a second line."',
     );
