@@ -271,24 +271,30 @@ export async function createProjectCtaCard({
   branding: StoryboardCtaBranding;
 }) {
   const logo =
-    (await readProjectAsset(branding.projectId, "logo.png")) ??
-    (await readProjectAsset(branding.projectId, "logo-full.png"));
-  const logoSize = Math.max(
-    72,
-    Math.round(Math.min(width * 0.22, height * 0.14)),
-  );
-  const logoTop = Math.round(height * 0.13);
-  const centerX = Math.round(width * 0.42);
-  const nameSize = Math.max(42, Math.round(width * 0.075));
-  const descriptionSize = Math.max(26, Math.round(width * 0.039));
-  const nameTop = logoTop + logoSize + Math.round(height * 0.045);
+    (await readProjectAsset(branding.projectId, "logo-full.png")) ??
+    (await readProjectAsset(branding.projectId, "logo.png"));
+  const preparedLogo = logo
+    ? await prepareBrandLogo(
+        logo,
+        Math.round(width * 0.4),
+        Math.round(height * 0.15),
+      )
+    : null;
+  const logoTop = Math.round(height * 0.2);
+  const centerX = Math.round(width * 0.5);
+  const nameSize = Math.max(46, Math.round(width * 0.085));
+  const descriptionSize = Math.max(28, Math.round(width * 0.041));
+  const nameTop =
+    logoTop +
+    (preparedLogo?.height ?? 0) +
+    Math.round(height * (preparedLogo ? 0.04 : 0));
   const descriptionLines = wrapText(
     shortenDescription(branding.description),
-    30,
-    3,
+    38,
+    2,
   );
-  const descriptionLineHeight = Math.round(descriptionSize * 1.35);
-  const descriptionTop = nameTop + nameSize + Math.round(height * 0.035);
+  const descriptionLineHeight = Math.round(descriptionSize * 1.32);
+  const descriptionTop = nameTop + nameSize + Math.round(height * 0.028);
   const stores = [
     branding.showAppStore ? "app-store" : null,
     branding.showGooglePlay ? "google-play" : null,
@@ -296,16 +302,35 @@ export async function createProjectCtaCard({
   const availabilityTop =
     descriptionTop +
     descriptionLines.length * descriptionLineHeight +
-    Math.round(height * 0.06);
-  const badgeTop = availabilityTop + Math.round(height * 0.045);
-  const badgeWidth = Math.round(width * 0.25);
+    Math.round(height * 0.065);
+  const brushY = availabilityTop + Math.round(height * 0.022);
+  const badgeTop = brushY + Math.round(height * 0.055);
+  const badgeWidth = Math.round(width * 0.29);
   const badgeHeight = Math.round(badgeWidth * 0.3);
-  const badgeGap = Math.round(width * 0.035);
+  const badgeGap = Math.round(width * 0.025);
   const totalBadgeWidth =
     stores.length * badgeWidth + Math.max(0, stores.length - 1) * badgeGap;
   const badgeLeft = Math.round(centerX - totalBadgeWidth / 2);
+  const brushHalfWidth = Math.round(width * 0.3);
+  const brushThickness = Math.max(10, Math.round(width * 0.013));
+  const brushCurve = Math.max(8, Math.round(height * 0.008));
   const cardText = Buffer.from(`
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="backgroundGlow" cx="50%" cy="43%" r="58%">
+          <stop offset="0%" stop-color="#18191d" />
+          <stop offset="52%" stop-color="#08090b" />
+          <stop offset="100%" stop-color="#000000" />
+        </radialGradient>
+        <linearGradient id="redBrush" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#b90016" />
+          <stop offset="16%" stop-color="#ed001f" />
+          <stop offset="52%" stop-color="#ff1737" />
+          <stop offset="84%" stop-color="#ed001f" />
+          <stop offset="100%" stop-color="#a90012" />
+        </linearGradient>
+      </defs>
+      <rect width="${width}" height="${height}" fill="url(#backgroundGlow)" />
       <text x="${centerX}" y="${nameTop + nameSize}" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="${nameSize}" font-weight="800" text-anchor="middle">${escapeXml(branding.name)}</text>
       ${descriptionLines
         .map(
@@ -313,16 +338,22 @@ export async function createProjectCtaCard({
             `<text x="${centerX}" y="${descriptionTop + descriptionSize + descriptionLineHeight * index}" fill="#cbd0d8" font-family="Arial, Helvetica, sans-serif" font-size="${descriptionSize}" font-weight="400" text-anchor="middle">${escapeXml(line)}</text>`,
         )
         .join("")}
-      <text x="${centerX}" y="${availabilityTop}" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="${Math.max(22, Math.round(width * 0.027))}" font-weight="700" letter-spacing="${Math.max(2, Math.round(width * 0.004))}" text-anchor="middle">${stores.length ? "AVAILABLE NOW" : "GET STARTED TODAY"}</text>
-      <line x1="${centerX - Math.round(width * 0.12)}" y1="${availabilityTop + Math.round(height * 0.018)}" x2="${centerX + Math.round(width * 0.12)}" y2="${availabilityTop + Math.round(height * 0.018)}" stroke="#ef1b2d" stroke-width="${Math.max(4, Math.round(width * 0.006))}" stroke-linecap="round" />
+      <text x="${centerX}" y="${availabilityTop}" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="${Math.max(25, Math.round(width * 0.032))}" font-weight="800" letter-spacing="${Math.max(2, Math.round(width * 0.004))}" text-anchor="middle">${stores.length ? "DOWNLOAD THE APP" : "GET STARTED TODAY"}</text>
+      <path d="M ${centerX - brushHalfWidth} ${brushY + brushThickness * 0.25} C ${centerX - Math.round(brushHalfWidth * 0.62)} ${brushY - brushCurve - brushThickness * 0.2}, ${centerX + Math.round(brushHalfWidth * 0.28)} ${brushY - brushCurve - brushThickness * 0.35}, ${centerX + brushHalfWidth} ${brushY + brushThickness * 0.05} C ${centerX + Math.round(brushHalfWidth * 0.34)} ${brushY - brushCurve + brushThickness * 0.8}, ${centerX - Math.round(brushHalfWidth * 0.52)} ${brushY - brushCurve + brushThickness * 0.9}, ${centerX - brushHalfWidth} ${brushY + brushThickness * 0.25} Z" fill="url(#redBrush)" />
+      ${stores
+        .map(
+          (_, index) =>
+            `<rect x="${badgeLeft + index * (badgeWidth + badgeGap) - 4}" y="${badgeTop - 4}" width="${badgeWidth + 8}" height="${badgeHeight + 8}" rx="${Math.round(badgeHeight * 0.13)}" fill="#0d0e11" stroke="#6f737c" stroke-width="${Math.max(2, Math.round(width * 0.002))}" />`,
+        )
+        .join("")}
     </svg>`);
   const composites = [{ input: cardText, top: 0, left: 0 }];
 
-  if (logo) {
+  if (preparedLogo) {
     composites.push({
-      input: await roundedBrandThumbnail(logo, logoSize),
+      input: preparedLogo.input,
       top: logoTop,
-      left: Math.round(centerX - logoSize / 2),
+      left: Math.round(centerX - preparedLogo.width / 2),
     });
   }
   for (const [index, store] of stores.entries()) {
@@ -384,16 +415,33 @@ async function createStoreBadge({
     .toBuffer();
 }
 
-async function roundedBrandThumbnail(input: Buffer, size: number) {
-  const radius = Math.max(12, Math.round(size * 0.18));
-  const mask = Buffer.from(
-    `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg"><rect width="${size}" height="${size}" rx="${radius}" fill="#ffffff" /></svg>`,
+async function prepareBrandLogo(
+  input: Buffer,
+  maximumWidth: number,
+  maximumHeight: number,
+) {
+  const { data, info } = await sharp(input)
+    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .resize({
+      width: maximumWidth,
+      height: maximumHeight,
+      fit: "inside",
+      withoutEnlargement: false,
+    })
+    .png()
+    .toBuffer({ resolveWithObject: true });
+  const radius = Math.max(
+    12,
+    Math.round(Math.min(info.width, info.height) * 0.18),
   );
-  return sharp(input)
-    .resize({ width: size, height: size, fit: "cover" })
-    .composite([{ input: mask, blend: "dest-in" }])
+  const roundedMask = Buffer.from(
+    `<svg width="${info.width}" height="${info.height}" xmlns="http://www.w3.org/2000/svg"><rect width="${info.width}" height="${info.height}" rx="${radius}" fill="#ffffff" /></svg>`,
+  );
+  const rounded = await sharp(data)
+    .composite([{ input: roundedMask, blend: "dest-in" }])
     .png()
     .toBuffer();
+  return { input: rounded, width: info.width, height: info.height };
 }
 
 async function readProjectAsset(projectId: string, filename: string) {
