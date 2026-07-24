@@ -207,6 +207,7 @@ SCENE MAPPING
 SCENE 1 CINEMATIC HOOK STYLE — MANDATORY
 - Make scene 1 substantially more arresting than the later story panels while keeping the same stickman character design and illustration world.
 - Compose it like a premium vertical movie poster: dramatic depth, one dominant foreground reaction, the source-supported conflict clearly visible in the background, and a strong visual path connecting them.
+- Scene 1 is not an exception to TikTok text safety. Keep its entire large hook caption and red underline inside x=15%–70%, y=25%–40%. The top 25% must remain completely free of text even when poster conventions would normally place a headline at the physical top.
 - Prefer an over-the-shoulder discovery, doorway reveal, reflection, looming foreground close-up, or similarly dramatic perspective when the supplied visual supports it. Avoid a flat lineup, two centered figures, empty symbolic space, or a generic character beside a screen.
 - Use a dark, high-contrast environment with cinematic rim light, screen glow, deep shadows, and restrained red accents. Keep faces and the central action immediately readable at phone size.
 - Make scene 1's caption the largest and boldest typography in the sheet. Use an expressive condensed brush-lettered display style, not the softer marker lettering used later.
@@ -228,9 +229,9 @@ ${layoutContract}
 
 TIKTOK-FIRST UI SAFETY — MANDATORY
 - Apply these coordinates separately inside every 9:16 panel after it is split from the contact sheet. Treat the panel's top-left as x=0%, y=0% and its bottom-right as x=100%, y=100%.
-- The hard text-safe region is x=12%–72% and y=20%–66%. Keep every caption, number, prop label, underline, and other readable text completely inside it, including all letter strokes, outlines, shadows, and glow.
-- The top 20% of every panel is a strict no-text zone reserved for TikTok search, navigation, and device UI. It may contain background artwork only. Never place even part of a letter, outline, shadow, glow, underline, or label above y=20%.
-- Treat the top 20%, bottom 34%, left 12%, and right 28% as text-obstruction zones. Never put readable text in those zones.
+- The hard text-safe region is x=12%–72% and y=25%–66%. Keep every caption, number, prop label, underline, and other readable text completely inside it, including all letter strokes, outlines, shadows, and glow.
+- The top 25% of every panel is a strict no-text zone reserved for TikTok search, navigation, and device UI. It may contain background artwork only. Never place even part of a letter, outline, shadow, glow, underline, or label above y=25%.
+- Treat the top 25%, bottom 34%, left 12%, and right 28% as text-obstruction zones. Never put readable text in those zones.
 - The right side is especially risky because of profile, like, comment, save, and share controls. Keep the protagonist's face and the scene's main visual meaning clear of the right-side control stack and the bottom username/caption/audio area.
 - Target the protagonist's face or main focal point around x=25%–60%, y=35%–60%. This is a composition target, not a hard crop box.
 - Let the illustration fill the entire 9:16 panel. Backgrounds, scenery, limbs, shadows, furniture, and nonessential parts of props may extend into UI-obstruction zones when the scene remains understandable without those covered portions.
@@ -239,9 +240,9 @@ TIKTOK-FIRST UI SAFETY — MANDATORY
 - Do not draw the safe-area rectangle, guides, coordinates, UI controls, or shaded exclusion zones in the finished artwork.
 
 CAPTIONS AND TEXT
-- Put every caption inside the caption band x=15%–70%, y=22%–38%. The top edge of the complete caption block must begin at or below y=22%, and its bottom edge must end at or above y=38%.
-- For a 1080×1920 panel, this means no caption pixel may appear above 422 px from the top. Use the equivalent 22% position at every other resolution.
-- "Near the top" always means the upper-middle caption band below the TikTok UI, never the physical top edge, upper margin, or top fifth of the panel.
+- Put every caption, including Scene 1, inside the caption band x=15%–70%, y=25%–40%. The top edge of the complete caption block must begin at or below y=25%, and its bottom edge must end at or above y=40%.
+- For a 1080×1920 panel, this means no caption pixel may appear above 480 px from the top. Use the equivalent 25% position at every other resolution.
+- "Near the top" always means the upper-middle caption band below the TikTok UI, never the physical top edge, upper margin, or top quarter of the panel.
 - Render the exact caption clearly, with high contrast, on no more than two lines.
 - Scale and wrap the caption so the complete text, including ascenders, descenders, outlines, and shadows, remains inside the caption band with visible breathing room on every side.
 - Center the caption around x=42%–45%, not at the full-panel horizontal center, and never right-align it.
@@ -275,8 +276,5 @@ CONTENT SAFETY
 - Represent sexual or otherwise sensitive material only symbolically and non-explicitly through blurred generic screens, silhouettes, icons, environmental cues, or character reactions.
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
-FINAL QUALITY CHECK
-Silently inspect every panel separately before returning the image. First check the empty top safety zone: if any readable pixel appears above y=20%, move the entire text block down. Then confirm every readable text element fits fully inside x=12%–72%, y=20%–66%, and every complete caption block fits fully inside x=15%–70%, y=22%–38%. Reject and correct the panel rather than accepting text that is merely close to these limits. Confirm the protagonist's face and the scene's main meaning remain clear of the right-side controls and bottom feed UI, and the full-frame artwork remains 9:16 without an inset aspect-ratio box or letterboxing. Also verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, the same character silhouettes and proportions recur throughout, every background uses the same softly painted editorial-storybook technique, and lighting and color support each scene's emotion without changing the locked art style.
-
-Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
+`;
 }
