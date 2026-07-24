@@ -1,6 +1,6 @@
 import "server-only";
 
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -21,9 +21,12 @@ import { ToolServiceError } from "@/features/tools/service/tool-service-error";
 
 const maximumInputPixels = 40_000_000;
 
-export type StoryboardEndCardBranding = {
+export type StoryboardCtaBranding = {
   projectId: string;
-  question: string;
+  name: string;
+  description: string;
+  showAppStore: boolean;
+  showGooglePlay: boolean;
 };
 
 export async function detectStoryboard(
@@ -101,7 +104,7 @@ export async function detectStoryboard(
 export async function processStoryboard(
   manifest: StoryboardJobManifest,
   rectangles: PanelBounds[],
-  branding?: StoryboardEndCardBranding,
+  branding?: StoryboardCtaBranding,
 ): Promise<StoryboardJobManifest> {
   const { projectId, jobId } = manifest;
   const sourcePath = storyboardJobPath(projectId, jobId, "source.png");
@@ -183,7 +186,7 @@ export async function processStoryboard(
       const panelNumber = panels.length + 1;
       const panelId = `panel-${String(panelNumber).padStart(2, "0")}`;
       const fileName = `${panelId}.png`;
-      await renderFinalQuestionCard({
+      await renderProjectCtaCard({
         panelPath: path.join(enhancedDirectory, fileName),
         width: firstPanel.width,
         height: firstPanel.height,
@@ -241,7 +244,7 @@ export async function processStoryboard(
   }
 }
 
-export async function renderFinalQuestionCard({
+export async function renderProjectCtaCard({
   panelPath,
   width,
   height,
@@ -250,38 +253,68 @@ export async function renderFinalQuestionCard({
   panelPath: string;
   width: number;
   height: number;
-  branding: StoryboardEndCardBranding;
+  branding: StoryboardCtaBranding;
+}) {
+  await writeFile(
+    panelPath,
+    await createProjectCtaCard({ width, height, branding }),
+  );
+}
+
+export async function createProjectCtaCard({
+  width,
+  height,
+  branding,
+}: {
+  width: number;
+  height: number;
+  branding: StoryboardCtaBranding;
 }) {
   const logo =
-    (await readProjectAsset(branding.projectId, "logo-full.png")) ??
-    (await readProjectAsset(branding.projectId, "logo.png"));
+    (await readProjectAsset(branding.projectId, "logo.png")) ??
+    (await readProjectAsset(branding.projectId, "logo-full.png"));
   const logoSize = Math.max(
     72,
-    Math.round(Math.min(width * 0.2, height * 0.13)),
+    Math.round(Math.min(width * 0.22, height * 0.14)),
   );
-  const logoTop = Math.round(height * 0.16);
-  const questionLines = wrapEndCardQuestion(branding.question);
-  const questionSize = Math.max(
-    30,
-    Math.round(Math.min(width * 0.075, height * 0.055)),
-  );
-  const lineHeight = Math.round(questionSize * 1.2);
-  const questionTop = logoTop + logoSize + Math.round(height * 0.055);
+  const logoTop = Math.round(height * 0.13);
   const centerX = Math.round(width * 0.42);
-  const underlineY =
-    questionTop +
-    questionLines.length * lineHeight +
-    Math.round(questionSize * 0.35);
-  const underlineWidth = Math.round(width * 0.5);
+  const nameSize = Math.max(42, Math.round(width * 0.075));
+  const descriptionSize = Math.max(26, Math.round(width * 0.039));
+  const nameTop = logoTop + logoSize + Math.round(height * 0.045);
+  const descriptionLines = wrapText(
+    shortenDescription(branding.description),
+    30,
+    3,
+  );
+  const descriptionLineHeight = Math.round(descriptionSize * 1.35);
+  const descriptionTop = nameTop + nameSize + Math.round(height * 0.035);
+  const stores = [
+    branding.showAppStore ? "app-store" : null,
+    branding.showGooglePlay ? "google-play" : null,
+  ].filter((store): store is "app-store" | "google-play" => Boolean(store));
+  const availabilityTop =
+    descriptionTop +
+    descriptionLines.length * descriptionLineHeight +
+    Math.round(height * 0.06);
+  const badgeTop = availabilityTop + Math.round(height * 0.045);
+  const badgeWidth = Math.round(width * 0.25);
+  const badgeHeight = Math.round(badgeWidth * 0.3);
+  const badgeGap = Math.round(width * 0.035);
+  const totalBadgeWidth =
+    stores.length * badgeWidth + Math.max(0, stores.length - 1) * badgeGap;
+  const badgeLeft = Math.round(centerX - totalBadgeWidth / 2);
   const cardText = Buffer.from(`
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      ${questionLines
+      <text x="${centerX}" y="${nameTop + nameSize}" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="${nameSize}" font-weight="800" text-anchor="middle">${escapeXml(branding.name)}</text>
+      ${descriptionLines
         .map(
           (line, index) =>
-            `<text x="${centerX}" y="${questionTop + questionSize + lineHeight * index}" fill="#ffffff" font-family="'Comic Sans MS', 'Chalkboard SE', sans-serif" font-size="${questionSize}" font-weight="700" text-anchor="middle">${escapeXml(line)}</text>`,
+            `<text x="${centerX}" y="${descriptionTop + descriptionSize + descriptionLineHeight * index}" fill="#cbd0d8" font-family="Arial, Helvetica, sans-serif" font-size="${descriptionSize}" font-weight="400" text-anchor="middle">${escapeXml(line)}</text>`,
         )
         .join("")}
-      <line x1="${centerX - underlineWidth / 2}" y1="${underlineY}" x2="${centerX + underlineWidth / 2}" y2="${underlineY}" stroke="#ef1b2d" stroke-width="${Math.max(4, Math.round(width * 0.008))}" stroke-linecap="round" />
+      <text x="${centerX}" y="${availabilityTop}" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="${Math.max(22, Math.round(width * 0.027))}" font-weight="700" letter-spacing="${Math.max(2, Math.round(width * 0.004))}" text-anchor="middle">${stores.length ? "AVAILABLE NOW" : "GET STARTED TODAY"}</text>
+      <line x1="${centerX - Math.round(width * 0.12)}" y1="${availabilityTop + Math.round(height * 0.018)}" x2="${centerX + Math.round(width * 0.12)}" y2="${availabilityTop + Math.round(height * 0.018)}" stroke="#ef1b2d" stroke-width="${Math.max(4, Math.round(width * 0.006))}" stroke-linecap="round" />
     </svg>`);
   const composites = [{ input: cardText, top: 0, left: 0 }];
 
@@ -292,7 +325,19 @@ export async function renderFinalQuestionCard({
       left: Math.round(centerX - logoSize / 2),
     });
   }
-  await sharp({
+  for (const [index, store] of stores.entries()) {
+    composites.push({
+      input: await createStoreBadge({
+        projectId: branding.projectId,
+        store,
+        width: badgeWidth,
+        height: badgeHeight,
+      }),
+      top: badgeTop,
+      left: badgeLeft + index * (badgeWidth + badgeGap),
+    });
+  }
+  return sharp({
     create: {
       width,
       height,
@@ -302,7 +347,41 @@ export async function renderFinalQuestionCard({
   })
     .composite(composites)
     .png({ compressionLevel: 9 })
-    .toFile(panelPath);
+    .toBuffer();
+}
+
+async function createStoreBadge({
+  projectId,
+  store,
+  width,
+  height,
+}: {
+  projectId: string;
+  store: "app-store" | "google-play";
+  width: number;
+  height: number;
+}) {
+  const filename = store === "app-store" ? "app-store.svg" : "google-play.svg";
+  const asset = await readProjectAsset(projectId, filename);
+  if (asset) {
+    return sharp(asset)
+      .resize({ width, height, fit: "contain" })
+      .png()
+      .toBuffer();
+  }
+  const label =
+    store === "app-store"
+      ? "Download on the App Store"
+      : "Get it on Google Play";
+  return sharp(
+    Buffer.from(`
+      <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${Math.round(height * 0.14)}" fill="#050505" stroke="#ffffff" stroke-width="2" />
+        <text x="${width / 2}" y="${height * 0.58}" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="${Math.max(12, Math.round(height * 0.22))}" font-weight="700" text-anchor="middle">${label}</text>
+      </svg>`),
+  )
+    .png()
+    .toBuffer();
 }
 
 async function roundedBrandThumbnail(input: Buffer, size: number) {
@@ -327,20 +406,31 @@ async function readProjectAsset(projectId: string, filename: string) {
   }
 }
 
-function wrapEndCardQuestion(question: string) {
-  const words = question.trim().split(/\s+/).filter(Boolean);
+function shortenDescription(description: string) {
+  const normalized = description.replace(/\s+/g, " ").trim();
+  if (normalized.length <= 110) return normalized;
+  return `${normalized.slice(0, 107).trimEnd()}…`;
+}
+
+function wrapText(
+  value: string,
+  maximumCharacters: number,
+  maximumLines: number,
+) {
+  const words = value.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let line = "";
   for (const word of words) {
     const next = line ? `${line} ${word}` : word;
-    if ((next.length > 22 || next.split(/\s+/).length > 4) && line) {
+    if (next.length > maximumCharacters && line) {
       lines.push(line);
       line = word;
     } else {
       line = next;
     }
+    if (lines.length === maximumLines) break;
   }
-  if (line) lines.push(line);
+  if (line && lines.length < maximumLines) lines.push(line);
   return lines;
 }
 

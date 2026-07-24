@@ -1,12 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  parseStickmanStoryboardScript,
-  stickmanFinalQuestionStorageKey,
-} from "@/features/tools/model/stickman-storyboard-script";
+import { parseStickmanStoryboardScript } from "@/features/tools/model/stickman-storyboard-script";
 
 describe("stickman storyboard JSON", () => {
-  it("parses scenes and the separate final question", () => {
+  it("parses illustrated scenes", () => {
     expect(
       parseStickmanStoryboardScript(
         JSON.stringify({
@@ -17,12 +14,10 @@ describe("stickman storyboard JSON", () => {
               visual: "A woman looks toward a blurred screen",
             },
           ],
-          finalQuestion: "Can you forgive yourself and keep fighting?",
         }),
       ),
     ).toMatchObject({
       scenes: [{ scene: 1, caption: "I discovered his hidden porn struggle" }],
-      finalQuestion: "Can you forgive yourself and keep fighting?",
     });
   });
 
@@ -35,18 +30,16 @@ describe("stickman storyboard JSON", () => {
           visual: "A shocked stick figure stands in a doorway",
         },
       ],
-      finalQuestion: "Could you tell someone you love?",
     });
 
     expect(
       parseStickmanStoryboardScript(`\`\`\`json\n${json}\n\`\`\``),
     ).toMatchObject({
       scenes: [{ caption: "I FOUND THE TRUTH" }],
-      finalQuestion: "Could you tell someone you love?",
     });
   });
 
-  it("rejects voiceover, nonsequential scenes, and invalid questions", () => {
+  it("rejects voiceover and nonsequential scenes", () => {
     expect(() =>
       parseStickmanStoryboardScript(
         JSON.stringify({
@@ -58,15 +51,19 @@ describe("stickman storyboard JSON", () => {
               voiceover: "Unwanted narration",
             },
           ],
-          finalQuestion: "Not a question",
         }),
       ),
     ).toThrow();
   });
 
-  it("uses Project-scoped browser storage keys", () => {
-    expect(stickmanFinalQuestionStorageKey("urge-zero")).not.toBe(
-      stickmanFinalQuestionStorageKey("subiq"),
-    );
+  it("rejects the removed final-question field", () => {
+    expect(() =>
+      parseStickmanStoryboardScript(
+        JSON.stringify({
+          scenes: [{ scene: 1, caption: "I faced it", visual: "A scene" }],
+          finalQuestion: "Could you face it?",
+        }),
+      ),
+    ).toThrow();
   });
 });

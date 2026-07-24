@@ -80,11 +80,7 @@ describe("StoryboardUploader", () => {
     ).toBeDisabled();
   });
 
-  it("automatically attaches the Project-scoped final question", async () => {
-    window.localStorage.setItem(
-      "anmisoft:stickman-final-question:urge-zero",
-      "Can you forgive yourself and keep fighting?",
-    );
+  it("uploads the storyboard without hidden CTA text", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -100,9 +96,6 @@ describe("StoryboardUploader", () => {
       />,
     );
 
-    expect(await screen.findByLabelText("Detected final question")).toHaveValue(
-      "Can you forgive yourself and keep fighting?",
-    );
     fireEvent.change(screen.getByLabelText("Storyboard image"), {
       target: {
         files: [
@@ -115,8 +108,48 @@ describe("StoryboardUploader", () => {
     await waitFor(() => expect(fetch).toHaveBeenCalled());
     const request = vi.mocked(fetch).mock.calls[0]?.[1];
     const body = request?.body as FormData;
-    expect(body.get("finalQuestion")).toBe(
-      "Can you forgive yourself and keep fighting?",
+    expect(body.has("finalQuestion")).toBe(false);
+  });
+
+  it("previews the final CTA without uploading a storyboard", async () => {
+    const createObjectUrl = vi.fn(() => "blob:final-cta-preview");
+    const revokeObjectUrl = vi.fn();
+    class PreviewUrl extends URL {}
+    PreviewUrl.createObjectURL = createObjectUrl;
+    PreviewUrl.revokeObjectURL = revokeObjectUrl;
+    vi.stubGlobal("URL", PreviewUrl);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        blob: async () => new Blob(["png"], { type: "image/png" }),
+        ok: true,
+      }),
     );
+
+    render(
+      <StoryboardUploader
+        available
+        projectId="urge-zero"
+        unavailableMessage={null}
+      />,
+    );
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Preview final CTA" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByAltText("Final CTA preview")).toBeInTheDocument(),
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/admin/projects/urge-zero/tools/storyboard-splitter/final-card-preview",
+      {
+        method: "POST",
+      },
+    );
+    expect(createObjectUrl).toHaveBeenCalledOnce();
+
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(revokeObjectUrl).toHaveBeenCalledOnce());
   });
 });

@@ -26,9 +26,7 @@ describe("StickmanStudio", () => {
   it("builds and copies a Project-aware script prompt", async () => {
     render(<StickmanStudio project={project} />);
 
-    expect(
-      screen.getByText(/faithful captions, visuals, and one separate/i),
-    ).toBeVisible();
+    expect(screen.getByText(/faithful captions and visuals/i)).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Copy JSON prompt" }),
     ).toBeDisabled();
@@ -64,33 +62,21 @@ describe("StickmanStudio", () => {
       target: {
         value: JSON.stringify({
           scenes: [{ scene: 1, caption: "First", visual: "A first scene" }],
-          finalQuestion: "Can you face this?",
         }),
       },
     });
     const output = screen.getByLabelText("Full storyboard image prompt");
     expect((output as HTMLTextAreaElement).value).toContain("A first scene");
-    expect(screen.getByLabelText("Detected final question")).toHaveValue(
-      "Can you face this?",
-    );
-    expect(
-      window.localStorage.getItem("anmisoft:stickman-final-question:urge-zero"),
-    ).toBe("Can you face this?");
-
     fireEvent.change(response, {
       target: {
         value: JSON.stringify({
           scenes: [{ scene: 1, caption: "New", visual: "A changed scene" }],
-          finalQuestion: "Can you choose differently?",
         }),
       },
     });
     expect((output as HTMLTextAreaElement).value).toContain("A changed scene");
     expect((output as HTMLTextAreaElement).value).not.toContain(
       "A first scene",
-    );
-    expect((output as HTMLTextAreaElement).value).not.toContain(
-      "Can you choose differently?",
     );
   });
 

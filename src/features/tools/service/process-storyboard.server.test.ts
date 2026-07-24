@@ -14,7 +14,7 @@ import {
   detectStoryboard,
   extractRawPanels,
   processStoryboard,
-  renderFinalQuestionCard,
+  renderProjectCtaCard,
 } from "@/features/tools/service/process-storyboard.server";
 
 vi.mock("@/features/tools/service/run-real-esrgan.server", () => ({
@@ -99,16 +99,19 @@ describe("storyboard processing stages", () => {
     ).resolves.toMatchObject({ width: 80, height: 60, format: "png" });
   });
 
-  it("renders the final card from the stored question", async () => {
+  it("renders the fixed Project CTA card", async () => {
     const panelPath = path.join(workspace, "end-card.png");
 
-    await renderFinalQuestionCard({
+    await renderProjectCtaCard({
       panelPath,
       width: 360,
       height: 640,
       branding: {
         projectId: "urge-zero",
-        question: "Can you forgive yourself and keep fighting?",
+        name: "UrgeZero",
+        description: "Overcome porn addiction and build lasting self-control",
+        showAppStore: true,
+        showGooglePlay: true,
       },
     });
 
@@ -149,7 +152,10 @@ describe("storyboard processing stages", () => {
 
     const completed = await processStoryboard(manifest, manifest.cropBounds, {
       projectId: "urge-zero",
-      question: "Can you forgive yourself and keep fighting?",
+      name: "UrgeZero",
+      description: "Overcome porn addiction and build lasting self-control",
+      showAppStore: true,
+      showGooglePlay: true,
     });
 
     expect(completed.status).toBe("ready");

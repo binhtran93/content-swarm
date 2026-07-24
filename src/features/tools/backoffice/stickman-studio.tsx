@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { Project } from "@/features/projects/model/project";
-import {
-  parseStickmanStoryboardScript,
-  stickmanFinalQuestionStorageKey,
-} from "@/features/tools/model/stickman-storyboard-script";
+import { parseStickmanStoryboardScript } from "@/features/tools/model/stickman-storyboard-script";
 import {
   buildShortVideoScriptPrompt,
   buildStickmanStoryboardPrompt,
@@ -41,15 +38,6 @@ export function StickmanStudio({
   const storyboardPrompt = parsedScript
     ? buildStickmanStoryboardPrompt({ project, script: parsedScript })
     : "";
-
-  useEffect(() => {
-    const storageKey = stickmanFinalQuestionStorageKey(project.projectId);
-    if (parsedScript) {
-      window.localStorage.setItem(storageKey, parsedScript.finalQuestion);
-    } else if (scriptResponse.trim()) {
-      window.localStorage.removeItem(storageKey);
-    }
-  }, [parsedScript, project.projectId, scriptResponse]);
 
   async function copyPrompt(target: CopyTarget, prompt: string) {
     setCopyError(null);
@@ -98,8 +86,7 @@ export function StickmanStudio({
               </h2>
               <p className="text-base-content/60 mt-1 text-sm leading-6">
                 Paste a post or story from any source. The generated prompt asks
-                a creative AI director for faithful captions, visuals, and one
-                separate final question.
+                a creative AI director for faithful captions and visuals.
               </p>
             </div>
 
@@ -143,8 +130,8 @@ export function StickmanStudio({
               </h2>
               <p className="text-base-content/60 mt-1 text-sm leading-6">
                 Paste the JSON response from Step 1. The generated prompt sends
-                only the illustrated scenes to the image AI and saves the final
-                question for Storyboard Splitter.
+                only the illustrated story scenes to the image AI. Storyboard
+                Splitter adds the Project CTA separately.
               </p>
             </div>
 
@@ -162,19 +149,7 @@ export function StickmanStudio({
               />
             </label>
 
-            {parsedScript ? (
-              <label className="form-control mt-4 block">
-                <span className="label-text font-medium">
-                  Detected final question
-                </span>
-                <input
-                  aria-label="Detected final question"
-                  className="input input-bordered bg-base-200 mt-2 w-full"
-                  readOnly
-                  value={parsedScript.finalQuestion}
-                />
-              </label>
-            ) : scriptResponse.trim() ? (
+            {!parsedScript && scriptResponse.trim() ? (
               <div className="alert alert-error mt-4" role="alert">
                 <span>
                   Paste the complete JSON code block returned by the Step 1

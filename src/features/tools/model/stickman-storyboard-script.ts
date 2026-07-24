@@ -25,10 +25,6 @@ export const stickmanStoryboardScriptSchema = z
           .strict(),
       )
       .min(1),
-    finalQuestion: captionSchema.refine(
-      (value) => value.endsWith("?"),
-      "The final question must end with a question mark",
-    ),
   })
   .strict()
   .superRefine(({ scenes }, context) => {
@@ -52,8 +48,4 @@ export function parseStickmanStoryboardScript(value: string) {
   const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
   const json = fenced?.[1] ?? trimmed;
   return stickmanStoryboardScriptSchema.parse(JSON.parse(json));
-}
-
-export function stickmanFinalQuestionStorageKey(projectId: string) {
-  return `anmisoft:stickman-final-question:${projectId}`;
 }
