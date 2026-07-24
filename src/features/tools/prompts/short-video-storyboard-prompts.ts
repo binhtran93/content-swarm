@@ -158,7 +158,10 @@ CAPTION AND VISUAL RULES
 - Depict sexual, violent, self-harm, or otherwise sensitive material only through safe, non-explicit symbols such as blurred screens, silhouettes, icons, environmental details, or character reactions.
 
 REQUIRED OUTPUT FORMAT
-Return only one valid JSON object. Do not wrap it in markdown fences and do not add a title, summary, notes, alternatives, preamble, or closing explanation.
+Return exactly one fenced JSON code block so the user can copy it with the interface's code-copy button. Start with \`\`\`json, end with \`\`\`, and put nothing before or after the code block.
+- Use only the straight ASCII double-quote character " (U+0022) around every JSON key and string value. Never use curly quotation marks “ or ” anywhere in the JSON.
+- Encode line breaks inside strings as the two characters \\n. Never place a literal line break inside a JSON string.
+- Use valid JSON syntax with no comments and no trailing commas.
 
 Use exactly this structure:
 {

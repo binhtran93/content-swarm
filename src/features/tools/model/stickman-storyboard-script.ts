@@ -48,7 +48,10 @@ export type StickmanStoryboardScript = z.infer<
 >;
 
 export function parseStickmanStoryboardScript(value: string) {
-  return stickmanStoryboardScriptSchema.parse(JSON.parse(value));
+  const trimmed = value.trim();
+  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  const json = fenced?.[1] ?? trimmed;
+  return stickmanStoryboardScriptSchema.parse(JSON.parse(json));
 }
 
 export function stickmanFinalQuestionStorageKey(projectId: string) {

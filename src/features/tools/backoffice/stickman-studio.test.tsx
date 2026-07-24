@@ -102,7 +102,7 @@ describe("StickmanStudio", () => {
     });
 
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "Paste the valid JSON object",
+      "Paste the complete JSON code block",
     );
     expect(
       screen.getByRole("button", { name: "Copy storyboard prompt" }),

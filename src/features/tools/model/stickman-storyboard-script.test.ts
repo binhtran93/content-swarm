@@ -26,6 +26,26 @@ describe("stickman storyboard JSON", () => {
     });
   });
 
+  it("parses a copied fenced JSON code block", () => {
+    const json = JSON.stringify({
+      scenes: [
+        {
+          scene: 1,
+          caption: "I FOUND THE TRUTH",
+          visual: "A shocked stick figure stands in a doorway",
+        },
+      ],
+      finalQuestion: "Could you tell someone you love?",
+    });
+
+    expect(
+      parseStickmanStoryboardScript(`\`\`\`json\n${json}\n\`\`\``),
+    ).toMatchObject({
+      scenes: [{ caption: "I FOUND THE TRUTH" }],
+      finalQuestion: "Could you tell someone you love?",
+    });
+  });
+
   it("rejects voiceover, nonsequential scenes, and invalid questions", () => {
     expect(() =>
       parseStickmanStoryboardScript(

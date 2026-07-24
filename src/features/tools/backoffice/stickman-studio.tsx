@@ -157,7 +157,7 @@ export function StickmanStudio({
                   setScriptResponse(event.target.value);
                   setCopied(null);
                 }}
-                placeholder='Paste the complete {"scenes":[...],"finalQuestion":"..."} response here…'
+                placeholder="Paste the complete JSON code block here…"
                 value={scriptResponse}
               />
             </label>
@@ -177,7 +177,8 @@ export function StickmanStudio({
             ) : scriptResponse.trim() ? (
               <div className="alert alert-error mt-4" role="alert">
                 <span>
-                  Paste the valid JSON object returned by the Step 1 prompt
+                  Paste the complete JSON code block returned by the Step 1
+                  prompt
                 </span>
               </div>
             ) : null}
