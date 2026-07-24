@@ -264,16 +264,22 @@ CAPTIONS AND TEXT
 - Never render dialogue, repeated words, speech bubbles, thought text, watermarks, panel numbers, logos, hashtags, subtitles, or decorative words, even when the VISUAL mentions or requests them. Communicate those ideas nonverbally instead.
 
 LOCKED ART STYLE
-- Minimal hand-drawn stick figures with round white heads and simple white bodies.
-- Thick, clean black outlines with a consistent line weight in every panel.
-- Highly expressive eyebrows, eyes, mouths, poses, and gestures.
-- Muted cream, soft gray, and desaturated blue backgrounds.
-- Use red, green, or warm yellow only as sparse story accents.
-- Add light digital shading, subtle paper-like softness, and simple symbolic environments.
-- Invent one simple protagonist design from scratch, then reuse that design consistently throughout every panel in this newly generated sheet.
-- Maintain one coherent palette, camera language, rendering technique, and level of detail across all panels.
-- Use visual metaphors such as scribble clouds, disappearing money, clocks, calendars, phone glow, and simple icons only when supported by the matching scene.
-- No photorealism, 3D rendering, anime, manga, detailed anatomy, realistic skin, glossy vector art, collage, or mixed art styles.
+- Use a polished 2D editorial-storybook illustration style built around minimalist stick figures and emotionally atmospheric environments.
+- Draw every character with a large circular or slightly oval off-white head, a tiny simplified white torso, and very thin black line arms and legs. Keep anatomy intentionally minimal and immediately recognizable as stickman art.
+- Use bold, slightly imperfect hand-inked black contours around heads and bodies. Lines should feel clean and controlled but never mechanically perfect or like glossy vector art.
+- Give faces only simple black eyebrows, oval eyes, and a small mouth. Make emotion unmistakable through eyebrow angle, eye direction, mouth shape, head tilt, hunched shoulders, open hands, and body distance.
+- Give each recurring person one stable identifying silhouette, such as a simple ponytail, hair tuft, clothing outline, or height difference. Preserve those exact identifiers, proportions, and facial conventions across every panel.
+- Render the heads and white bodies with soft gray edge shading and gentle directional light so they feel dimensional while remaining clearly hand-drawn 2D stick figures.
+- Build simplified but believable rooms and environments with walls, doors, desks, chairs, screens, mirrors, paths, and other story-supported objects. Use enough environmental detail to establish place and mood, but keep it subordinate to the characters.
+- Paint backgrounds with soft digital gouache or watercolor-like gradients, smoky shadow shapes, subtle paper grain, feathered edges, and a mild vignette. Avoid flat empty backgrounds unless the scene specifically requires isolation.
+- Use a restrained emotional palette: charcoal, slate blue, dusty blue-gray, and muted cream as the foundation. Use warm ivory or soft golden light for safety, connection, relief, or hope. Use deep blue-gray shadows for secrecy, fear, distance, or shame.
+- Reserve saturated red for rare danger, tension, or hook emphasis. Reserve warm gold for rare moments of breakthrough or emotional connection. Never scatter bright accent colors decoratively.
+- Light scenes cinematically with window glow, screen glow, a soft spotlight, rim light, or a warm pool of light. Let lighting direct attention to the face, gesture, relationship, or symbolic object that carries the beat.
+- Compose with clear foreground, middle ground, and background depth. Use character scale, walls, doorways, shadows, reflections, negative space, and sightlines to show emotional distance or connection.
+- Use one strong visual metaphor at a time when supported, such as a solid wall for hidden shame, a cracking wall for trust, looming shadow figures for fear of judgment, a tangled cord for dependence, or a path toward warm light for change.
+- Make metaphors feel physically integrated into the environment rather than floating clip-art icons. Do not overcrowd a panel with multiple symbols.
+- Maintain one coherent drawing technique, line weight, facial language, texture, palette, lighting logic, and level of detail across the entire sheet. Emotional color and lighting may shift, but the underlying art style must not.
+- No photorealism, 3D rendering, anime, manga, realistic anatomy, realistic skin, glossy vector art, flat corporate illustration, collage, childish doodles, or mixed art styles.
 
 CONTENT SAFETY
 - Keep every image safe for a general social-media audience.
@@ -282,7 +288,7 @@ CONTENT SAFETY
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
 FINAL QUALITY CHECK
-Silently verify each panel against its own coordinate system: every readable text element must fit fully inside x=12%–72%, y=15%–66%; every caption must fit fully inside x=15%–70%, y=18%–34%; the protagonist's face and the scene's main meaning must remain clear of the right-side controls and bottom feed UI; and the full-frame artwork must remain 9:16 without an inset aspect-ratio box or letterboxing. Also verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
+Silently verify each panel against its own coordinate system: every readable text element must fit fully inside x=12%–72%, y=15%–66%; every caption must fit fully inside x=15%–70%, y=18%–34%; the protagonist's face and the scene's main meaning must remain clear of the right-side controls and bottom feed UI; and the full-frame artwork must remain 9:16 without an inset aspect-ratio box or letterboxing. Also verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, the same character silhouettes and proportions recur throughout, every background uses the same softly painted editorial-storybook technique, and lighting and color support each scene's emotion without changing the locked art style.
 
 Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
 }
