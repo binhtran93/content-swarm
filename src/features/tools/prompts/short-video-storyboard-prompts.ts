@@ -93,6 +93,7 @@ SHORT-VIDEO DIRECTION
 - Create a minimum of 10 scenes. Use more than 10 only when the story genuinely benefits and still fits the timing and spoken-word limits.
 - Act as a highly creative director: use varied framing, visual metaphors, reaction shots, symbolic details, pattern interrupts, and purposeful transitions while staying completely faithful to the source.
 - Give each scene one clear story beat and one visually distinct action. Avoid repetitive compositions, poses, props, camera angles, and backgrounds.
+- Compose every VISUAL for a TikTok-first UI-safe layout. Keep the caption, face, and essential action away from the top search/navigation area, the right-side action buttons, and the bottom username/caption/audio area. Unsafe edges may contain background or expendable decoration only.
 - Keep individual VOICEOVER lines concise so at least 10 scenes still feel natural within the short-video runtime.
 - The final scene is mandatory: make it a direct question card, not another illustrated story beat.
 - Use the source author's own direct question as the factual basis whenever one exists, but distill it into a broad audience-facing question about the central subject.
@@ -165,7 +166,7 @@ SCENE MAPPING
 - Each panel must illustrate only its matching VISUAL and emotional beat.
 - Use the matching ON_IMAGE_CAPTION exactly as written. Do not paraphrase, shorten, expand, correct, or invent captions.
 - The highest-numbered scene is the final panel and must be a question card, not an illustrated character scene.
-- For that final panel only: use a solid black background, render the exact ON_IMAGE_CAPTION as a large centered white handwritten question, add one thin red underline, and include no character, scenery, prop, icon, logo, panel number, or other text.
+- For that final panel only: use a solid black background, render the exact ON_IMAGE_CAPTION as a large white handwritten question centered in the text-safe region around x=42%, y=42% rather than at the full-panel center, add one thin red underline inside that region, and include no character, scenery, prop, icon, logo, panel number, or other text.
 
 CONTACT-SHEET GEOMETRY — STRICT
 - Every individual bordered panel must be a 9:16 portrait rectangle: for every 9 units of panel width, use exactly 16 units of panel height.
@@ -179,11 +180,24 @@ ${layoutContract}
 - Put a clear white gutter between every panel on all four sides.
 - Panel borders must not touch or share edges. Do not interrupt, round away, decorate, or hide any border.
 - Do not overlap panels. Do not let captions, characters, props, shadows, backgrounds, or effects cross a panel border or enter a gutter.
-- Keep captions, faces, characters, and essential action inside the central 75% of each panel's width. Leave the outer 12.5% on both sides free of essential details.
+
+TIKTOK-FIRST UI SAFETY — MANDATORY
+- Apply these coordinates separately inside every 9:16 panel after it is split from the contact sheet. Treat the panel's top-left as x=0%, y=0% and its bottom-right as x=100%, y=100%.
+- The hard text-safe region is x=12%–72% and y=15%–66%. Keep every caption, question, number, prop label, underline, and other readable text completely inside it, including all letter strokes, outlines, shadows, and glow.
+- Treat the top 15%, bottom 34%, left 12%, and right 28% as text-obstruction zones. Never put readable text in those zones.
+- The right side is especially risky because of profile, like, comment, save, and share controls. Keep the protagonist's face and the scene's main visual meaning clear of the right-side control stack and the bottom username/caption/audio area.
+- Target the protagonist's face or main focal point around x=25%–60%, y=35%–60%. This is a composition target, not a hard crop box.
+- Let the illustration fill the entire 9:16 panel. Backgrounds, scenery, limbs, shadows, furniture, and nonessential parts of props may extend into UI-obstruction zones when the scene remains understandable without those covered portions.
+- Do not inset the artwork into a 4:3, square, or other inner frame. Do not add letterboxing; use the complete 9:16 canvas.
+- If a requested composition conflicts with UI safety, reposition or rescale the caption and main focal point while preserving full-frame artwork.
+- Do not draw the safe-area rectangle, guides, coordinates, UI controls, or shaded exclusion zones in the finished artwork.
 
 CAPTIONS AND TEXT
-- Reserve a clean caption area near the top of every panel.
+- Put every ON_IMAGE_CAPTION inside the caption band x=15%–70%, y=18%–34%. "Near the top" always means this upper-middle band below the platform UI, never the physical top edge of the panel.
 - Render the exact ON_IMAGE_CAPTION clearly, with high contrast, on no more than two lines.
+- Scale and wrap the caption so the complete text, including ascenders, descenders, outlines, and shadows, remains inside the caption band with visible breathing room on every side.
+- Center the caption around x=42%–45%, not at the full-panel horizontal center, and never right-align it.
+- Place illustrated faces and essential action below or beside the caption without overlapping its letters.
 - Use a consistent friendly hand-lettered marker style that remains easy to read at phone size.
 - Render direct non-graphic subject words exactly as supplied, including "porn" or "pornography." Do not censor them, replace them with vague wording, or remove them because the accompanying imagery is non-explicit.
 - Apart from the supplied caption, include text only when a short source-supported number or prop label is essential to the VISUAL, such as "$15,000" on a banking screen.
@@ -208,7 +222,7 @@ CONTENT SAFETY
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
 FINAL QUALITY CHECK
-Silently verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all essential details stay inside the central 75% width, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
+Silently verify each panel against its own coordinate system: every readable text element must fit fully inside x=12%–72%, y=15%–66%; every caption must fit fully inside x=15%–70%, y=18%–34%; the protagonist's face and the scene's main meaning must remain clear of the right-side controls and bottom feed UI; and the full-frame artwork must remain 9:16 without an inset aspect-ratio box or letterboxing. Also verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, and the same protagonist and art style appear throughout.
 
 Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
 }

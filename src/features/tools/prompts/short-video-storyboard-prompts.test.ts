@@ -32,6 +32,9 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain("Create a minimum of 10 scenes");
     expect(prompt).toContain("Act as a highly creative director");
     expect(prompt).toContain("Avoid repetitive compositions");
+    expect(prompt).toContain("TikTok-first UI-safe layout");
+    expect(prompt).toContain("top search/navigation area");
+    expect(prompt).toContain("bottom username/caption/audio area");
     expect(prompt).toContain(
       "The final scene is mandatory: make it a direct question card",
     );
@@ -75,7 +78,21 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain("9:16 portrait rectangle");
     expect(prompt).toContain("fully closed, straight, dark rectangular border");
     expect(prompt).toContain("clear white gutter");
-    expect(prompt).toContain("central 75% of each panel's width");
+    expect(prompt).toContain("TIKTOK-FIRST UI SAFETY — MANDATORY");
+    expect(prompt).toContain(
+      "hard text-safe region is x=12%–72% and y=15%–66%",
+    );
+    expect(prompt).toContain("top 15%, bottom 34%, left 12%, and right 28%");
+    expect(prompt).toContain("caption band x=15%–70%, y=18%–34%");
+    expect(prompt).toContain(
+      "Target the protagonist's face or main focal point around x=25%–60%, y=35%–60%",
+    );
+    expect(prompt).toContain("Let the illustration fill the entire 9:16 panel");
+    expect(prompt).toContain(
+      "Do not inset the artwork into a 4:3, square, or other inner frame",
+    );
+    expect(prompt).toContain("Center the caption around x=42%–45%");
+    expect(prompt).toContain("Do not draw the safe-area rectangle");
     expect(prompt).toContain("round white heads");
     expect(prompt).toContain(
       'Render direct non-graphic subject words exactly as supplied, including "porn"',
@@ -108,6 +125,8 @@ describe("short-video storyboard prompt contracts", () => {
       "Every bordered panel must have exactly the same 9:16",
     );
     expect(prompt).toContain("Do not stretch panels into squares");
-    expect(prompt).toContain("outer 12.5% on both sides");
+    expect(prompt).toContain(
+      "every readable text element must fit fully inside x=12%–72%",
+    );
   });
 });
