@@ -172,9 +172,7 @@ Use exactly this structure:
   "finalQuestion": "<source-faithful audience question, maximum 12 words>"
 }
 
-Number scenes sequentially starting at 1. Do not put finalQuestion inside scenes and do not add voiceover, type, title, or any other fields.
-
-Before answering, silently verify every statement against the source; confirm there are at least 7 illustrated scenes plus finalQuestion and the chosen scene count contains only essential beats; confirm no caption ends with a period/full stop or contains an em dash or en dash, and confirm finalQuestion ends with a question mark and contains no em dash or en dash; read the captions followed by finalQuestion and confirm they communicate a coherent beginning, progression, climax, and ending; confirm every illustrated scene consistently uses first person and only finalQuestion changes to “you”; confirm scene 1 is a source-supported, trauma-aware summary hook; confirm every caption and finalQuestion is no more than 12 words; confirm uncertainty and causality remain faithful to the source; confirm the Project voice and tone is applied throughout; estimate a 20–40 second runtime; and confirm the output is valid JSON with exactly the required fields.`;
+Number scenes sequentially starting at 1. Do not put finalQuestion inside scenes and do not add voiceover, type, title, or any other fields`;
 }
 
 export function buildStickmanStoryboardPrompt({
