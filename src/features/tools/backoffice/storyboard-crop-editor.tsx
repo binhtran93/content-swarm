@@ -8,11 +8,15 @@ import {
 } from "react";
 
 import {
+  clampPanelBounds,
   sortPanelBoundsReadingOrder,
   transformPanelBounds,
   type ResizeHandle,
 } from "@/features/tools/model/storyboard-crop-geometry";
-import type { PanelBounds } from "@/features/tools/model/storyboard-splitter-job";
+import {
+  storyboardCropConfig,
+  type PanelBounds,
+} from "@/features/tools/model/storyboard-splitter-job";
 
 type EditorRectangle = {
   id: string;
@@ -61,6 +65,7 @@ export function StoryboardCropEditor({
   const drag = useRef<DragState | null>(null);
   const saveQueue = useRef(Promise.resolve());
   const pendingSaveCount = useRef(0);
+  const nextRectangleId = useRef(cropBounds.length + 1);
   const rectangleState = useRef(
     cropBounds.map((bounds, index) => ({
       id: `crop-${index + 1}`,
@@ -147,6 +152,37 @@ export function StoryboardCropEditor({
     if (!drag.current || drag.current.pointerId !== event.pointerId) return;
     drag.current = null;
     commitRectangles(rectangleState.current);
+  }
+
+  function addRectangle() {
+    if (
+      processing ||
+      rectangleState.current.length >= storyboardCropConfig.maximumPanels
+    ) {
+      return;
+    }
+    const rectangle: EditorRectangle = {
+      id: `crop-${nextRectangleId.current++}`,
+      bounds: createManualBounds(sourceWidth, sourceHeight),
+    };
+    const next = [...rectangleState.current, rectangle];
+    setSelectedId(rectangle.id);
+    void commitRectangles(next);
+  }
+
+  function removeSelectedRectangle() {
+    if (
+      processing ||
+      rectangleState.current.length <= 1 ||
+      selectedId === null
+    ) {
+      return;
+    }
+    const next = rectangleState.current.filter(
+      (rectangle) => rectangle.id !== selectedId,
+    );
+    setSelectedId(next[0]?.id ?? null);
+    void commitRectangles(next);
   }
 
   async function commitRectangles(next: EditorRectangle[]) {
@@ -318,7 +354,28 @@ export function StoryboardCropEditor({
         </svg>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          <button
+            className="btn btn-outline"
+            disabled={
+              processing ||
+              rectangles.length >= storyboardCropConfig.maximumPanels
+            }
+            onClick={addRectangle}
+            type="button"
+          >
+            Add rectangle
+          </button>
+          <button
+            className="btn btn-outline btn-error"
+            disabled={processing || rectangles.length <= 1 || !selectedId}
+            onClick={removeSelectedRectangle}
+            type="button"
+          >
+            Remove selected
+          </button>
+        </div>
         <button
           className="btn btn-primary"
           disabled={processing || saving || !rectangles.length}
@@ -346,6 +403,22 @@ function sortEditorRectangles(rectangles: EditorRectangle[]) {
   return sortedBounds.flatMap(
     (bounds) =>
       rectangles.find((rectangle) => rectangle.bounds === bounds) ?? [],
+  );
+}
+
+function createManualBounds(
+  sourceWidth: number,
+  sourceHeight: number,
+): PanelBounds {
+  return clampPanelBounds(
+    {
+      x: Math.round(sourceWidth * 0.3),
+      y: Math.round(sourceHeight * 0.3),
+      width: Math.round(sourceWidth * 0.4),
+      height: Math.round(sourceHeight * 0.4),
+    },
+    sourceWidth,
+    sourceHeight,
   );
 }
 

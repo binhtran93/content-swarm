@@ -72,6 +72,39 @@ describe("StoryboardCropEditor", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("adds a selected rectangle and saves it", async () => {
+    renderEditor();
+
+    fireEvent.click(screen.getByRole("button", { name: "Add rectangle" }));
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(requestRectangles(0)).toEqual([
+      { x: 10, y: 10, width: 200, height: 150 },
+      { x: 260, y: 10, width: 200, height: 150 },
+      { x: 150, y: 120, width: 200, height: 160 },
+    ]);
+    expect(
+      screen.getByRole("button", { name: "Remove selected" }),
+    ).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: /Resize panel \d+ nw/ }),
+    ).toBeVisible();
+  });
+
+  it("removes the selected rectangle while keeping at least one", async () => {
+    renderEditor();
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove selected" }));
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(requestRectangles(0)).toEqual([
+      { x: 260, y: 10, width: 200, height: 150 },
+    ]);
+    expect(
+      screen.getByRole("button", { name: "Remove selected" }),
+    ).toBeDisabled();
+  });
+
   it("submits current rectangles for cutting and enhancement", async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,

@@ -83,8 +83,8 @@ export default async function StoryboardJobPage({
           <div>
             <h2 className="text-lg font-semibold">Review crop rectangles</h2>
             <p className="text-base-content/60 mt-1 text-sm">
-              Drag a rectangle to move it, or select it and drag a white handle
-              to resize it. The red boundary is the exact final crop.
+              Add or select a rectangle, drag it to move it, and drag a white
+              handle to resize it. The red boundary is the exact final crop.
             </p>
           </div>
           <StoryboardCropEditor
