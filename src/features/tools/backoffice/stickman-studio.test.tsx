@@ -26,7 +26,7 @@ describe("StickmanStudio", () => {
 
     expect(
       screen.getByText(
-        /faithful script using only the essential, visually distinct story beats/i,
+        /faithful script with at least eight essential, visually distinct story beats/i,
       ),
     ).toBeVisible();
     expect(

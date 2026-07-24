@@ -35,10 +35,10 @@ describe("short-video storyboard prompt contracts", () => {
     expect(prompt).toContain(
       "central conflict, timeline, essential turning points",
     );
+    expect(prompt).toContain("Create at least 8 scenes");
     expect(prompt).toContain(
-      "Choose exactly as many scenes as the story needs",
+      "Use more only when the story genuinely needs them",
     );
-    expect(prompt).toContain("There is no numerical scene minimum or maximum");
     expect(prompt).toContain(
       "Include a scene only when it materially advances time, cause, emotion, or understanding",
     );
@@ -124,10 +124,16 @@ describe("short-video storyboard prompt contracts", () => {
       "Preserve uncertainty exactly. Never turn a fear, suspected or blocked memory",
     );
     expect(prompt).toContain(
-      "The SCENE 01 ON_IMAGE_CAPTION may contain no more than 12 words",
+      "Every ON_IMAGE_CAPTION, including the SCENE 01 hook and final question, may contain no more than 12 words",
     );
     expect(prompt).toContain(
-      "Every later ON_IMAGE_CAPTION, including the final question, may contain no more than 10 words",
+      "Never end a VOICEOVER or ON_IMAGE_CAPTION with a period/full stop",
+    );
+    expect(prompt).toContain(
+      "Never use an em dash (—) or en dash (–) in a VOICEOVER or ON_IMAGE_CAPTION",
+    );
+    expect(prompt).toContain(
+      "confirm no VOICEOVER or ON_IMAGE_CAPTION ends with a period/full stop or contains an em dash or en dash",
     );
     expect(prompt).toContain(
       "Do not request dialogue, repeated words, speech bubbles, thought text",

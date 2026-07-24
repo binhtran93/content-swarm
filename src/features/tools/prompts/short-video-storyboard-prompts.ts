@@ -96,7 +96,7 @@ SHORT-VIDEO DIRECTION
 - Adapt the finished video to the source's complexity. Target 20–40 seconds.
 - Aim for 45–95 total spoken words across all VOICEOVER fields, with an absolute maximum of 100 spoken words.
 - Before writing, silently identify the central conflict, timeline, essential turning points, and the source author's final unresolved realization, fear, decision, or question.
-- Choose exactly as many scenes as the story needs. There is no numerical scene minimum or maximum.
+- Create at least 8 scenes. Use more only when the story genuinely needs them.
 - Include a scene only when it materially advances time, cause, emotion, or understanding. Merge repetitive or closely related beats, and never split content merely to increase the picture count.
 - Act as a highly creative director: use varied framing, visual metaphors, reaction shots, symbolic details, pattern interrupts, and purposeful transitions while staying completely faithful to the source.
 - Give each scene one clear story beat and one visually distinct action. Avoid repetitive compositions, poses, props, camera angles, and backgrounds.
@@ -109,7 +109,7 @@ SHORT-VIDEO DIRECTION
 - Do not include incidental dates, streak counts, day numbers, money amounts, names, or other one-off examples in the final question unless that specific detail is the source's central issue.
 - If the source has no direct question, write one short audience-facing question anchored to the source's central subject, conflict, or decision. Name the subject plainly; never use a vague narrative question such as “Where does he go now?”
 - Do not claim that one event, behavior, or condition caused another unless the source explicitly establishes that causality. Avoid constructions such as “Has porn made you...” when the source reports correlation, uncertainty, or fear rather than cause.
-- The final VOICEOVER and ON_IMAGE_CAPTION must be that exact question. Keep it to 10 words or fewer.
+- The final VOICEOVER and ON_IMAGE_CAPTION must be that exact question. Keep it to 12 words or fewer.
 - The final VISUAL must be exactly: QUESTION CARD ONLY — solid black background, large white handwritten question, one thin red underline, no character, scenery, prop, icon, or extra text.
 
 NARRATIVE STRUCTURE AND VIEWPOINT — MANDATORY
@@ -138,7 +138,9 @@ PROJECT VOICE AND TONE — MANDATORY
 
 CAPTION AND VISUAL RULES
 - ON_IMAGE_CAPTION is the exact text that will be drawn into that scene's image.
-- The SCENE 01 ON_IMAGE_CAPTION may contain no more than 12 words. Every later ON_IMAGE_CAPTION, including the final question, may contain no more than 10 words.
+- Never end a VOICEOVER or ON_IMAGE_CAPTION with a period/full stop. Questions must still end with a question mark.
+- Never use an em dash (—) or en dash (–) in a VOICEOVER or ON_IMAGE_CAPTION. Use a comma, colon, or separate short sentence instead.
+- Every ON_IMAGE_CAPTION, including the SCENE 01 hook and final question, may contain no more than 12 words.
 - Every ON_IMAGE_CAPTION must fit on no more than two short lines.
 - Captions should reinforce the beat without copying a long VOICEOVER sentence.
 - Every VISUAL must describe one concrete, drawable composition synchronized with that scene's VOICEOVER.
@@ -154,12 +156,12 @@ Repeat this exact four-line block for every scene:
 
 SCENE 01
 VOICEOVER: <natural spoken narration>
-ON_IMAGE_CAPTION: <exact caption, maximum 12 words for SCENE 01 and 10 words for every later scene, maximum two lines>
+ON_IMAGE_CAPTION: <exact caption, maximum 12 words and two lines>
 VISUAL: <one specific, drawable, non-explicit composition>
 
 Number later scenes sequentially as SCENE 02, SCENE 03, and so on.
 
-Before answering, silently verify every statement against the source; confirm the chosen scene count contains only essential beats; read the ON_IMAGE_CAPTION fields alone in order and confirm they communicate a coherent beginning, progression, climax, and ending; confirm every narrative scene consistently uses first person and only the final audience question changes to “you”; confirm SCENE 01 is a source-supported, trauma-aware summary hook of no more than 12 words with matching VOICEOVER and ON_IMAGE_CAPTION; confirm every later caption is no more than 10 words; confirm uncertainty and causality remain faithful to the source; confirm the Project voice and tone is applied throughout; count the spoken words and estimate a 20–40 second runtime; confirm the final scene is a source-faithful direct question card; and confirm every scene follows the required four-line format.`;
+Before answering, silently verify every statement against the source; confirm there are at least 8 scenes and the chosen scene count contains only essential beats; confirm no VOICEOVER or ON_IMAGE_CAPTION ends with a period/full stop or contains an em dash or en dash, and confirm the final question ends with a question mark; read the ON_IMAGE_CAPTION fields alone in order and confirm they communicate a coherent beginning, progression, climax, and ending; confirm every narrative scene consistently uses first person and only the final audience question changes to “you”; confirm SCENE 01 is a source-supported, trauma-aware summary hook with matching VOICEOVER and ON_IMAGE_CAPTION; confirm every caption is no more than 12 words; confirm uncertainty and causality remain faithful to the source; confirm the Project voice and tone is applied throughout; count the spoken words and estimate a 20–40 second runtime; confirm the final scene is a source-faithful direct question card; and confirm every scene follows the required four-line format.`;
 }
 
 export function buildStickmanStoryboardPrompt({
