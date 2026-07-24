@@ -1,3 +1,4 @@
+import { jsonrepair } from "jsonrepair";
 import { z } from "zod";
 
 export const chatStoryConfig = {
@@ -197,9 +198,13 @@ export function parseChatStoryScript(input: string) {
   try {
     parsed = JSON.parse(input);
   } catch {
-    throw new Error(
-      "Paste the raw JSON response from ChatGPT without markdown fences or commentary.",
-    );
+    try {
+      parsed = JSON.parse(jsonrepair(input));
+    } catch {
+      throw new Error(
+        "The ChatGPT response is not valid JSON and could not be repaired.",
+      );
+    }
   }
 
   const legacyResult = chatStoryScriptSchema.safeParse(parsed);

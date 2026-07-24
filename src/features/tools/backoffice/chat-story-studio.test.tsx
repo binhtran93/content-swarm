@@ -94,13 +94,11 @@ describe("ChatStoryStudio", () => {
     expect(screen.getByRole("button", { name: "Export MP4" })).toBeEnabled();
   });
 
-  it("shows a useful error for markdown-wrapped output", async () => {
+  it("shows a useful error when repaired JSON has the wrong structure", async () => {
     render(<ChatStoryStudio project={project} projectId="urge-zero" />);
     fireEvent.change(screen.getByLabelText("ChatGPT JSON response"), {
       target: { value: "```json\n{}\n```" },
     });
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "without markdown fences",
-    );
+    expect(await screen.findByRole("alert")).toHaveTextContent("title");
   });
 });

@@ -91,9 +91,26 @@ describe("chat story contract", () => {
     expect(() => chatStoryScriptSchema.parse(script)).toThrow(/duplicated/);
   });
 
-  it("rejects markdown-wrapped responses with a useful message", () => {
+  it("repairs smart quotes and unescaped dialogue quotes", () => {
+    const messages = Array.from({ length: 20 }, (_, index) =>
+      index === 19
+        ? `{“from”:“them”,“text”:“Said "I can do whatever I want" and started yelling”}`
+        : `{“from”:“${index % 2 ? "me" : "them"}”,“text”:“Message ${index + 1}”}`,
+    ).join(",");
+    const script = parseChatStoryScript(
+      `{“title”:“The Grass Outside My Window”,“otherPerson”:“Nina”,“messages”:[${messages}]}`,
+    );
+
+    expect(script.title).toBe("The Grass Outside My Window");
+    expect(script.participants[0].displayName).toBe("Nina");
+    expect(script.messages.at(-1)?.text).toBe(
+      'Said "I can do whatever I want" and started yelling',
+    );
+  });
+
+  it("accepts markdown-wrapped JSON and still validates its structure", () => {
     expect(() => parseChatStoryScript("```json\n{}\n```")).toThrow(
-      /without markdown fences/,
+      /title.*expected string/i,
     );
   });
 });
