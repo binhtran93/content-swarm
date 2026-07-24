@@ -6,6 +6,19 @@ export const storyboardJobNameSchema = z
   .trim()
   .min(1, "Name is required.")
   .max(100, "Use 100 characters or fewer.");
+export const storyboardEndCardQuestionSchema = z
+  .string()
+  .trim()
+  .max(120, "Use 120 characters or fewer.")
+  .refine(
+    (value) => !value || value.split(/\s+/).filter(Boolean).length <= 12,
+    "Use 12 words or fewer.",
+  )
+  .refine((value) => !/[—–]/.test(value), "Do not use an em dash or en dash.")
+  .refine(
+    (value) => !value || value.endsWith("?"),
+    "Final question must end with a question mark.",
+  );
 
 export const storyboardCropConfig = {
   maximumPanels: 200,
@@ -38,6 +51,7 @@ const commonManifestFields = {
   projectId: z.string().min(1),
   jobId: storyboardJobIdSchema,
   name: storyboardJobNameSchema,
+  endCardQuestion: storyboardEndCardQuestionSchema.default(""),
   source: sourceSchema,
   panels: z
     .array(storyboardPanelSchema)

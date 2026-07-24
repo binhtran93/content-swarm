@@ -15,13 +15,18 @@ export async function POST(
     const { projectId } = await context.params;
     const formData = await request.formData();
     const upload = formData.get("storyboard");
+    const finalQuestion = formData.get("finalQuestion");
     if (!(upload instanceof File)) {
       throw new ToolServiceError(
         "invalid",
         "Choose a PNG or JPEG storyboard image.",
       );
     }
-    const job = await createStoryboardJob(projectId, upload);
+    const job = await createStoryboardJob(
+      projectId,
+      upload,
+      typeof finalQuestion === "string" ? finalQuestion : "",
+    );
     return NextResponse.json(
       { jobId: job.jobId, status: job.status },
       { status: 201 },

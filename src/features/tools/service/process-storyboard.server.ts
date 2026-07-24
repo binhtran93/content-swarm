@@ -2,7 +2,7 @@ import "server-only";
 
 import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
-import sharp, { type OverlayOptions } from "sharp";
+import sharp from "sharp";
 
 import type {
   PanelBounds,
@@ -23,8 +23,7 @@ const maximumInputPixels = 40_000_000;
 
 export type StoryboardEndCardBranding = {
   projectId: string;
-  name: string;
-  description: string;
+  question: string;
 };
 
 export async function detectStoryboard(
@@ -119,7 +118,7 @@ export async function processStoryboard(
     status: "processing",
     cropBounds: rectangles,
     panels: [],
-    panelCount: rectangles.length,
+    panelCount: rectangles.length + (branding ? 1 : 0),
     hasZip: false,
     error: null,
     updatedAt: new Date().toISOString(),
@@ -155,16 +154,6 @@ export async function processStoryboard(
       inputDirectory: rawDirectory,
       outputDirectory: enhancedDirectory,
     });
-    if (branding) {
-      await brandFinalQuestionCard({
-        panelPath: path.join(
-          enhancedDirectory,
-          `panel-${String(rawPanels.length).padStart(2, "0")}.png`,
-        ),
-        branding,
-      });
-    }
-
     const panels: StoryboardPanel[] = await Promise.all(
       rawPanels.map(async (panel) => {
         const metadata = await sharp(
@@ -183,6 +172,36 @@ export async function processStoryboard(
         };
       }),
     );
+    if (branding) {
+      const firstPanel = panels[0];
+      if (!firstPanel) {
+        throw new ToolServiceError(
+          "failed",
+          "At least one illustrated panel is required.",
+        );
+      }
+      const panelNumber = panels.length + 1;
+      const panelId = `panel-${String(panelNumber).padStart(2, "0")}`;
+      const fileName = `${panelId}.png`;
+      await renderFinalQuestionCard({
+        panelPath: path.join(enhancedDirectory, fileName),
+        width: firstPanel.width,
+        height: firstPanel.height,
+        branding,
+      });
+      panels.push({
+        panelId,
+        fileName,
+        bounds: {
+          x: 0,
+          y: 0,
+          width: firstPanel.width,
+          height: firstPanel.height,
+        },
+        width: firstPanel.width,
+        height: firstPanel.height,
+      });
+    }
 
     await createPanelsZip({
       panels: panels.map((panel) => ({
@@ -222,106 +241,68 @@ export async function processStoryboard(
   }
 }
 
-export async function brandFinalQuestionCard({
+export async function renderFinalQuestionCard({
   panelPath,
+  width,
+  height,
   branding,
 }: {
   panelPath: string;
+  width: number;
+  height: number;
   branding: StoryboardEndCardBranding;
 }) {
-  if (!(await isBlackEndCard(panelPath))) return;
-
-  const metadata = await sharp(panelPath).metadata();
-  if (!metadata.width || !metadata.height) return;
-
   const logo =
     (await readProjectAsset(branding.projectId, "logo-full.png")) ??
     (await readProjectAsset(branding.projectId, "logo.png"));
-  if (!logo) return;
-  const appStoreIcon = await readSharedAsset("appstore.png");
-  const googlePlayIcon = await readSharedAsset("google-play.png");
-
-  const { width, height } = metadata;
-  const margin = Math.max(28, Math.round(width * 0.07));
   const logoSize = Math.max(
-    48,
-    Math.round(Math.min(width * 0.1, height * 0.11)),
+    72,
+    Math.round(Math.min(width * 0.2, height * 0.13)),
   );
-  const titleSize = Math.max(
-    24,
-    Math.round(Math.min(width * 0.042, height * 0.06)),
+  const logoTop = Math.round(height * 0.16);
+  const questionLines = wrapEndCardQuestion(branding.question);
+  const questionSize = Math.max(
+    30,
+    Math.round(Math.min(width * 0.075, height * 0.055)),
   );
-  const descriptionSize = Math.max(
-    16,
-    Math.round(Math.min(width * 0.027, height * 0.032)),
-  );
-  const storeIconSize = Math.max(
-    32,
-    Math.round(Math.min(width * 0.048, height * 0.04)),
-  );
-  const storeIconGap = Math.max(10, Math.round(width * 0.018));
-  const storeIconTop = height - margin - storeIconSize;
-  const descriptionLines = wrapEndCardDescription(branding.description);
-  const descriptionGap = Math.max(14, Math.round(titleSize * 0.42));
-  const descriptionLineHeight = descriptionSize + 8;
-  const descriptionHeight =
-    descriptionGap + descriptionLines.length * descriptionLineHeight;
-  const titleY =
-    storeIconTop - Math.max(16, Math.round(height * 0.018)) - descriptionHeight;
-  const logoTop = Math.max(
-    margin,
-    titleY - titleSize - logoSize - Math.max(14, Math.round(width * 0.018)),
-  );
-  const brandText = Buffer.from(`
+  const lineHeight = Math.round(questionSize * 1.2);
+  const questionTop = logoTop + logoSize + Math.round(height * 0.055);
+  const centerX = Math.round(width * 0.42);
+  const underlineY =
+    questionTop +
+    questionLines.length * lineHeight +
+    Math.round(questionSize * 0.35);
+  const underlineWidth = Math.round(width * 0.5);
+  const cardText = Buffer.from(`
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <text x="${Math.round(width / 2)}" y="${titleY}" fill="#ffffff" font-family="Arial, sans-serif" font-size="${titleSize}" font-weight="700" text-anchor="middle">${escapeXml(branding.name)}</text>
-      ${descriptionLines
+      ${questionLines
         .map(
           (line, index) =>
-            `<text x="${Math.round(width / 2)}" y="${titleY + descriptionGap + descriptionSize + descriptionLineHeight * index}" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="${descriptionSize}" text-anchor="middle">${escapeXml(line)}</text>`,
+            `<text x="${centerX}" y="${questionTop + questionSize + lineHeight * index}" fill="#ffffff" font-family="'Comic Sans MS', 'Chalkboard SE', sans-serif" font-size="${questionSize}" font-weight="700" text-anchor="middle">${escapeXml(line)}</text>`,
         )
         .join("")}
+      <line x1="${centerX - underlineWidth / 2}" y1="${underlineY}" x2="${centerX + underlineWidth / 2}" y2="${underlineY}" stroke="#ef1b2d" stroke-width="${Math.max(4, Math.round(width * 0.008))}" stroke-linecap="round" />
     </svg>`);
-  const composites: OverlayOptions[] = [
-    {
-      input: brandText,
-      top: 0,
-      left: 0,
-    },
-  ];
+  const composites = [{ input: cardText, top: 0, left: 0 }];
 
   if (logo) {
     composites.push({
       input: await roundedBrandThumbnail(logo, logoSize),
       top: logoTop,
-      left: Math.round((width - logoSize) / 2),
+      left: Math.round(centerX - logoSize / 2),
     });
   }
-
-  const storeIcons: Array<NonNullable<typeof appStoreIcon>> = [];
-  if (appStoreIcon) storeIcons.push(appStoreIcon);
-  if (googlePlayIcon) storeIcons.push(googlePlayIcon);
-  const storeRowWidth =
-    storeIcons.length * storeIconSize +
-    Math.max(0, storeIcons.length - 1) * storeIconGap;
-  let storeIconLeft = Math.round((width - storeRowWidth) / 2);
-  for (const storeIcon of storeIcons) {
-    composites.push({
-      input: await sharp(storeIcon)
-        .resize({ width: storeIconSize, height: storeIconSize, fit: "contain" })
-        .png()
-        .toBuffer(),
-      top: storeIconTop,
-      left: storeIconLeft,
-    });
-    storeIconLeft += storeIconSize + storeIconGap;
-  }
-
-  const branded = await sharp(panelPath)
+  await sharp({
+    create: {
+      width,
+      height,
+      channels: 3,
+      background: "#000000",
+    },
+  })
     .composite(composites)
     .png({ compressionLevel: 9 })
-    .toBuffer();
-  await sharp(branded).png({ compressionLevel: 9 }).toFile(panelPath);
+    .toFile(panelPath);
 }
 
 async function roundedBrandThumbnail(input: Buffer, size: number) {
@@ -336,17 +317,6 @@ async function roundedBrandThumbnail(input: Buffer, size: number) {
     .toBuffer();
 }
 
-async function isBlackEndCard(panelPath: string) {
-  const { data } = await sharp(panelPath)
-    .resize({ width: 100, withoutEnlargement: true })
-    .flatten({ background: "#000000" })
-    .greyscale()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  const darkPixels = [...data].filter((pixel) => pixel < 48).length;
-  return darkPixels / data.length >= 0.6;
-}
-
 async function readProjectAsset(projectId: string, filename: string) {
   try {
     return await readFile(
@@ -357,31 +327,20 @@ async function readProjectAsset(projectId: string, filename: string) {
   }
 }
 
-async function readSharedAsset(filename: string) {
-  try {
-    return await readFile(
-      path.join(process.cwd(), "public", "shared", filename),
-    );
-  } catch {
-    return null;
-  }
-}
-
-function wrapEndCardDescription(description: string) {
-  const words = description.trim().split(/\s+/).filter(Boolean);
+function wrapEndCardQuestion(question: string) {
+  const words = question.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let line = "";
   for (const word of words) {
     const next = line ? `${line} ${word}` : word;
-    if (next.length > 42 && line) {
+    if ((next.length > 22 || next.split(/\s+/).length > 4) && line) {
       lines.push(line);
       line = word;
-      if (lines.length === 2) break;
     } else {
       line = next;
     }
   }
-  if (line && lines.length < 2) lines.push(line);
+  if (line) lines.push(line);
   return lines;
 }
 

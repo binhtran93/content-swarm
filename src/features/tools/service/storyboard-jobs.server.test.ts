@@ -114,6 +114,7 @@ function reviewManifest(): StoryboardJobManifest {
     projectId: "urge-zero",
     jobId,
     name: "Urge storyboard",
+    endCardQuestion: "",
     status: "review",
     source: {
       originalName: "storyboard.png",

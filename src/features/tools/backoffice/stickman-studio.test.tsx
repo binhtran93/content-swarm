@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { StickmanStudio } from "@/features/tools/backoffice/stickman-studio";
 
 const project = {
+  projectId: "urge-zero",
   name: "UrgeZero",
   description: "Private recovery product context.",
   voiceTone: "Direct, compassionate, and candid.",
@@ -15,6 +16,7 @@ describe("StickmanStudio", () => {
 
   beforeEach(() => {
     writeText.mockClear();
+    window.localStorage.clear();
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
       value: { writeText },
@@ -25,12 +27,10 @@ describe("StickmanStudio", () => {
     render(<StickmanStudio project={project} />);
 
     expect(
-      screen.getByText(
-        /faithful script with at least eight essential, visually distinct story beats/i,
-      ),
+      screen.getByText(/faithful captions, visuals, and one separate/i),
     ).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Copy script prompt" }),
+      screen.getByRole("button", { name: "Copy JSON prompt" }),
     ).toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Copy storyboard prompt" }),
@@ -40,7 +40,7 @@ describe("StickmanStudio", () => {
       target: { value: "A multiline story.\nIt has a second line." },
     });
 
-    const prompt = screen.getByLabelText("Full script prompt");
+    const prompt = screen.getByLabelText("Full JSON-generation prompt");
     const promptValue = (prompt as HTMLTextAreaElement).value;
     expect(promptValue).toContain('"name": "UrgeZero"');
     expect(promptValue).toContain(
@@ -50,7 +50,7 @@ describe("StickmanStudio", () => {
       '"source": "A multiline story.\\nIt has a second line."',
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Copy script prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copy JSON prompt" }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(promptValue));
     expect(screen.getByRole("button", { name: "Copied" })).toBeVisible();
@@ -58,27 +58,55 @@ describe("StickmanStudio", () => {
 
   it("rebuilds the storyboard prompt when the pasted AI response changes", () => {
     render(<StickmanStudio project={project} />);
-    const response = screen.getByLabelText("AI scene-script response");
+    const response = screen.getByLabelText("AI JSON response");
 
     fireEvent.change(response, {
       target: {
-        value:
-          "SCENE 01\nVOICEOVER: First version.\nON_IMAGE_CAPTION: First\nVISUAL: A first scene.",
+        value: JSON.stringify({
+          scenes: [{ scene: 1, caption: "First", visual: "A first scene" }],
+          finalQuestion: "Can you face this?",
+        }),
       },
     });
     const output = screen.getByLabelText("Full storyboard image prompt");
-    expect((output as HTMLTextAreaElement).value).toContain("First version");
+    expect((output as HTMLTextAreaElement).value).toContain("A first scene");
+    expect(screen.getByLabelText("Detected final question")).toHaveValue(
+      "Can you face this?",
+    );
+    expect(
+      window.localStorage.getItem("anmisoft:stickman-final-question:urge-zero"),
+    ).toBe("Can you face this?");
 
     fireEvent.change(response, {
       target: {
-        value:
-          "SCENE 01\nVOICEOVER: Replacement.\nON_IMAGE_CAPTION: New\nVISUAL: A changed scene.",
+        value: JSON.stringify({
+          scenes: [{ scene: 1, caption: "New", visual: "A changed scene" }],
+          finalQuestion: "Can you choose differently?",
+        }),
       },
     });
-    expect((output as HTMLTextAreaElement).value).toContain("Replacement");
+    expect((output as HTMLTextAreaElement).value).toContain("A changed scene");
     expect((output as HTMLTextAreaElement).value).not.toContain(
-      "First version",
+      "A first scene",
     );
+    expect((output as HTMLTextAreaElement).value).not.toContain(
+      "Can you choose differently?",
+    );
+  });
+
+  it("rejects a non-JSON AI response without building the image prompt", () => {
+    render(<StickmanStudio project={project} />);
+
+    fireEvent.change(screen.getByLabelText("AI JSON response"), {
+      target: { value: "SCENE 01\nCAPTION: Not JSON" },
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Paste the valid JSON object",
+    );
+    expect(
+      screen.getByRole("button", { name: "Copy storyboard prompt" }),
+    ).toBeDisabled();
   });
 
   it("reports unavailable clipboard access", async () => {
@@ -90,7 +118,7 @@ describe("StickmanStudio", () => {
     fireEvent.change(screen.getByLabelText("Source story or post"), {
       target: { value: "Source" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Copy script prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copy JSON prompt" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Clipboard access is unavailable",

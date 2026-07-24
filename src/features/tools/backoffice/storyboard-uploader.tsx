@@ -2,12 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ChangeEvent,
   type FormEvent,
 } from "react";
+
+import { stickmanFinalQuestionStorageKey } from "@/features/tools/model/stickman-storyboard-script";
 
 export function StoryboardUploader({
   available,
@@ -23,6 +27,21 @@ export function StoryboardUploader({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [storyboard, setStoryboard] = useState<File | null>(null);
+  const subscribeToStorage = useCallback((notify: () => void) => {
+    window.addEventListener("storage", notify);
+    return () => window.removeEventListener("storage", notify);
+  }, []);
+  const readFinalQuestion = useCallback(
+    () =>
+      window.localStorage.getItem(stickmanFinalQuestionStorageKey(projectId)) ??
+      "",
+    [projectId],
+  );
+  const finalQuestion = useSyncExternalStore(
+    subscribeToStorage,
+    readFinalQuestion,
+    () => "",
+  );
 
   useEffect(() => {
     function acceptClipboardImage(event: ClipboardEvent) {
@@ -92,6 +111,7 @@ export function StoryboardUploader({
     try {
       const formData = new FormData();
       formData.set("storyboard", storyboard);
+      formData.set("finalQuestion", finalQuestion);
       const response = await fetch(
         `/api/admin/projects/${projectId}/tools/storyboard-splitter/jobs`,
         {
@@ -137,6 +157,19 @@ export function StoryboardUploader({
         <div className="alert alert-error mt-5" role="alert">
           <span>{error}</span>
         </div>
+      ) : null}
+      {finalQuestion ? (
+        <label className="form-control mt-5 block">
+          <span className="label-text font-medium">
+            Detected final question
+          </span>
+          <input
+            aria-label="Detected final question"
+            className="input input-bordered bg-base-200 mt-2 w-full"
+            readOnly
+            value={finalQuestion}
+          />
+        </label>
       ) : null}
       <form className="mt-5 flex flex-col gap-4 sm:flex-row" onSubmit={submit}>
         <input

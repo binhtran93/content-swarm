@@ -64,6 +64,7 @@ describe("local storyboard workspace", () => {
     const versionOne: Record<string, unknown> = { ...legacy };
     delete versionOne.detectedBounds;
     delete versionOne.cropBounds;
+    delete versionOne.endCardQuestion;
     await writeFile(
       storyboardJobPath("urge-zero", jobId, "manifest.json"),
       JSON.stringify(versionOne),
@@ -76,6 +77,7 @@ describe("local storyboard workspace", () => {
       { x: 10, y: 10, width: 280, height: 210 },
     ]);
     expect(normalized.cropBounds).toEqual(normalized.detectedBounds);
+    expect(normalized.endCardQuestion).toBe("");
   });
 });
 
@@ -85,6 +87,7 @@ function readyManifest(): StoryboardJobManifest {
     projectId: "urge-zero",
     jobId,
     name: "Urge storyboard",
+    endCardQuestion: "Can you forgive yourself?",
     status: "ready",
     source: {
       originalName: "storyboard.png",

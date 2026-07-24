@@ -6,6 +6,7 @@ import sharp from "sharp";
 
 import {
   storyboardCropBoundsSchema,
+  storyboardEndCardQuestionSchema,
   storyboardJobNameSchema,
   type PanelBounds,
   type StoryboardJobManifest,
@@ -30,7 +31,11 @@ const maximumUploadBytes = 25 * 1024 * 1024;
 const maximumInputPixels = 40_000_000;
 const allowedContentTypes = new Set(["image/jpeg", "image/png"]);
 
-export async function createStoryboardJob(projectId: string, file: File) {
+export async function createStoryboardJob(
+  projectId: string,
+  file: File,
+  finalQuestion = "",
+) {
   await getProjectContext(projectId);
   const capability = await getLocalMediaToolsCapability();
   if (!capability.available) {
@@ -94,6 +99,7 @@ export async function createStoryboardJob(projectId: string, file: File) {
       projectId,
       jobId,
       name: defaultName,
+      endCardQuestion: storyboardEndCardQuestionSchema.parse(finalQuestion),
       status: "processing",
       source: {
         originalName: basename(file.name).slice(0, 255) || "storyboard",
@@ -197,11 +203,16 @@ export async function processStoryboardJob(
       "This storyboard cannot be processed from its current state.",
     );
   }
-  return processStoryboard(manifest, validateCropBounds(manifest, rectangles), {
-    projectId: project.projectId,
-    name: project.name,
-    description: project.description,
-  });
+  return processStoryboard(
+    manifest,
+    validateCropBounds(manifest, rectangles),
+    manifest.endCardQuestion
+      ? {
+          projectId: project.projectId,
+          question: manifest.endCardQuestion,
+        }
+      : undefined,
+  );
 }
 
 export async function deleteStoryboardJob(projectId: string, jobId: string) {

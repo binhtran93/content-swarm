@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { Project } from "@/features/projects/model/project";
+import {
+  parseStickmanStoryboardScript,
+  stickmanFinalQuestionStorageKey,
+} from "@/features/tools/model/stickman-storyboard-script";
 import {
   buildShortVideoScriptPrompt,
   buildStickmanStoryboardPrompt,
@@ -13,7 +17,10 @@ type CopyTarget = "script" | "storyboard";
 export function StickmanStudio({
   project,
 }: {
-  project: Pick<Project, "name" | "description" | "voiceTone" | "topics">;
+  project: Pick<
+    Project,
+    "projectId" | "name" | "description" | "voiceTone" | "topics"
+  >;
 }) {
   const [source, setSource] = useState("");
   const [scriptResponse, setScriptResponse] = useState("");
@@ -23,9 +30,26 @@ export function StickmanStudio({
   const scriptPrompt = source.trim()
     ? buildShortVideoScriptPrompt({ project, source })
     : "";
-  const storyboardPrompt = scriptResponse.trim()
-    ? buildStickmanStoryboardPrompt({ project, script: scriptResponse })
+  const parsedScript = useMemo(() => {
+    if (!scriptResponse.trim()) return null;
+    try {
+      return parseStickmanStoryboardScript(scriptResponse);
+    } catch {
+      return null;
+    }
+  }, [scriptResponse]);
+  const storyboardPrompt = parsedScript
+    ? buildStickmanStoryboardPrompt({ project, script: parsedScript })
     : "";
+
+  useEffect(() => {
+    const storageKey = stickmanFinalQuestionStorageKey(project.projectId);
+    if (parsedScript) {
+      window.localStorage.setItem(storageKey, parsedScript.finalQuestion);
+    } else if (scriptResponse.trim()) {
+      window.localStorage.removeItem(storageKey);
+    }
+  }, [parsedScript, project.projectId, scriptResponse]);
 
   async function copyPrompt(target: CopyTarget, prompt: string) {
     setCopyError(null);
@@ -70,12 +94,12 @@ export function StickmanStudio({
                 className="mt-1 text-lg font-semibold"
                 id="script-prompt-heading"
               >
-                Turn a source story into a short-video script
+                Turn a source story into storyboard JSON
               </h2>
               <p className="text-base-content/60 mt-1 text-sm leading-6">
                 Paste a post or story from any source. The generated prompt asks
-                a creative AI director for a faithful script with at least eight
-                essential, visually distinct story beats.
+                a creative AI director for faithful captions, visuals, and one
+                separate final question.
               </p>
             </div>
 
@@ -96,9 +120,9 @@ export function StickmanStudio({
             </label>
 
             <PromptOutput
-              copyLabel="Copy script prompt"
+              copyLabel="Copy JSON prompt"
               copied={copied === "script"}
-              heading="Full script prompt"
+              heading="Full JSON-generation prompt"
               onCopy={() => copyPrompt("script", scriptPrompt)}
               prompt={scriptPrompt}
             />
@@ -118,27 +142,45 @@ export function StickmanStudio({
                 Turn the script into a stickman storyboard
               </h2>
               <p className="text-base-content/60 mt-1 text-sm leading-6">
-                Paste the AI response from Step 1. The generated prompt locks
-                the art style and produces splitter-friendly 9:16 portrait
-                panels.
+                Paste the JSON response from Step 1. The generated prompt sends
+                only the illustrated scenes to the image AI and saves the final
+                question for Storyboard Splitter.
               </p>
             </div>
 
             <label className="form-control mt-5 block">
-              <span className="label-text font-medium">
-                AI scene-script response
-              </span>
+              <span className="label-text font-medium">AI JSON response</span>
               <textarea
-                aria-label="AI scene-script response"
+                aria-label="AI JSON response"
                 className="textarea textarea-bordered mt-2 min-h-44 w-full"
                 onChange={(event) => {
                   setScriptResponse(event.target.value);
                   setCopied(null);
                 }}
-                placeholder="Paste the complete SCENE / VOICEOVER / ON_IMAGE_CAPTION / VISUAL response here…"
+                placeholder='Paste the complete {"scenes":[...],"finalQuestion":"..."} response here…'
                 value={scriptResponse}
               />
             </label>
+
+            {parsedScript ? (
+              <label className="form-control mt-4 block">
+                <span className="label-text font-medium">
+                  Detected final question
+                </span>
+                <input
+                  aria-label="Detected final question"
+                  className="input input-bordered bg-base-200 mt-2 w-full"
+                  readOnly
+                  value={parsedScript.finalQuestion}
+                />
+              </label>
+            ) : scriptResponse.trim() ? (
+              <div className="alert alert-error mt-4" role="alert">
+                <span>
+                  Paste the valid JSON object returned by the Step 1 prompt
+                </span>
+              </div>
+            ) : null}
 
             <PromptOutput
               copyLabel="Copy storyboard prompt"

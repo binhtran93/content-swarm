@@ -1,8 +1,8 @@
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import sharp from "sharp";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { StoryboardJobManifest } from "@/features/tools/model/storyboard-splitter-job";
 import {
@@ -11,10 +11,30 @@ import {
   writeStoryboardJobManifest,
 } from "@/features/tools/service/local-tool-workspace.server";
 import {
-  brandFinalQuestionCard,
   detectStoryboard,
   extractRawPanels,
+  processStoryboard,
+  renderFinalQuestionCard,
 } from "@/features/tools/service/process-storyboard.server";
+
+vi.mock("@/features/tools/service/run-real-esrgan.server", () => ({
+  runRealEsrgan: vi.fn(
+    async ({
+      inputDirectory,
+      outputDirectory,
+    }: {
+      inputDirectory: string;
+      outputDirectory: string;
+    }) => {
+      for (const fileName of await readdir(inputDirectory)) {
+        await copyFile(
+          path.join(inputDirectory, fileName),
+          path.join(outputDirectory, fileName),
+        );
+      }
+    },
+  ),
+}));
 
 const jobId = "8f6d717d-56d5-4f62-9254-08aeb4d92d31";
 let workspace: string;
@@ -79,34 +99,67 @@ describe("storyboard processing stages", () => {
     ).resolves.toMatchObject({ width: 80, height: 60, format: "png" });
   });
 
-  it("adds real Project branding to a final black question card", async () => {
+  it("renders the final card from the stored question", async () => {
     const panelPath = path.join(workspace, "end-card.png");
-    await sharp({
-      create: {
-        width: 360,
-        height: 640,
-        channels: 3,
-        background: "#000000",
-      },
-    })
-      .png()
-      .toFile(panelPath);
 
-    await brandFinalQuestionCard({
+    await renderFinalQuestionCard({
       panelPath,
+      width: 360,
+      height: 640,
       branding: {
         projectId: "urge-zero",
-        name: "UrgeZero",
-        description: "Build healthier habits and take back control.",
+        question: "Can you forgive yourself and keep fighting?",
       },
     });
 
-    const { data } = await sharp(panelPath)
+    const { data, info } = await sharp(panelPath)
       .resize({ width: 80 })
       .greyscale()
       .raw()
       .toBuffer({ resolveWithObject: true });
+    expect(info.height).toBeGreaterThan(info.width);
     expect([...data].some((pixel) => pixel > 200)).toBe(true);
+  });
+
+  it("appends the code-rendered final card after illustrated panels", async () => {
+    const source = storyboardJobPath("urge-zero", jobId, "source.png");
+    await sharp({
+      create: {
+        width: 180,
+        height: 320,
+        channels: 3,
+        background: "#ffffff",
+      },
+    })
+      .png()
+      .toFile(source);
+    const manifest: StoryboardJobManifest = {
+      ...processingManifest(),
+      status: "review",
+      source: {
+        originalName: "storyboard.png",
+        contentType: "image/png",
+        width: 180,
+        height: 320,
+      },
+      detectedBounds: [{ x: 0, y: 0, width: 180, height: 320 }],
+      cropBounds: [{ x: 0, y: 0, width: 180, height: 320 }],
+    };
+    await writeStoryboardJobManifest(manifest);
+
+    const completed = await processStoryboard(manifest, manifest.cropBounds, {
+      projectId: "urge-zero",
+      question: "Can you forgive yourself and keep fighting?",
+    });
+
+    expect(completed.status).toBe("ready");
+    expect(completed.panels).toHaveLength(2);
+    expect(completed.panels[1]).toMatchObject({
+      panelId: "panel-02",
+      fileName: "panel-02.png",
+      width: 180,
+      height: 320,
+    });
   });
 });
 
@@ -117,6 +170,7 @@ function processingManifest(): StoryboardJobManifest {
     projectId: "urge-zero",
     jobId,
     name: "Storyboard",
+    endCardQuestion: "",
     status: "processing",
     source: {
       originalName: "storyboard.png",
