@@ -228,8 +228,9 @@ ${layoutContract}
 
 TIKTOK-FIRST UI SAFETY — MANDATORY
 - Apply these coordinates separately inside every 9:16 panel after it is split from the contact sheet. Treat the panel's top-left as x=0%, y=0% and its bottom-right as x=100%, y=100%.
-- The hard text-safe region is x=12%–72% and y=15%–66%. Keep every caption, question, number, prop label, underline, and other readable text completely inside it, including all letter strokes, outlines, shadows, and glow.
-- Treat the top 15%, bottom 34%, left 12%, and right 28% as text-obstruction zones. Never put readable text in those zones.
+- The hard text-safe region is x=12%–72% and y=20%–66%. Keep every caption, number, prop label, underline, and other readable text completely inside it, including all letter strokes, outlines, shadows, and glow.
+- The top 20% of every panel is a strict no-text zone reserved for TikTok search, navigation, and device UI. It may contain background artwork only. Never place even part of a letter, outline, shadow, glow, underline, or label above y=20%.
+- Treat the top 20%, bottom 34%, left 12%, and right 28% as text-obstruction zones. Never put readable text in those zones.
 - The right side is especially risky because of profile, like, comment, save, and share controls. Keep the protagonist's face and the scene's main visual meaning clear of the right-side control stack and the bottom username/caption/audio area.
 - Target the protagonist's face or main focal point around x=25%–60%, y=35%–60%. This is a composition target, not a hard crop box.
 - Let the illustration fill the entire 9:16 panel. Backgrounds, scenery, limbs, shadows, furniture, and nonessential parts of props may extend into UI-obstruction zones when the scene remains understandable without those covered portions.
@@ -238,7 +239,9 @@ TIKTOK-FIRST UI SAFETY — MANDATORY
 - Do not draw the safe-area rectangle, guides, coordinates, UI controls, or shaded exclusion zones in the finished artwork.
 
 CAPTIONS AND TEXT
-- Put every caption inside the caption band x=15%–70%, y=18%–34%. "Near the top" always means this upper-middle band below the platform UI, never the physical top edge of the panel.
+- Put every caption inside the caption band x=15%–70%, y=22%–38%. The top edge of the complete caption block must begin at or below y=22%, and its bottom edge must end at or above y=38%.
+- For a 1080×1920 panel, this means no caption pixel may appear above 422 px from the top. Use the equivalent 22% position at every other resolution.
+- "Near the top" always means the upper-middle caption band below the TikTok UI, never the physical top edge, upper margin, or top fifth of the panel.
 - Render the exact caption clearly, with high contrast, on no more than two lines.
 - Scale and wrap the caption so the complete text, including ascenders, descenders, outlines, and shadows, remains inside the caption band with visible breathing room on every side.
 - Center the caption around x=42%–45%, not at the full-panel horizontal center, and never right-align it.
@@ -273,7 +276,7 @@ CONTENT SAFETY
 - Do not depict nudity, explicit anatomy, sexual acts, graphic violence, or self-harm.
 
 FINAL QUALITY CHECK
-Silently verify each panel against its own coordinate system: every readable text element must fit fully inside x=12%–72%, y=15%–66%; every caption must fit fully inside x=15%–70%, y=18%–34%; the protagonist's face and the scene's main meaning must remain clear of the right-side controls and bottom feed UI; and the full-frame artwork must remain 9:16 without an inset aspect-ratio box or letterboxing. Also verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, the same character silhouettes and proportions recur throughout, every background uses the same softly painted editorial-storybook technique, and lighting and color support each scene's emotion without changing the locked art style.
+Silently inspect every panel separately before returning the image. First check the empty top safety zone: if any readable pixel appears above y=20%, move the entire text block down. Then confirm every readable text element fits fully inside x=12%–72%, y=20%–66%, and every complete caption block fits fully inside x=15%–70%, y=22%–38%. Reject and correct the panel rather than accepting text that is merely close to these limits. Confirm the protagonist's face and the scene's main meaning remain clear of the right-side controls and bottom feed UI, and the full-frame artwork remains 9:16 without an inset aspect-ratio box or letterboxing. Also verify that the sheet contains exactly one equal-size bordered 9:16 portrait panel per scene, the reading order matches the script, every caption is exact, all borders are complete and separated by white gutters, no content crosses a border, the same character silhouettes and proportions recur throughout, every background uses the same softly painted editorial-storybook technique, and lighting and color support each scene's emotion without changing the locked art style.
 
 Output only the finished contact-sheet image. Do not output an explanation, prompt text, legend, or commentary.`;
 }
