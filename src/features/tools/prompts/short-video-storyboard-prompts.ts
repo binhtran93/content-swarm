@@ -207,7 +207,7 @@ SCENE MAPPING
 SCENE 1 CINEMATIC HOOK STYLE — MANDATORY
 - Make scene 1 substantially more arresting than the later story panels while keeping the same stickman character design and illustration world.
 - Compose it like a premium vertical movie poster: dramatic depth, one dominant foreground reaction, the source-supported conflict clearly visible in the background, and a strong visual path connecting them.
-- Scene 1 is not an exception to TikTok text safety. Keep its entire large hook caption and red underline inside x=15%–70%, y=35%–50%. The top 35% must remain completely free of text even when poster conventions would normally place a headline at the physical top.
+- Keep Scene 1's entire large hook caption and red underline in the upper-middle band x=15%–70%, y=30%–45%, centered around y=37.5%. Scene 1 is the only panel whose caption stays above the middle.
 - Prefer an over-the-shoulder discovery, doorway reveal, reflection, looming foreground close-up, or similarly dramatic perspective when the supplied visual supports it. Avoid a flat lineup, two centered figures, empty symbolic space, or a generic character beside a screen.
 - Use a dark, high-contrast environment with cinematic rim light, screen glow, deep shadows, and restrained red accents. Keep faces and the central action immediately readable at phone size.
 - Make scene 1's caption the largest and boldest typography in the sheet. Use an expressive condensed brush-lettered display style, not the softer marker lettering used later.
@@ -229,24 +229,25 @@ ${layoutContract}
 
 TIKTOK-FIRST UI SAFETY — MANDATORY
 - Apply these coordinates separately inside every 9:16 panel after it is split from the contact sheet. Treat the panel's top-left as x=0%, y=0% and its bottom-right as x=100%, y=100%.
-- The hard text-safe region is x=12%–72% and y=35%–66%. Keep every caption, number, prop label, underline, and other readable text completely inside it, including all letter strokes, outlines, shadows, and glow.
-- The top 35% of every panel is a strict no-text zone reserved for TikTok search, navigation, and device UI. It may contain background artwork only. Never place even part of a letter, outline, shadow, glow, underline, or label above y=35%.
-- Treat the top 35%, bottom 34%, left 12%, and right 28% as text-obstruction zones. Never put readable text in those zones.
+- Keep every caption horizontally inside x=15%–70% so TikTok's right-side controls cannot cover it.
+- Scene 1 uses the upper-middle caption band y=30%–45%.
+- Every later story scene uses the caption band y=54%–66%, centered exactly 60% down from the top.
+- Do not swap these placements: only Scene 1 uses the upper hook position; Scenes 2 and later center their captions at y=60%.
 - The right side is especially risky because of profile, like, comment, save, and share controls. Keep the protagonist's face and the scene's main visual meaning clear of the right-side control stack and the bottom username/caption/audio area.
-- Target the protagonist's face or main focal point around x=25%–60%, y=35%–60%. This is a composition target, not a hard crop box.
+- In Scenes 2 and later, target the protagonist's face or main focal point around x=25%–60%, y=30%–52%, above the caption band. This is a composition target, not a hard crop box.
 - Let the illustration fill the entire 9:16 panel. Backgrounds, scenery, limbs, shadows, furniture, and nonessential parts of props may extend into UI-obstruction zones when the scene remains understandable without those covered portions.
 - Do not inset the artwork into a 4:3, square, or other inner frame. Do not add letterboxing; use the complete 9:16 canvas.
 - If a requested composition conflicts with UI safety, reposition or rescale the caption and main focal point while preserving full-frame artwork.
 - Do not draw the safe-area rectangle, guides, coordinates, UI controls, or shaded exclusion zones in the finished artwork.
 
 CAPTIONS AND TEXT
-- Put every caption, including Scene 1, inside the caption band x=15%–70%, y=35%–50%. The top edge of the complete caption block must begin at or below y=35%, and its bottom edge must end at or above y=50%.
-- For a 1080×1920 panel, this means no caption pixel may appear above 672 px from the top. Use the equivalent 35% position at every other resolution.
-- "Near the top" means the middle caption band below the TikTok UI, never the physical top edge, upper margin, or top 35% of the panel.
+- Scene 1 caption: fit every caption pixel inside x=15%–70%, y=30%–45%, which is 576–864 px from the top of a 1080×1920 panel.
+- Scenes 2 and later: fit every caption pixel inside x=15%–70%, y=54%–66%, which is 1037–1267 px from the top of a 1080×1920 panel.
+- Center every later caption at y=60%, beneath the main action. Never push it into the bottom subtitle area.
 - Render the exact caption clearly, with high contrast, on no more than two lines.
 - Scale and wrap the caption so the complete text, including ascenders, descenders, outlines, and shadows, remains inside the caption band with visible breathing room on every side.
 - Center the caption around x=42%–45%, not at the full-panel horizontal center, and never right-align it.
-- Place illustrated faces and essential action below or beside the caption without overlapping its letters.
+- In Scene 1, place the essential action below or behind the hook. In later scenes, place faces and essential action above the lower caption without overlapping its letters.
 - Use a consistent friendly hand-lettered marker style that remains easy to read at phone size for scenes after scene 1. Scene 1 uses the stronger cinematic brush-lettering exception defined above.
 - Render direct non-graphic subject words exactly as supplied, including "porn" or "pornography." Do not censor them, replace them with vague wording, or remove them because the accompanying imagery is non-explicit.
 - Apart from the supplied caption, include text only when a short source-supported number or prop label is essential to understanding the VISUAL, such as "$15,000" on a banking screen.
