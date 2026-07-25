@@ -33,6 +33,9 @@ describe("StickmanStudio", () => {
     expect(
       screen.getByRole("button", { name: "Copy storyboard prompt" }),
     ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Copy description prompt" }),
+    ).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText("Source story or post"), {
       target: { value: "A multiline story.\nIt has a second line." },
@@ -66,7 +69,14 @@ describe("StickmanStudio", () => {
       },
     });
     const output = screen.getByLabelText("Full storyboard image prompt");
+    const description = screen.getByLabelText("Full video-description prompt");
     expect((output as HTMLTextAreaElement).value).toContain("A first scene");
+    expect((description as HTMLTextAreaElement).value).toContain(
+      '"voiceTone": "Direct, compassionate, and candid."',
+    );
+    expect((description as HTMLTextAreaElement).value).toContain(
+      '"visual": "A first scene"',
+    );
     fireEvent.change(response, {
       target: {
         value: JSON.stringify({
@@ -78,6 +88,42 @@ describe("StickmanStudio", () => {
     expect((output as HTMLTextAreaElement).value).not.toContain(
       "A first scene",
     );
+    expect((description as HTMLTextAreaElement).value).toContain(
+      '"visual": "A changed scene"',
+    );
+  });
+
+  it("copies a description prompt with source and storyboard context", async () => {
+    render(<StickmanStudio project={project} />);
+    fireEvent.change(screen.getByLabelText("Source story or post"), {
+      target: { value: "Porn kept costing me focus and motivation" },
+    });
+    fireEvent.change(screen.getByLabelText("AI JSON response"), {
+      target: {
+        value: JSON.stringify({
+          scenes: [
+            {
+              scene: 1,
+              caption: "PORN KEPT DRAINING MY FOCUS",
+              visual: "A tired person facing a blurred screen",
+            },
+          ],
+        }),
+      },
+    });
+
+    const prompt = screen.getByLabelText("Full video-description prompt");
+    const promptValue = (prompt as HTMLTextAreaElement).value;
+    expect(promptValue).toContain(
+      '"source": "Porn kept costing me focus and motivation"',
+    );
+    expect(promptValue).toContain('"caption": "PORN KEPT DRAINING MY FOCUS"');
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Copy description prompt" }),
+    );
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(promptValue));
   });
 
   it("rejects a non-JSON AI response without building the image prompt", () => {

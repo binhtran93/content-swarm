@@ -5,11 +5,12 @@ import { useMemo, useState } from "react";
 import type { Project } from "@/features/projects/model/project";
 import { parseStickmanStoryboardScript } from "@/features/tools/model/stickman-storyboard-script";
 import {
+  buildShortVideoDescriptionPrompt,
   buildShortVideoScriptPrompt,
   buildStickmanStoryboardPrompt,
 } from "@/features/tools/prompts/short-video-storyboard-prompts";
 
-type CopyTarget = "script" | "storyboard";
+type CopyTarget = "script" | "storyboard" | "description";
 
 export function StickmanStudio({
   project,
@@ -37,6 +38,13 @@ export function StickmanStudio({
   }, [scriptResponse]);
   const storyboardPrompt = parsedScript
     ? buildStickmanStoryboardPrompt({ project, script: parsedScript })
+    : "";
+  const descriptionPrompt = parsedScript
+    ? buildShortVideoDescriptionPrompt({
+        project,
+        source,
+        script: parsedScript,
+      })
     : "";
 
   async function copyPrompt(target: CopyTarget, prompt: string) {
@@ -164,6 +172,35 @@ export function StickmanStudio({
               heading="Full storyboard image prompt"
               onCopy={() => copyPrompt("storyboard", storyboardPrompt)}
               prompt={storyboardPrompt}
+            />
+          </section>
+
+          <div className="divider" />
+
+          <section aria-labelledby="description-prompt-heading">
+            <div>
+              <p className="text-primary text-xs font-bold tracking-widest uppercase">
+                Step 3
+              </p>
+              <h2
+                className="mt-1 text-lg font-semibold"
+                id="description-prompt-heading"
+              >
+                Write the social-video description
+              </h2>
+              <p className="text-base-content/60 mt-1 text-sm leading-6">
+                This prompt combines the original source, the exact Step 2
+                storyboard, Project context, and saved voice and tone. Copy it
+                directly into ChatGPT to create the final post description.
+              </p>
+            </div>
+
+            <PromptOutput
+              copyLabel="Copy description prompt"
+              copied={copied === "description"}
+              heading="Full video-description prompt"
+              onCopy={() => copyPrompt("description", descriptionPrompt)}
+              prompt={descriptionPrompt}
             />
           </section>
         </div>
