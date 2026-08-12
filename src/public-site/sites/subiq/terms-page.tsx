@@ -10,7 +10,7 @@ export function SubiqTermsPage() {
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Terms and Conditions
         </h1>
-        <p className="mb-8 text-sm text-zinc-600">Effective Date: 13.07.2026</p>
+        <p className="mb-8 text-sm text-zinc-600">Effective Date: 12.08.2026</p>
 
         <p className="mb-6 leading-8 text-zinc-700">
           Welcome to SubIQ, operated by ANMISOFT (&quot;we,&quot;
@@ -40,6 +40,10 @@ export function SubiqTermsPage() {
           <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
             <li>
               Recording and organizing subscription details that you enter.
+            </li>
+            <li>
+              Optionally finding subscription candidates from billing-related
+              Gmail messages after you connect Gmail and start a scan.
             </li>
             <li>
               Estimating renewal dates, upcoming charges, and totals across
@@ -93,6 +97,31 @@ export function SubiqTermsPage() {
               SubIQ Privacy Policy
             </Link>
             .
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="mb-3 text-2xl font-semibold">Find from Gmail</h2>
+          <p className="mb-4 leading-8 text-zinc-700">
+            Find from Gmail is optional. If you use it, you authorize SubIQ to
+            use Gmail read-only access to search for and analyze messages that
+            may contain subscription billing information. SubIQ does not use
+            this access to send, modify, or delete emails. Scans run only when
+            you request them.
+          </p>
+          <p className="leading-8 text-zinc-700">
+            Gmail-derived subscription candidates are informational and may be
+            incomplete or incorrect. Review each candidate before saving it. You
+            may disconnect Gmail in the app at any time; disconnection revokes
+            access and deletes the Gmail connection and its scan data, while
+            subscriptions you already chose to save remain in SubIQ. See the{" "}
+            <Link
+              href="./privacy#google-api-data"
+              className="font-medium text-zinc-900 underline-offset-4 hover:underline"
+            >
+              Privacy Policy
+            </Link>{" "}
+            for details.
           </p>
         </section>
 
@@ -160,9 +189,9 @@ export function SubiqTermsPage() {
           </h2>
           <p className="mb-3 leading-8 text-zinc-700">
             SubIQ relies on or links to third-party services, which may include
-            Firebase, Google Gemini, Google Search, Logo.dev, ExchangeRate-API,
-            Apple, Google Play, subscription providers, and their websites or
-            account portals.
+            Firebase, the Gmail API, Google Gemini, Google Search, Logo.dev,
+            ExchangeRate-API, Apple, Google Play, subscription providers, and
+            their websites or account portals.
           </p>
           <p className="leading-8 text-zinc-700">
             We do not control third-party services, content, policies,

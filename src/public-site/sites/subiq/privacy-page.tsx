@@ -10,7 +10,7 @@ export function SubiqPrivacyPage() {
         <h1 className="mb-3 text-3xl font-semibold tracking-tight">
           Privacy Policy
         </h1>
-        <p className="mb-8 text-sm text-zinc-600">Effective Date: 20.07.2026</p>
+        <p className="mb-8 text-sm text-zinc-600">Effective Date: 12.08.2026</p>
 
         <p className="mb-6 leading-8 text-zinc-700">
           At SubIQ (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;),
@@ -32,8 +32,9 @@ export function SubiqPrivacyPage() {
             permanently delete it in the app: open <strong>Settings</strong>,
             select <strong>Account</strong>, choose
             <strong> Delete Account</strong>, and confirm. This deletes your
-            SubIQ Firebase account, settings, and all saved subscription records
-            associated with that account.
+            SubIQ Firebase account, settings, saved subscription records,
+            connected Gmail credentials, and Gmail scan data associated with
+            that account.
           </p>
           <p className="mb-3 leading-8 text-zinc-700">
             You can also request deletion without the app by emailing{" "}
@@ -79,6 +80,13 @@ export function SubiqPrivacyPage() {
               Google and Firebase account information such as your account
               identifier, email address, display name, and profile image, when
               provided by Google.
+            </li>
+            <li>
+              If you separately connect Gmail to find subscriptions, your Gmail
+              address, an encrypted OAuth refresh token, and data from messages
+              matching billing-focused searches. The message data may include
+              message identifiers, labels, dates, sender and subject headers,
+              snippets, and text extracted from email bodies.
             </li>
             <li>
               Subscription records you enter, including company name, company
@@ -141,6 +149,10 @@ export function SubiqPrivacyPage() {
               analytics, or calls a cloud service.
             </li>
             <li>
+              From the Gmail API only after you connect a Gmail account and
+              start a scan. SubIQ does not continuously monitor Gmail.
+            </li>
+            <li>
               Through first-party cookies and similar technologies when the
               dedicated SubIQ website records page views.
             </li>
@@ -170,6 +182,11 @@ export function SubiqPrivacyPage() {
             <li>
               Search for companies and logos and provide cancellation or refund
               instructions for the company you select.
+            </li>
+            <li>
+              Search for subscription-related Gmail messages, analyze likely
+              billing emails, and present subscription candidates for you to
+              review and optionally save in SubIQ.
             </li>
             <li>
               Maintain the app, authenticate requests, prevent abuse,
@@ -219,6 +236,60 @@ export function SubiqPrivacyPage() {
             sessions. We do not use these analytics services to collect
             subscription record contents, waitlist form contents, or website
             account identifiers as analytics event data.
+          </p>
+        </section>
+
+        <section id="google-api-data" className="mb-8">
+          <h2 className="mb-3 text-2xl font-semibold">
+            Gmail Read-Only Access and Google API Data
+          </h2>
+          <p className="mb-4 leading-8 text-zinc-700">
+            Find from Gmail is optional and separate from using Google to sign
+            in to SubIQ. If you enable it, SubIQ requests the Gmail read-only
+            scope so it can search for and read messages that may contain
+            subscription receipts, invoices, trial notices, payment notices,
+            cancellations, or renewals. A scan starts only when you request it.
+            SubIQ cannot use this permission to send, modify, or delete your
+            emails.
+          </p>
+          <p className="mb-4 leading-8 text-zinc-700">
+            Gmail access is processed by Firebase Cloud Functions. The OAuth
+            refresh token is encrypted at rest. During a scan, matching message
+            content and prepared analysis data are stored in a private
+            server-only Firestore area. Relevant sender, subject, date, message
+            identifier, and limited email-body text are sent to Google Gemini so
+            it can identify subscription details such as merchant, plan, price,
+            currency, billing period, status, and billing dates. The resulting
+            scan status and subscription candidates are stored so you can review
+            them in SubIQ.
+          </p>
+          <p className="mb-4 leading-8 text-zinc-700">
+            Temporary message content and prepared analysis data are deleted
+            after a scan completes successfully. If a scan does not complete,
+            that private scan work remains until you disconnect that Gmail
+            account, delete your SubIQ account, or ask us to delete it. Scan
+            results and review candidates remain until you disconnect Gmail,
+            delete your SubIQ account, or request deletion. A subscription you
+            choose to save becomes a normal SubIQ subscription record and is not
+            deleted merely because you later disconnect Gmail.
+          </p>
+          <p className="mb-4 leading-8 text-zinc-700">
+            We do not sell Google user data, use it for advertising or credit
+            decisions, or use it to train or improve a general-purpose AI model.
+            Human access is prohibited except with your explicit consent for
+            specific support, when necessary for security or abuse
+            investigation, or when required by law.
+          </p>
+          <p className="leading-8 text-zinc-700">
+            SubIQ&apos;s use and transfer of information received from Google
+            APIs adheres to the{" "}
+            <a
+              href="https://developers.google.com/terms/api-services-user-data-policy"
+              className="font-medium text-zinc-900 underline-offset-4 hover:underline"
+            >
+              Google API Services User Data Policy
+            </a>{" "}
+            and its Limited Use requirements.
           </p>
         </section>
 
@@ -300,8 +371,9 @@ export function SubiqPrivacyPage() {
             </li>
             <li>
               Google Gemini and Google Search for generating grounded
-              cancellation and refund instructions from the selected company
-              name and domain.
+              cancellation and refund instructions, and Google Gemini for
+              classifying user-requested Gmail scan content into subscription
+              candidates.
             </li>
             <li>
               Logo.dev for company search results and company logo images.
@@ -344,12 +416,25 @@ export function SubiqPrivacyPage() {
             security.
           </p>
           <p className="mb-4 leading-8 text-zinc-700">
+            Gmail message content used during a scan is retained as described in
+            the Gmail section above. Disconnecting a Gmail account revokes
+            SubIQ&apos;s access and permanently deletes that connection&apos;s
+            scan results, review candidates, private scan work, and scan cursor
+            metadata. Saved SubIQ subscription records are not deleted by Gmail
+            disconnection.
+          </p>
+          <p className="mb-4 leading-8 text-zinc-700">
             We retain a waitlist email until SubIQ launches, you ask us to
             remove it, or it is no longer needed for launch communication.
           </p>
           <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-700">
             <li>
               You can delete individual subscription records from within SubIQ.
+            </li>
+            <li>
+              To disconnect Gmail and delete its scan data, open Find from
+              Gmail, select <strong>Disconnect Gmail</strong> for the account,
+              and confirm. You may also email support@anmisoft.com for help.
             </li>
             <li>
               If you use a Google-linked account, you can delete it from
@@ -392,6 +477,12 @@ export function SubiqPrivacyPage() {
             <li>
               Contact support@anmisoft.com to ask about access, correction,
               deletion, or another privacy request.
+            </li>
+            <li>
+              Disconnect Gmail in SubIQ to revoke access and delete Gmail scan
+              data. Removing SubIQ from your Google Account permissions stops
+              future access but does not by itself submit a deletion request to
+              SubIQ.
             </li>
             <li>
               Ask support@anmisoft.com to remove your email from the launch
