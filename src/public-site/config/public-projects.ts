@@ -3,6 +3,7 @@ export const publicProjectBasePaths = {
   skylens: "/skylens",
   subiq: "/subiq",
   "urge-zero": "/urge-zero",
+  "world-clock": "/world-clock",
 } as const satisfies Record<string, `/${string}`>;
 
 export type PublicProjectId = keyof typeof publicProjectBasePaths;

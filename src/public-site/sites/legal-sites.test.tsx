@@ -21,11 +21,19 @@ import UrgeZeroSupportPage, {
 import UrgeZeroTermsPage, {
   metadata as urgeZeroTermsMetadata,
 } from "@/public-site/sites/urge-zero/terms-page";
+import WorldClockPrivacyPage, {
+  metadata as worldClockPrivacyMetadata,
+} from "@/public-site/sites/world-clock/privacy-page";
+import { worldClockSiteConfig } from "@/public-site/sites/world-clock/site-config";
+import WorldClockSupportPage from "@/public-site/sites/world-clock/support-page";
+import WorldClockTermsPage, {
+  metadata as worldClockTermsMetadata,
+} from "@/public-site/sites/world-clock/terms-page";
 
-const configs = [skylensSiteConfig] as const;
+const configs = [skylensSiteConfig, worldClockSiteConfig] as const;
 
 describe("legal-only public sites", () => {
-  it.each(configs)("builds scoped navigation and icons for $name", (config) => {
+  it.each(configs)("builds scoped navigation for $name", (config) => {
     const { container } = render(
       <LegalSiteShell config={config}>
         <main>Content</main>
@@ -46,10 +54,22 @@ describe("legal-only public sites", () => {
       "href",
       `${config.basePath}/terms`,
     );
-    expect(getLegalSiteIcons(config)).toMatchObject({
-      icon: [{ url: `${config.basePath}/favicon.png` }],
-      shortcut: `${config.basePath}/favicon.png`,
+  });
+
+  it("uses project icons when supplied and text-only branding otherwise", () => {
+    expect(getLegalSiteIcons(skylensSiteConfig)).toMatchObject({
+      icon: [{ url: "/skylens/favicon.png" }],
+      shortcut: "/skylens/favicon.png",
     });
+    expect(getLegalSiteIcons(worldClockSiteConfig)).toBeUndefined();
+
+    const { container } = render(
+      <LegalSiteShell config={worldClockSiteConfig}>
+        <main>Content</main>
+      </LegalSiteShell>,
+    );
+    expect(container.querySelector("img")).not.toBeInTheDocument();
+    expect(screen.getAllByText("World Clock Plus")).toHaveLength(2);
   });
 
   it("preserves Jewelry Identifier legal copy while branding the shell as JLens", () => {
@@ -94,6 +114,41 @@ describe("legal-only public sites", () => {
     expect(
       screen.getByText("UrgeZero version", { exact: false }),
     ).toBeInTheDocument();
+    cleanup();
+
+    render(<WorldClockSupportPage />);
+    expect(screen.getAllByText("support@anmisoft.com").length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      screen.getByText("World Clock Plus version", { exact: false }),
+    ).toBeInTheDocument();
+  });
+
+  it("publishes source-backed World Clock Plus privacy and terms", () => {
+    render(<WorldClockPrivacyPage />);
+    expect(
+      screen.getByText("Last updated: 1 September 2026"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Device permissions and features"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Website data")).toBeInTheDocument();
+    expect(screen.queryByText(/targeted ads/i)).toBeInTheDocument();
+    expect(worldClockPrivacyMetadata.title).toBe(
+      "Privacy Policy | World Clock Plus",
+    );
+
+    cleanup();
+    render(<WorldClockTermsPage />);
+    expect(screen.getByText("Subscriptions and purchases")).toBeInTheDocument();
+    expect(
+      screen.getByText("Applicable law and local rights"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Your Jurisdiction/i)).not.toBeInTheDocument();
+    expect(worldClockTermsMetadata.title).toBe(
+      "Terms and Conditions | World Clock Plus",
+    );
   });
 
   it("publishes source-backed UrgeZero privacy and terms without stale claims", () => {

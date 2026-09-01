@@ -12,7 +12,7 @@ export type LegalSiteConfig = {
   id: string;
   basePath: `/${string}`;
   name: string;
-  logoSrc: string;
+  logoSrc?: string;
   scopeClassName: string;
   routeProgressColor: string;
   copyrightName: string;
@@ -29,6 +29,8 @@ function route(config: LegalSiteConfig, href: string) {
 }
 
 export function getLegalSiteIcons(config: LegalSiteConfig) {
+  if (!config.logoSrc) return undefined;
+
   const favicon = `${config.basePath}/favicon.png`;
   return {
     icon: [{ url: favicon, type: "image/png" }],
@@ -51,15 +53,17 @@ function Brand({
       href={route(config, "/support")}
       aria-label={`${config.name} support`}
     >
-      <span className={styles.brandMark}>
-        <Image
-          src={config.logoSrc}
-          alt=""
-          width={size}
-          height={size}
-          priority={!footer}
-        />
-      </span>
+      {config.logoSrc ? (
+        <span className={styles.brandMark}>
+          <Image
+            src={config.logoSrc}
+            alt=""
+            width={size}
+            height={size}
+            priority={!footer}
+          />
+        </span>
+      ) : null}
       <span>{config.name}</span>
     </Link>
   );

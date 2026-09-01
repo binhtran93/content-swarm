@@ -1,0 +1,14 @@
+.world-clock-site {
+  --legal-accent: #007aff;
+  --legal-background: #f2f2f7;
+  --legal-border: #d7d7dc;
+  --legal-focus-ring: rgba(0, 122, 255, 0.34);
+  --legal-footer: #e9e9ef;
+  --legal-header: #ffffff;
+  --legal-shadow: rgba(18, 22, 28, 0.1);
+  --legal-surface: #ffffff;
+  --legal-surface-muted: #f6f6f8;
+  --legal-text: #1c1c1e;
+  --legal-text-secondary: #6c6c70;
+  --site-on-accent: #ffffff;
+}
